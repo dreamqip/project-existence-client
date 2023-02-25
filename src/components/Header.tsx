@@ -11,8 +11,11 @@ import {
   Registered,
   FileImport,
   FileOff,
+  FileStar,
 } from 'tabler-icons-react';
-import { provider, updateProvider } from '../contract_interactions';
+
+const updateProvider = require('../contract_interactions').updateProvider;
+const getProvider = require('../contract_interactions').getProvider;
 
 export default function Header() {
   return (
@@ -20,7 +23,7 @@ export default function Header() {
       <div className={styles.header__container}>
         <div className={styles.header__left}>
           <Link className={styles.logo} href='/'>
-            <Image src='/logo.png' alt='' width={40} height={40} />
+            <FileStar size={40} strokeWidth={2} color={'#ffffff'} />
             <Title order={2} className={styles.logo__text}>
               Project existence
             </Title>
@@ -41,6 +44,7 @@ export default function Header() {
             <Button radius='md'>Create Record</Button>
             <Button radius='md'>Invalidate Record</Button>
           </div>
+
           <div className={styles.header__connect}>
             <Button
               leftIcon={<Wallet />}
@@ -51,6 +55,7 @@ export default function Header() {
               Connect
             </Button>
           </div>
+
           <div className={styles.header__burger}>
             <Menu
               shadow='md'
