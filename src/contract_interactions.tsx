@@ -45,6 +45,9 @@ async function updateProvider(chain: "mainnet" | "testnet" | "fakenet") {
     provider = rawProvider == null ? null : new ethers.BrowserProvider(rawProvider as any, chainID);
     return provider != null;
 }
+function getProvider() {
+    return provider;
+}
 
 function getOrganisationFactoryContract (contract_address: string) {
     if(provider === null) throw new NoProviderError();
@@ -68,4 +71,5 @@ class NoProviderError extends Error {
     }
 }
 
-export {provider, updateProvider, getOrganisationContract, getRegisterContract, getOrganisationFactoryContract};
+export default () => {""}
+export {getProvider, updateProvider, getOrganisationContract, getRegisterContract, getOrganisationFactoryContract};

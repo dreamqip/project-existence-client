@@ -12,7 +12,9 @@ import {
   FileImport,
   FileOff,
 } from 'tabler-icons-react';
-import { provider, updateProvider } from '../contract_interactions';
+
+const updateProvider = require('../contract_interactions').updateProvider
+const getProvider = require('../contract_interactions').getProvider
 
 export default function Header() {
   return (
@@ -46,7 +48,7 @@ export default function Header() {
               leftIcon={<Wallet />}
               color='dark'
               radius='md'
-              //onClick={(event) => console.log(updateProvider('testnet'))}
+              onClick={(event) => updateProvider('testnet')}
             >
               Connect
             </Button>
