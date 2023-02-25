@@ -50,7 +50,7 @@ export default function Header() {
               leftIcon={<Wallet />}
               color='dark'
               radius='md'
-              //onClick={(event) => console.log(updateProvider('testnet'))}
+              onClick={(event) => updateProvider('testnet')}
             >
               Connect
             </Button>
