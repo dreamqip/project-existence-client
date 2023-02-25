@@ -23,9 +23,6 @@
         display: flex;
         align-items: center;
     }
-    &__left a{
-        text-decoration: none;
-    }
     &__left{
         flex: 0 1 100%;
     }
@@ -56,6 +53,7 @@
         white-space: nowrap;
         margin-left: 10px;
         color: white;
+        text-align: center;
     }
 }
 

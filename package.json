@@ -23,7 +23,9 @@
     "ethers": "^6.0.8",
     "next": "13.2.1",
     "react": "18.2.0",
+    "react-breadcrumbs": "^2.1.7",
     "react-dom": "18.2.0",
+    "react-router-dom": "^6.8.1",
     "tabler-icons-react": "^1.56.0",
     "typescript": "4.9.5"
   },

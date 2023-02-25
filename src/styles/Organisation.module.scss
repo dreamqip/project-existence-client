@@ -1,0 +1,60 @@
+.organisation{
+    &__container{
+        padding: 0 20px;
+        max-width: 1240px;
+        margin: 0 auto;
+        margin-top: 25px;
+    }
+    &__title{
+        text-transform: capitalize;
+    }
+    &__body{
+        display: flex;
+        margin: 0px -10px;
+        margin-top: 25px;
+        @media (max-width: 768px){
+            flex-direction: column;
+        }
+        div{
+            flex: 1 1 auto;
+        }
+    }
+    &__card{
+        padding: 0px 10px;
+        max-width: 400px;
+    }
+    &__breadcrumbs{
+        display: flex;
+        flex-wrap: wrap;
+    }
+}
+
+.registers{
+    &__list{
+        margin-top: 20px;
+        padding: 0px 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 20px;
+        @media (max-width: 1024px){
+            grid-template-columns: 1fr 1fr;
+        }
+        @media (max-width: 425px){
+            grid-template-columns: 1fr;
+        }
+    }
+    &__tabs{
+        @media (max-width: 768px){
+            margin-top: 10px;
+        }
+    }
+    &__title{
+        margin-bottom: 10px;
+        text-align: center;
+        @media (max-width: 768px){
+            margin-bottom: 0;
+            margin-top: 40px;
+        }
+    }
+}
+
