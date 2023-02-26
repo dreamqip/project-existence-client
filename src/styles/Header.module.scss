@@ -41,7 +41,7 @@
         margin-left: 10px;
         display: grid;
         grid-gap: 10px;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
     }
     &__mobile_menu{
         margin-top: 20px;
@@ -64,7 +64,7 @@
     }
 }
 
-@media (max-width: 768px){
+@media (max-width: 920px){
     .header__connect button{
         padding: 0 5px;
         div span:last-child{

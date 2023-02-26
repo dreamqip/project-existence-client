@@ -247,7 +247,7 @@ export default function Register() {
               </Tabs.List>
 
               <Tabs.Panel value='activity' pt='xs'>
-                <Table highlightOnHover>
+                <Table highlightOnHover fontSize='xs'>
                   <thead>
                     <tr>
                       <th>Document hash</th>

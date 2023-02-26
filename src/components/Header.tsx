@@ -1,32 +1,27 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Header.module.scss';
-import {
-  Button,
-  Input,
-  Title,
-  Menu,
-  ActionIcon,
-  Drawer,
-  Group,
-} from '@mantine/core';
-import {
-  Search,
-  Wallet,
-  Menu2,
-  AddressBook,
-  Registered,
-  FileImport,
-  FileOff,
-  FileStar,
-} from 'tabler-icons-react';
+import { Button, Input, Title, ActionIcon, Drawer, Group } from '@mantine/core';
+import { Search, Wallet, Menu2 } from 'tabler-icons-react';
+import { useRouter } from 'next/router';
 
 const updateProvider = require('../contract_interactions').updateProvider;
 const getProvider = require('../contract_interactions').getProvider;
 
 export default function Header() {
+  const router = useRouter();
   const [opened, setOpened] = useState(false);
+
+  const isHomePage = router.pathname === '/';
+  const isOrganisationsPage = router.pathname === '/organisations';
+  const isOrganisationPage = /\/organisations\/organisation-\d+/.test(
+    router.pathname,
+  );
+  const isRegisterPage = /\/organisations\/organisation-\d+\/register-\d+/.test(
+    router.pathname,
+  );
+
   return (
     <header className={styles.header}>
       <div className={styles.header__container}>
@@ -36,6 +31,7 @@ export default function Header() {
               Project Existence
             </Title>
           </Link>
+
           <div className={styles.header__search}>
             <ActionIcon className={styles.search__button}>
               <Search />
@@ -49,13 +45,25 @@ export default function Header() {
           </div>
         </div>
         <div className={styles.header__right}>
-          <div className={styles.header__menu}>
-            <Button radius='md'>Create Organisation</Button>
-            <Button radius='md'>Deploy Register</Button>
-            <Button radius='md'>Create Record</Button>
-            <Button radius='md'>Invalidate Record</Button>
-          </div>
-
+          {isHomePage ? null : null}
+          {isOrganisationsPage ? (
+            <div className={styles.header__menu}>
+              <Button radius='md'>Create Organisation</Button>
+            </div>
+          ) : null}
+          {isOrganisationPage && !isRegisterPage ? (
+            <div className={styles.header__menu}>
+              <Button radius='md'>Update Organisation</Button>
+              <Button radius='md'>Deploy Register</Button>
+            </div>
+          ) : null}
+          {isRegisterPage ? (
+            <div className={styles.header__menu}>
+              <Button radius='md'>Create Record</Button>
+              <Button radius='md'>Invalidate Record</Button>
+              <Button radius='md'>Update Register</Button>
+            </div>
+          ) : null}
           <div className={styles.header__connect}>
             <Button
               leftIcon={<Wallet />}
@@ -84,12 +92,25 @@ export default function Header() {
                 radius='md'
                 size='md'
               />
-              <div className={styles.header__mobile_menu}>
-                <Button radius='md'>Create Organisation</Button>
-                <Button radius='md'>Deploy Register</Button>
-                <Button radius='md'>Create Record</Button>
-                <Button radius='md'>Invalidate Record</Button>
-              </div>
+              {isHomePage ? null : null}
+              {isOrganisationsPage ? (
+                <div className={styles.header__mobile_menu}>
+                  <Button radius='md'>Create Organisation</Button>
+                </div>
+              ) : null}
+              {isOrganisationPage && !isRegisterPage ? (
+                <div className={styles.header__mobile_menu}>
+                  <Button radius='md'>Update Organisation</Button>
+                  <Button radius='md'>Deploy Register</Button>
+                </div>
+              ) : null}
+              {isRegisterPage ? (
+                <div className={styles.header__mobile_menu}>
+                  <Button radius='md'>Create Record</Button>
+                  <Button radius='md'>Invalidate Record</Button>
+                  <Button radius='md'>Update Register</Button>
+                </div>
+              ) : null}
             </Drawer>
 
             <Group position='center'>
