@@ -1,8 +1,16 @@
 import React from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Header.module.scss';
-import { Button, Input, Title, Menu, ActionIcon } from '@mantine/core';
+import {
+  Button,
+  Input,
+  Title,
+  Menu,
+  ActionIcon,
+  Drawer,
+  Group,
+} from '@mantine/core';
 import {
   Search,
   Wallet,
@@ -18,6 +26,7 @@ const updateProvider = require('../contract_interactions').updateProvider;
 const getProvider = require('../contract_interactions').getProvider;
 
 export default function Header() {
+  const [opened, setOpened] = useState(false);
   return (
     <header className={styles.header}>
       <div className={styles.header__container}>
@@ -55,40 +64,34 @@ export default function Header() {
               Connect
             </Button>
           </div>
-
           <div className={styles.header__burger}>
-            <Menu
-              shadow='md'
-              width={200}
-              transition='rotate-right'
-              transitionDuration={150}
+            <Drawer
+              opened={opened}
+              onClose={() => setOpened(false)}
+              title='Menu'
+              padding='xl'
+              size='xl'
+              position='right'
             >
-              <Menu.Target>
-                <ActionIcon>
-                  <Menu2 size={40} />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Input
-                  icon={<Search />}
-                  placeholder='Enter Org or Reg address'
-                  radius='md'
-                  size='md'
-                />
-                <Menu.Item icon={<AddressBook size={14} />}>
-                  Create Organisation
-                </Menu.Item>
-                <Menu.Item icon={<Registered size={14} />}>
-                  Deploy Register
-                </Menu.Item>
-                <Menu.Item icon={<FileImport size={14} />}>
-                  Create Record
-                </Menu.Item>
-                <Menu.Item icon={<FileOff size={14} />}>
-                  Invalidate Record
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+              <Input
+                icon={<Search />}
+                placeholder='Enter Org or Reg address'
+                radius='md'
+                size='md'
+              />
+              <div className={styles.header__mobile_menu}>
+                <Button radius='md'>Create Organisation</Button>
+                <Button radius='md'>Deploy Register</Button>
+                <Button radius='md'>Create Record</Button>
+                <Button radius='md'>Invalidate Record</Button>
+              </div>
+            </Drawer>
+
+            <Group position='center'>
+              <Button onClick={() => setOpened(true)} variant='subtle' compact>
+                <Menu2 size={25} />
+              </Button>
+            </Group>
           </div>
         </div>
       </div>

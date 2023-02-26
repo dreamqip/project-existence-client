@@ -35,13 +35,20 @@
     }
     &__burger{
         display: none;
-        margin-left: 20px;
+        margin-left: 10px;
     }
     &__menu{
         margin-left: 10px;
         display: grid;
         grid-gap: 10px;
         grid-template-columns: 1fr 1fr;
+    }
+    &__mobile_menu{
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        grid-gap: 10px;
+        align-items: left;
     }
 }
 

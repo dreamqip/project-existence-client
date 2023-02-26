@@ -134,7 +134,7 @@ export default function Organisation() {
               </Tabs.Panel>
 
               <Tabs.Panel value='activity' pt='xs'>
-                <Table>
+                <Table highlightOnHover>
                   <thead>
                     <tr>
                       <th>Register address</th>
