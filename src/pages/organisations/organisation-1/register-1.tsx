@@ -7,7 +7,6 @@ import {
   Table,
   Button,
   CopyButton,
-  FileInput,
   Input,
   Title,
   Progress,
@@ -16,19 +15,23 @@ import {
   Group,
   Stack,
   List,
+  Text,
 } from '@mantine/core';
+import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import RegisterCard from '@/components/Card';
 import Link from 'next/link';
 import { Copy } from 'tabler-icons-react';
 import {
   ArrowUpRight,
-  FileUpload,
   Search,
   AlertCircle,
+  Upload,
+  X,
 } from 'tabler-icons-react';
 
 export default function Register() {
   const [opened, setOpened] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const items = [
     { title: 'Home', href: '/' },
@@ -122,14 +125,6 @@ export default function Register() {
           </Title>
           <Progress value={33} color='teal' />
           <div className={styles.records__check}>
-            <div className={styles.records__drag_file}>
-              <FileInput
-                placeholder='Upload Document'
-                radius='md'
-                size='md'
-                icon={<FileUpload />}
-              />
-            </div>
             <div className={styles.records__search}>
               <Input
                 icon={<Search />}
@@ -137,6 +132,37 @@ export default function Register() {
                 radius='md'
                 size='md'
               />
+            </div>
+            <div className={styles.records__drag_file}>
+              <Dropzone
+                loading={isLoading}
+                onDrop={(files) => console.log('accepted files', files)}
+                onReject={(files) => console.log('rejected files', files)}
+              >
+                <Group
+                  position='center'
+                  spacing='xl'
+                  style={{ minHeight: 220, pointerEvents: 'none' }}
+                >
+                  <Dropzone.Accept>
+                    <Upload size={50} />
+                  </Dropzone.Accept>
+                  <Dropzone.Reject>
+                    <X size={50} />
+                  </Dropzone.Reject>
+                  <Dropzone.Idle>
+                    <Upload size={50} />
+                  </Dropzone.Idle>
+                  <div>
+                    <Text size='xl' inline>
+                      Drag documents here or click to select files
+                    </Text>
+                    <Text size='sm' color='dimmed' inline mt={7}>
+                      Attach as many files as you like
+                    </Text>
+                  </div>
+                </Group>
+              </Dropzone>
             </div>
             <div className={styles.records__result}>
               <Alert
