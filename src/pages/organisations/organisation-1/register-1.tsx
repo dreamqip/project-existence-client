@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import styles from '@/styles/Register.module.scss';
 import {
   Breadcrumbs,
@@ -11,6 +12,10 @@ import {
   Title,
   Progress,
   Alert,
+  Modal,
+  Group,
+  Stack,
+  List,
 } from '@mantine/core';
 import RegisterCard from '@/components/Card';
 import Link from 'next/link';
@@ -23,6 +28,8 @@ import {
 } from 'tabler-icons-react';
 
 export default function Register() {
+  const [opened, setOpened] = useState(false);
+
   const items = [
     { title: 'Home', href: '/' },
     { title: 'Organisations', href: '/organisations' },
@@ -84,9 +91,14 @@ export default function Register() {
       <td>{element.action}</td>
       <td>{element.date}</td>
       <td>
-        <Link href='#'>
+        <Button
+          variant='subtle'
+          compact
+          className={styles.records__link}
+          onClick={() => setOpened(true)}
+        >
           <ArrowUpRight size={40} strokeWidth={2} color={'#ffffff'} />
-        </Link>
+        </Button>
       </td>
     </tr>
   ));
@@ -133,10 +145,61 @@ export default function Register() {
                 color='teal'
               >
                 Record found!
+                <br />
+                <Button
+                  className={styles.records__link}
+                  onClick={() => setOpened(true)}
+                  rightIcon={
+                    <ArrowUpRight size={40} strokeWidth={2} color={'#ffffff'} />
+                  }
+                >
+                  Details
+                </Button>
+                <Modal
+                  opened={opened}
+                  onClose={() => setOpened(false)}
+                  title='Record'
+                  overlayOpacity={0.55}
+                  overlayBlur={3}
+                >
+                  <div className={styles.records__record}>
+                    <Stack spacing='sm'>
+                      <List>
+                        <List.Item>
+                          Document hash:
+                          0x7894567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+                        </List.Item>
+                        <List.Item>
+                          Creator: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+                        </List.Item>
+                        <List.Item>
+                          Updater: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+                        </List.Item>
+                        <List.Item>
+                          Source Document: SOURCE_DOCUMENT_URL
+                        </List.Item>
+                        <List.Item>
+                          Reference Document: REFERENCE_DOCUMENT_URL
+                        </List.Item>
+                        <List.Item>Created at: 1677419137</List.Item>
+                        <List.Item>Updated at: 1677419145</List.Item>
+                        <List.Item>Starts at: 0</List.Item>
+                        <List.Item>Expires at: 1677419145</List.Item>
+                        <List.Item>
+                          Past Document hash:
+                          0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+                        </List.Item>
+                        <List.Item>
+                          Next Document hash:
+                          0x5464567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+                        </List.Item>
+                      </List>
+                    </Stack>
+                  </div>
+                </Modal>
               </Alert>
             </div>
           </div>
-
           <div className={styles.records__tabs}>
             <Tabs defaultValue='activity'>
               <Tabs.List>
@@ -144,7 +207,7 @@ export default function Register() {
               </Tabs.List>
 
               <Tabs.Panel value='activity' pt='xs'>
-                <Table>
+                <Table highlightOnHover>
                   <thead>
                     <tr>
                       <th>Document hash</th>
