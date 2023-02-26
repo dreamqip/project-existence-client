@@ -6,8 +6,9 @@ import { Button, Input, Title, ActionIcon, Drawer, Group } from '@mantine/core';
 import { Search, Wallet, Menu2 } from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 
-const updateProvider = require('../contract_interactions').updateProvider;
-const getProvider = require('../contract_interactions').getProvider;
+const updateProvider = require('../contract_interactions').updateProvider as (
+  chain: 'mainnet' | 'testnet' | 'fakenet',
+) => Promise<boolean>;
 
 export default function Header() {
   const router = useRouter();
@@ -31,7 +32,6 @@ export default function Header() {
               Project Existence
             </Title>
           </Link>
-
           <div className={styles.header__search}>
             <ActionIcon className={styles.search__button}>
               <Search />
@@ -69,7 +69,7 @@ export default function Header() {
               leftIcon={<Wallet />}
               color='dark'
               radius='md'
-              onClick={(event) => updateProvider('testnet')}
+              onClick={(event) => updateProvider('fakenet')}
             >
               Connect
             </Button>
