@@ -32,9 +32,8 @@ export default function Header() {
       <div className={styles.header__container}>
         <div className={styles.header__left}>
           <Link className={styles.logo} href='/'>
-            <FileStar size={40} strokeWidth={2} color={'#ffffff'} />
             <Title order={2} className={styles.logo__text}>
-              Project existence
+              Project Existence
             </Title>
           </Link>
           <div className={styles.header__search}>
