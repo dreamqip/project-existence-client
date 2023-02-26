@@ -85,5 +85,10 @@
     }
 }
 
-
-
+.search{
+    &__button{
+        margin-left: 6px;
+        margin-bottom: -35px;
+        z-index: 10;
+    }
+}

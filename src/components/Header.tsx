@@ -37,6 +37,9 @@ export default function Header() {
             </Title>
           </Link>
           <div className={styles.header__search}>
+            <ActionIcon className={styles.search__button}>
+              <Search />
+            </ActionIcon>
             <Input
               icon={<Search />}
               placeholder='Enter Org or Reg address'
@@ -72,6 +75,9 @@ export default function Header() {
               size='xl'
               position='right'
             >
+              <ActionIcon className={styles.search__button}>
+                <Search />
+              </ActionIcon>
               <Input
                 icon={<Search />}
                 placeholder='Enter Org or Reg address'

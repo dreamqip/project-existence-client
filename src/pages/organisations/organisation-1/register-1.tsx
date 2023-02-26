@@ -16,8 +16,10 @@ import {
   Stack,
   List,
   Text,
+  Notification,
+  ActionIcon,
 } from '@mantine/core';
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
 import RegisterCard from '@/components/Card';
 import Link from 'next/link';
 import { Copy } from 'tabler-icons-react';
@@ -27,12 +29,20 @@ import {
   AlertCircle,
   Upload,
   X,
+  CircleCheck,
 } from 'tabler-icons-react';
 
 export default function Register() {
   const [opened, setOpened] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  function handleDrop(files: File[]) {
+    setIsLoading(true);
+    // Perform your file processing logic here
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }
   const items = [
     { title: 'Home', href: '/' },
     { title: 'Organisations', href: '/organisations' },
@@ -123,9 +133,12 @@ export default function Register() {
           <Title order={2} className={styles.records__title}>
             Records
           </Title>
-          <Progress value={33} color='teal' />
+
           <div className={styles.records__check}>
             <div className={styles.records__search}>
+              <ActionIcon className={styles.search__button}>
+                <Search />
+              </ActionIcon>
               <Input
                 icon={<Search />}
                 placeholder='Enter Document hash'
@@ -135,8 +148,8 @@ export default function Register() {
             </div>
             <div className={styles.records__drag_file}>
               <Dropzone
+                onDrop={handleDrop}
                 loading={isLoading}
-                onDrop={(files) => console.log('accepted files', files)}
                 onReject={(files) => console.log('rejected files', files)}
               >
                 <Group
@@ -165,15 +178,16 @@ export default function Register() {
               </Dropzone>
             </div>
             <div className={styles.records__result}>
-              <Alert
-                icon={<AlertCircle size={16} />}
-                title='Alert!'
+              <Notification
+                disallowClose
+                icon={<CircleCheck size={30} />}
                 color='teal'
+                title='Record found!'
               >
-                Record found!
+                Click details to get more information about the record
                 <br />
                 <Button
-                  className={styles.records__link}
+                  className={styles.records__link_btn}
                   onClick={() => setOpened(true)}
                   rightIcon={
                     <ArrowUpRight size={40} strokeWidth={2} color={'#ffffff'} />
@@ -223,7 +237,7 @@ export default function Register() {
                     </Stack>
                   </div>
                 </Modal>
-              </Alert>
+              </Notification>
             </div>
           </div>
           <div className={styles.records__tabs}>
