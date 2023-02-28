@@ -1,44 +1,80 @@
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.scss';
 import OrganisationCard from '@/components/Card';
-import { Input, Title } from '@mantine/core';
-import { Search } from 'tabler-icons-react';
+import { Title } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { getOrganisationContract, getOrganisationFactoryContract, getSigner, OrganisationContract, organisationsOfOwner } from '@/contract_interactions';
+import React from 'react';
+import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import { sign } from 'crypto';
+import { waitFor } from '@/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  return (
-    <>
-      <div className={styles.home__container}>
-        {/* <div className={styles.home__main}>
-          <Title order={1} className={styles.home__title}>
-            Project Existence
-          </Title>
-          <div className={styles.home__search}>
-            <Input
-              icon={<Search />}
-              placeholder='Enter Organisation or Register address'
-              radius='md'
-              size='xl'
-            />
-          </div>
-        </div> */}
-        <div className={styles.home__your_organisations}>
-          <Title order={2} className={styles.your_organisations__title}>
-            Your Organisations
-          </Title>
-          <div className={styles.your_organisations__cards}>
-            <OrganisationCard
-              title='Test Organisation'
-              description='This organisation is created to show you the capabilities of our project. 
-            It actively demostrates all the implemented functions and interaction between people and 
-            contracts. Contacts: email.'
-              badge='Featured'
-              way='/organisations/organisation-1'
-            />
-          </div>
-        </div>
-      </div>
-    </>
-  );
+    const [yourOrganisationsCards, setYourOrganisationsCards] = useState([<React.Fragment key='1'>please connect your wallet</React.Fragment>] as JSX.Element[]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchData = async () => {
+            if (isMounted) {
+                await waitFor(() => getSigner() != null);
+                setYourOrganisationsCards([<React.Fragment key='1'>loading...</React.Fragment>]);
+                let signer = getSigner();
+                if (signer == null) return;
+
+                let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
+                if (orgFactory == null) {
+                    setYourOrganisationsCards([<React.Fragment key='1'>error</React.Fragment>])
+                    return;
+                }
+
+                let orgs: OrganisationContract[] = [];
+                for await (const orgAddress of organisationsOfOwner(await signer.getAddress(), orgFactory)) {
+                    let org = await getOrganisationContract(orgAddress.toString(), true)
+                    if (org != null) orgs.push(org);
+                }
+                let orgCards = await Promise.all(orgs.map(async (org: OrganisationContract, index) => {
+                    let metadata = await org.metadata();
+
+                    return <OrganisationCard
+                        title={metadata}
+                        key={index}
+                        description='This organisation is created to show you the capabilities of our project. 
+                            It actively demostrates all the implemented functions and interaction between people and 
+                            contracts. Contacts: email.'
+                        //badge='Featured'
+                        badge=''
+                        way={'/organisations/'+await org.getAddress()}
+                    />
+                }));
+
+                setYourOrganisationsCards(orgCards);
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    return (
+        <>
+            <div className={styles.home__container}>
+                <div className={styles.home__your_organisations}>
+                    <Title order={2} className={styles.your_organisations__title}>
+                        Your Organisations
+                    </Title>
+                    <div className={styles.your_organisations__cards}>
+                        <>
+                            {yourOrganisationsCards}
+                        </>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
 }

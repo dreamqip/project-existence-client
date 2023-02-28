@@ -1,0 +1,5 @@
+export const NETWORK = "fakenet"
+export const ORGANISATION_FACTORY_ADDRESS = "0xB7341f0900dCA03e05337Ed04192D22fd2969f94"
+export const FEATURED_ORGANISATIONS = [
+    "0x1234"
+]
