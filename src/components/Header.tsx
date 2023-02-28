@@ -39,7 +39,7 @@ export default function Header() {
           </div>
         </div>
         <div className={styles.header__right}>
-          <Header__menu></Header__menu>
+          <Header__menu walletConnected={walletConnected}></Header__menu>
           <div className={styles.header__connect}>
             <Button
               leftIcon={<Wallet />}
@@ -53,7 +53,9 @@ export default function Header() {
               {walletConnected ? <>Connected ✅</> : <>Connect</>}
             </Button>
           </div>
-          <Header__mobile_menu></Header__mobile_menu>
+          <Header__mobile_menu
+            walletConnected={walletConnected}
+          ></Header__mobile_menu>
         </div>
       </div>
     </header>
