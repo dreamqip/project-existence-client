@@ -13,7 +13,11 @@ import {
   FileTime,
 } from 'tabler-icons-react';
 
-export default function Header__menu() {
+export default function Header__menu({
+  walletConnected,
+}: {
+  walletConnected: boolean;
+}) {
   const router = useRouter();
   const isHomePage = router.pathname === '/';
   const isOrganisationsPage = router.pathname === '/organisations';
@@ -53,7 +57,7 @@ export default function Header__menu() {
           </Modal>
         </div>
       ) : null}
-      {isOrganisationPage && !isRegisterPage /*&& walletConnected*/ ? (
+      {isOrganisationPage && !isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
           <Button radius='md' onClick={() => setOrgModalOpened(true)}>
             Update Organisation
@@ -100,7 +104,7 @@ export default function Header__menu() {
           </Modal>
         </div>
       ) : null}
-      {isRegisterPage /*&& walletConnected*/ ? (
+      {isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
           <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
             Create Record
