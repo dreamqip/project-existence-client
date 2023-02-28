@@ -32,11 +32,10 @@
     }
     &__check{
         margin-top: 10px;
-        display: grid;
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         grid-gap: 10px;
         @media (max-width: 768px){
-            grid-template-columns: 1fr;
             margin-top: 10px;
         }
     }
@@ -60,9 +59,7 @@
         padding: 25px;
         padding-left: 0;
     }
-    &__result{
-        max-width: 410px;
-    }
+    
 }
 
 
@@ -71,5 +68,11 @@
         margin-left: 6px;
         margin-bottom: -35px;
         z-index: 10;
+    }
+}
+
+.result{
+    &__hash{
+        margin: 10px;
     }
 }

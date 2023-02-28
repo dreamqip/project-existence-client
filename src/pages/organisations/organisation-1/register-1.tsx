@@ -31,17 +31,32 @@ import {
   X,
   CircleCheck,
 } from 'tabler-icons-react';
+import { sha256 } from 'crypto-hash';
 
 export default function Register() {
+  const [hashValue, setHashValue] = useState('');
   const [opened, setOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   function handleDrop(files: File[]) {
     setIsLoading(true);
     // Perform your file processing logic here
-    setTimeout(() => {
+
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      // Get the file contents as a Uint8Array
+      const fileContents = new Uint8Array(event?.target?.result as ArrayBuffer);
+
+      // Calculate the SHA-256 hash of the file contents
+      const hash = await sha256(fileContents);
+
+      // Do something with the hash, for example, log it to the console
+      setHashValue(hash);
       setIsLoading(false);
-    }, 2000);
+    };
+
+    reader.readAsArrayBuffer(file);
   }
   const items = [
     { title: 'Home', href: '/' },
@@ -178,12 +193,7 @@ export default function Register() {
               </Dropzone>
             </div>
             <div className={styles.records__result}>
-              <Notification
-                disallowClose
-                icon={<CircleCheck size={30} />}
-                color='teal'
-                title='Record found!'
-              >
+              <Notification disallowClose color='teal' title='Record found!'>
                 Click details to get more information about the record
                 <br />
                 <Button
@@ -239,6 +249,26 @@ export default function Register() {
                 </Modal>
               </Notification>
             </div>
+            {hashValue ? (
+              <div className={styles.records__result}>
+                <Notification disallowClose color='teal' title='Hash produced!'>
+                  <Text fz='md' className={styles.result__hash} fw={700}>
+                    {hashValue}
+                  </Text>
+                  <CopyButton value={hashValue}>
+                    {({ copied, copy }) => (
+                      <Button
+                        color={copied ? 'teal' : 'blue'}
+                        onClick={copy}
+                        sx={{ marginRight: '10px' }}
+                      >
+                        <Copy size={20} strokeWidth={2} color={'#000000'} />
+                      </Button>
+                    )}
+                  </CopyButton>
+                </Notification>
+              </div>
+            ) : null}
           </div>
           <div className={styles.records__tabs}>
             <Tabs defaultValue='activity'>
