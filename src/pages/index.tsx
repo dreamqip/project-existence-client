@@ -1,80 +1,86 @@
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.scss';
 import OrganisationCard from '@/components/Card';
-import { Title } from '@mantine/core';
+import { Button, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { getOrganisationContract, getOrganisationFactoryContract, getSigner, OrganisationContract, organisationsOfOwner } from '@/contract_interactions';
 import React from 'react';
 import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
 import { sign } from 'crypto';
-import { waitFor } from '@/utils';
+import { parseMetadata, waitFor } from '@/utils';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-    const [yourOrganisationsCards, setYourOrganisationsCards] = useState([<React.Fragment key='1'>please connect your wallet</React.Fragment>] as JSX.Element[]);
+  const [yourOrganisationsCards, setYourOrganisationsCards] = useState([<React.Fragment key='1'>please connect your wallet</React.Fragment>] as JSX.Element[]);
 
-    useEffect(() => {
-        let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-        const fetchData = async () => {
-            if (isMounted) {
-                await waitFor(() => getSigner() != null);
-                setYourOrganisationsCards([<React.Fragment key='1'>loading...</React.Fragment>]);
-                let signer = getSigner();
-                if (signer == null) return;
+    const fetchData = async () => {
+      if (isMounted) {
+        await waitFor(() => getSigner() != null);
+        setYourOrganisationsCards([<React.Fragment key='1'>loading...</React.Fragment>]);
+        let signer = getSigner();
+        if (signer == null) return;
 
-                let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
-                if (orgFactory == null) {
-                    setYourOrganisationsCards([<React.Fragment key='1'>error</React.Fragment>])
-                    return;
-                }
+        let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
+        if (orgFactory == null) {
+          setYourOrganisationsCards([<React.Fragment key='1'>error</React.Fragment>])
+          return;
+        }
 
-                let orgs: OrganisationContract[] = [];
-                for await (const orgAddress of organisationsOfOwner(await signer.getAddress(), orgFactory)) {
-                    let org = await getOrganisationContract(orgAddress.toString(), true)
-                    if (org != null) orgs.push(org);
-                }
-                let orgCards = await Promise.all(orgs.map(async (org: OrganisationContract, index) => {
-                    let metadata = await org.metadata();
+        let orgs: OrganisationContract[] = [];
+        for await (const orgAddress of organisationsOfOwner(await signer.getAddress(), orgFactory)) {
+          let org = await getOrganisationContract(orgAddress.toString(), true)
+          if (org != null) orgs.push(org);
+        }
+        let orgCards = await Promise.all(orgs.map(async (org: OrganisationContract, index) => {
+          let metadata = parseMetadata(await org.metadata());
 
-                    return <OrganisationCard
-                        title={metadata}
-                        key={index}
-                        description='This organisation is created to show you the capabilities of our project. 
-                            It actively demostrates all the implemented functions and interaction between people and 
-                            contracts. Contacts: email.'
-                        //badge='Featured'
-                        badge=''
-                        way={'/organisations/'+await org.getAddress()}
-                    />
-                }));
+          return <OrganisationCard
+            title={metadata.name ?? "name"}
+            key={index}
+            description={metadata.description ?? "description"}
+            //badge='Featured'
+            way={'/organisations/' + await org.getAddress()}
+          />
+        }));
 
-                setYourOrganisationsCards(orgCards);
-            }
-        };
+        setYourOrganisationsCards(orgCards);
+      }
+    };
 
-        fetchData();
+    fetchData();
 
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    return (
-        <>
-            <div className={styles.home__container}>
-                <div className={styles.home__your_organisations}>
-                    <Title order={2} className={styles.your_organisations__title}>
-                        Your Organisations
-                    </Title>
-                    <div className={styles.your_organisations__cards}>
-                        <>
-                            {yourOrganisationsCards}
-                        </>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <div className={styles.home__container}>
+        <div className={styles.home__your_organisations}>
+          <Title order={2} className={styles.your_organisations__title}>
+            Your Organisations
+          </Title>
+          <div className={styles.your_organisations__cards}>
+            <>
+              {yourOrganisationsCards}
+            </>
+          </div>
+          <div className={styles.featured}>
+          <Title order={2} className={styles.featured__title}>
+            Explore featured organisations
+          </Title>
+          <Link href='/organisations'>
+            <Button radius='md'>Featured Organisations</Button>
+          </Link>
+        </div>
+        </div>
+      </div>
+    </>
+  );
 }

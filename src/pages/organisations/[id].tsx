@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '@/styles/Organisation.module.scss';
 import OrganisationCard from '@/components/Card';
 import RegisterCard from '@/components/Card';
@@ -13,6 +13,9 @@ import {
 import { Copy } from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { getOrganisationContract, getOrganisationFactoryContract, getSigner, OrganisationContract, organisationsOfOwner } from '@/contract_interactions';
+import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import { parseMetadata, waitFor } from '@/utils';
 
 export default function Organisation() {
   const router = useRouter();
@@ -20,7 +23,7 @@ export default function Organisation() {
   const items = [
     { title: 'Home', href: '/' },
     { title: 'Organisations', href: '/organisations' },
-    { title: 'Organisation-1', href: `/organisations/organisation-1` },
+    { title: id, href: `/organisations/` + id },
   ].map((item, index) => (
     <Link href={item.href} key={index}>
       {item.title}
@@ -76,6 +79,80 @@ export default function Organisation() {
     </tr>
   ));
 
+  const [orgCard, setOrgCard] = useState(<>please connect your wallet</>);
+  const [regCards, setRegCards] = useState([<React.Fragment key='1'>please connect your wallet</React.Fragment>] as JSX.Element[]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchOrgData = async () => {
+      if (isMounted) {
+        await waitFor(() => getSigner() != null); 
+        //await waitFor(() => id != undefined);
+        setOrgCard(<>loading...</>);
+        let signer = getSigner();
+        if (signer == null) return;
+
+        let contractAddress: string;
+        if(id == undefined) return; 
+        if(typeof id == "string") contractAddress = id;
+        else contractAddress = id[0];
+
+        let org = await getOrganisationContract(contractAddress, true);
+        if (org == null) {
+          setOrgCard(<>error</>)
+          return;
+        }
+
+        let metadata = parseMetadata(await org.metadata());
+
+        setOrgCard(<OrganisationCard
+          title={metadata.name ?? "name"}
+          description={metadata.description ?? "description"}
+          //badge='Featured'
+          way={'/organisations/' + await org.getAddress()}
+        />);
+      }
+    };
+    fetchOrgData();
+
+    /*const fetchRegisterData = async () => {
+      if (isMounted) {
+        await waitFor(() => getSigner() != null);
+        await waitFor(() => id != undefined);
+        setOrgCard(<>loading...</>);
+        let signer = getSigner();
+        if (signer == null) return;
+
+        let contractAddress: string;
+        if(id == undefined) return;
+        if(typeof id == "string") contractAddress = id;
+        else contractAddress = id[0];
+
+        let org = await getOrganisationContract(contractAddress, true);
+        if (org == null) {
+          setOrgCard(<>error</>)
+          return;
+        }
+
+        let metadata = parseMetadata(await org.metadata());
+
+        setOrgCard(<OrganisationCard
+          title={metadata.name ?? "name"}
+          description={metadata.description ?? "description"}
+          //badge='Featured'
+          way={'/organisations/' + await org.getAddress()}
+        />);
+      }
+    };*/
+    //fetchRegisterData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router]);
+
+
   return (
     <div className={styles.organisation__container}>
       <Breadcrumbs className={styles.organisation__breadcrumbs}>
@@ -83,14 +160,7 @@ export default function Organisation() {
       </Breadcrumbs>
       <div className={styles.organisation__body}>
         <div className={styles.organisation__card}>
-          <OrganisationCard
-            title='Test Organisation'
-            description='This organisation is created to show you the capabilities of our project. 
-            It actively demostrates all the implemented functions and interaction between people and 
-            contracts. Contacts: email.'
-            badge='Featured'
-            way=''
-          />
+          {orgCard}
         </div>
 
         <div className={styles.organisation__registers}>

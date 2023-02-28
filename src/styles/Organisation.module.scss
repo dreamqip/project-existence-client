@@ -15,13 +15,14 @@
         @media (max-width: 768px){
             flex-direction: column;
         }
-        div{
-            flex: 1 1 auto;
-        }
     }
     &__card{
         padding: 0px 10px;
         max-width: 400px;
+        flex: 0 1 40%;
+    }
+    &__registers{
+        flex: 0 1 60%;
     }
     &__breadcrumbs{
         display: flex;

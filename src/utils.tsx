@@ -5,3 +5,22 @@ export function waitFor(conditionFunction: () => boolean) {
     }
     return new Promise(poll);
 }
+
+type Metadata = {
+    name?: string;
+    description?: string;
+    contacts?: string;
+    imageLink?: string;
+}
+
+export function parseMetadata(rawMetadata: string) {
+    try {
+        return JSON.parse(rawMetadata) as Metadata;
+    } catch {
+        return {description: rawMetadata} as Metadata;
+    }
+}
+
+export function serializeMetadata(metadata: Metadata) {
+    return JSON.stringify(metadata);
+}
