@@ -1,5 +1,8 @@
 body{
-  background-color: black !important;
+  background-image: linear-gradient( black 0%, #923CB5 250% ) !important;
+  background-repeat:no-repeat;
+  background-size:100%;
+  background-position:center;
 }
 a{
   text-decoration: none;

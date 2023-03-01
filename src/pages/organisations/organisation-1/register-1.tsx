@@ -49,8 +49,8 @@ export default function Register() {
       const fileContents = new Uint8Array(event?.target?.result as ArrayBuffer);
 
       // Calculate the SHA-256 hash of the file contents
-      const hash = await sha256(fileContents);
-
+      let hash = await sha256(fileContents);
+      hash = '0x' + hash;
       // Do something with the hash, for example, log it to the console
       setHashValue(hash);
       setIsLoading(false);
