@@ -9,12 +9,13 @@ import {
   CopyButton,
   Button,
   Title,
+  Notification
 } from '@mantine/core';
 import { Copy } from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { getOrganisationContract, getOrganisationFactoryContract, getSigner, OrganisationContract, organisationsOfOwner } from '@/contract_interactions';
-import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import { getOrganisationContract, getOrganisationFactoryContract, getRegisterContract, getSigner, OrganisationContract, organisationsOfOwner, RegisterContract, registersOfOrganisation } from '@/contract_interactions';
+import { FEATURED_ORGANISATIONS, ORGANISATION_FACTORY_ADDRESS } from '@/config';
 import { parseMetadata, waitFor } from '@/utils';
 
 export default function Organisation() {
@@ -79,59 +80,53 @@ export default function Organisation() {
     </tr>
   ));
 
-  const [orgCard, setOrgCard] = useState(<>please connect your wallet</>);
-  const [regCards, setRegCards] = useState([<React.Fragment key='1'>please connect your wallet</React.Fragment>] as JSX.Element[]);
+  const [orgCard, setOrgCard] = useState(<><Notification
+    disallowClose
+    color='grape'
+    title='Please connect your wallet'
+  ></Notification></>);
+  const [regCards, setRegCards] = useState([<React.Fragment key='1'><Notification
+    disallowClose
+    color='grape'
+    title='Please connect your wallet'
+  ></Notification></React.Fragment>] as JSX.Element[]);
 
   useEffect(() => {
     let isMounted = true;
 
-    const fetchOrgData = async () => {
-      if (isMounted) {
-        await waitFor(() => getSigner() != null); 
-        //await waitFor(() => id != undefined);
-        setOrgCard(<>loading...</>);
-        let signer = getSigner();
-        if (signer == null) return;
-
-        let contractAddress: string;
-        if(id == undefined) return; 
-        if(typeof id == "string") contractAddress = id;
-        else contractAddress = id[0];
-
-        let org = await getOrganisationContract(contractAddress, true);
-        if (org == null) {
-          setOrgCard(<>error</>)
-          return;
-        }
-
-        let metadata = parseMetadata(await org.metadata());
-
-        setOrgCard(<OrganisationCard
-          title={metadata.name ?? "name"}
-          description={metadata.description ?? "description"}
-          //badge='Featured'
-          way={'/organisations/' + await org.getAddress()}
-        />);
-      }
-    };
-    fetchOrgData();
-
-    /*const fetchRegisterData = async () => {
+    const fetchData = async () => {
       if (isMounted) {
         await waitFor(() => getSigner() != null);
-        await waitFor(() => id != undefined);
-        setOrgCard(<>loading...</>);
+        setOrgCard(<><Notification
+          disallowClose
+          color="yellow"
+          title='Loading...'
+        ></Notification></>);
+        setRegCards([<React.Fragment key='1'><Notification
+          disallowClose
+          color="yellow"
+          title='Loading...'
+        ></Notification></React.Fragment>]);
         let signer = getSigner();
         if (signer == null) return;
 
-        let contractAddress: string;
-        if(id == undefined) return;
-        if(typeof id == "string") contractAddress = id;
-        else contractAddress = id[0];
+        let orgAddress: string;
+        if (id == undefined) return;
+        if (typeof id == "string") orgAddress = id;
+        else orgAddress = id[0];
 
-        let org = await getOrganisationContract(contractAddress, true);
+        let org = await getOrganisationContract(orgAddress, true);
         if (org == null) {
-          setOrgCard(<>error</>)
+          setOrgCard(<><Notification
+            disallowClose
+            color="red"
+            title='Error'
+          ></Notification></>)
+          setRegCards([<React.Fragment key='1'><Notification
+            disallowClose
+            color="red"
+            title='Error'
+          ></Notification></React.Fragment>]);
           return;
         }
 
@@ -140,12 +135,30 @@ export default function Organisation() {
         setOrgCard(<OrganisationCard
           title={metadata.name ?? "name"}
           description={metadata.description ?? "description"}
-          //badge='Featured'
-          way={'/organisations/' + await org.getAddress()}
+          badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
         />);
+
+        let regs: RegisterContract[] = [];
+        for await (const i of registersOfOrganisation(org)) {
+          let reg = await getRegisterContract(i.toString());
+          if (reg != null) regs.push(reg);
+        }
+
+        let regCards = await Promise.all(regs.map(async (reg: RegisterContract, index) => {
+          let metadata = parseMetadata(await reg.metadata());
+
+          return <RegisterCard
+            title={metadata.name ?? "name"}
+            key={index}
+            description={metadata.description ?? "description"}
+            way={'/organisations/' + (await org?.getAddress() ?? "error") + "/" + await reg.getAddress()}
+          />
+        }));
+
+        setRegCards(regCards);
       }
-    };*/
-    //fetchRegisterData();
+    };
+    fetchData();
 
     return () => {
       isMounted = false;
@@ -176,30 +189,7 @@ export default function Organisation() {
 
               <Tabs.Panel value='items' pt='xs'>
                 <div className={styles.registers__list}>
-                  <RegisterCard
-                    title='Test Register'
-                    description='This register actively demostrates the possiblities. Contacts: email.'
-                    badge='Featured'
-                    way='/organisations/organisation-1/register-1'
-                  />
-                  <RegisterCard
-                    title='Test Register'
-                    description='This register actively demostrates the possiblities.'
-                    badge='Featured'
-                    way='/organisations/organisation-1'
-                  />
-                  <RegisterCard
-                    title='Test Register'
-                    description='This register actively demostrates the possiblities.'
-                    badge='Featured'
-                    way='/organisations/organisation-1'
-                  />
-                  <RegisterCard
-                    title='Test Register'
-                    description='This register actively demostrates the possiblities.'
-                    badge='Featured'
-                    way='/organisations/organisation-1'
-                  />
+                  {regCards}
                 </div>
               </Tabs.Panel>
 

@@ -235,7 +235,7 @@ export async function getOrganisationContract(
         if (
             !bytecode.includes(
                 ethers
-                    .keccak256(ethers.toUtf8Bytes('updateOrganisationMetadata(string)'))
+                    .keccak256(ethers.toUtf8Bytes('editOrganisationMetadata(string)'))
                     .slice(2, 10),
             )
         ) {

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import styles from '@/styles/Header.module.scss';
 import {
   Button,
-  Input,
+  TextInput,
   ActionIcon,
   Drawer,
   Group,
@@ -52,7 +52,7 @@ export default function Header__menu({
           <ActionIcon className={styles.search__button}>
             <Search />
           </ActionIcon>
-          <Input
+          <TextInput
             icon={<Search />}
             placeholder='Enter Org or Reg address'
             radius='md'
@@ -70,9 +70,9 @@ export default function Header__menu({
                 title='To create Organisation fill in the forms please.'
               >
                 <Stack>
-                  <Input icon={<TextColor />} placeholder='Name' />
-                  <Input icon={<TextCaption />} placeholder='Description' />
-                  <Input icon={<BrandMailgun />} placeholder='Contacts' />
+                  <TextInput icon={<TextColor />} placeholder='Name' />
+                  <TextInput icon={<TextCaption />} placeholder='Description' />
+                  <TextInput icon={<BrandMailgun />} placeholder='Contacts' />
                   <Button radius='md' color='red'>
                     Create Organisation
                   </Button>
@@ -91,12 +91,12 @@ export default function Header__menu({
                 title='Fill in the forms you want to update.'
               >
                 <Stack>
-                  <Input icon={<TextColor />} placeholder='Organisation name' />
-                  <Input
+                  <TextInput icon={<TextColor />} placeholder='Organisation name' />
+                  <TextInput
                     icon={<TextCaption />}
                     placeholder='Organisation description'
                   />
-                  <Input
+                  <TextInput
                     icon={<BrandMailgun />}
                     placeholder='Organisation contacts'
                   />
@@ -114,12 +114,12 @@ export default function Header__menu({
                 title='To create Register fill in the forms'
               >
                 <Stack>
-                  <Input icon={<TextColor />} placeholder='Register name' />
-                  <Input
+                  <TextInput icon={<TextColor />} placeholder='Register name' />
+                  <TextInput
                     icon={<TextCaption />}
                     placeholder='Register description'
                   />
-                  <Input
+                  <TextInput
                     icon={<BrandMailgun />}
                     placeholder='Register contacts'
                   />
@@ -141,15 +141,15 @@ export default function Header__menu({
                 title='To create Record fill in the forms'
               >
                 <Stack>
-                  <Input icon={<Hash />} placeholder='Document hash' />
-                  <Input icon={<FileSymlink />} placeholder='Source Document' />
-                  <Input
+                  <TextInput icon={<Hash />} placeholder='Document hash' />
+                  <TextInput icon={<FileSymlink />} placeholder='Source Document' />
+                  <TextInput
                     icon={<ExternalLink />}
                     placeholder='Reference Document'
                   />
-                  <Input icon={<FileTime />} placeholder='Starts at' />
-                  <Input icon={<FileTime />} placeholder='Expires at' />
-                  <Input icon={<Hash />} placeholder='Past Document Hash' />
+                  <TextInput icon={<FileTime />} placeholder='Starts at' />
+                  <TextInput icon={<FileTime />} placeholder='Expires at' />
+                  <TextInput icon={<Hash />} placeholder='Past Document Hash' />
                   <Button radius='md' color='red'>
                     Create Record
                   </Button>
@@ -164,7 +164,7 @@ export default function Header__menu({
                 title='To invalidate Record fill in the forms'
               >
                 <Stack>
-                  <Input icon={<Hash />} placeholder='Document hash' />
+                  <TextInput icon={<Hash />} placeholder='Document hash' />
                   <Button radius='md' color='red'>
                     Invalidate Record
                   </Button>
@@ -179,12 +179,12 @@ export default function Header__menu({
                 title='Fill in the forms you want to update.'
               >
                 <Stack>
-                  <Input icon={<TextColor />} placeholder='Register name' />
-                  <Input
+                  <TextInput icon={<TextColor />} placeholder='Register name' />
+                  <TextInput
                     icon={<TextCaption />}
                     placeholder='Register description'
                   />
-                  <Input
+                  <TextInput
                     icon={<BrandMailgun />}
                     placeholder='Register contacts'
                   />

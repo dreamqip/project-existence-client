@@ -39,9 +39,8 @@
     }
     &__menu{
         margin-left: 10px;
-        display: grid;
-        grid-gap: 10px;
-        grid-template-columns: 1fr 1fr 1fr;
+        display: flex;
+        gap: 10px;
     }
     &__mobile_menu{
         margin-top: 20px;

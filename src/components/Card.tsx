@@ -8,7 +8,7 @@ export default function MyCard(props: {
     title: string;
     description: string;
     badge?: string;
-    way: string;
+    way?: string;
 }) {
     const { title, description, badge, way } = props;
     return (
@@ -31,11 +31,14 @@ export default function MyCard(props: {
             <Text size='sm' color='dimmed'>
                 {description}
             </Text>
+            {
+                way != undefined ?
             <Link href={way}>
                 <Button variant='light' color='blue' fullWidth mt='md' radius='md'>
                     View
                 </Button>
-            </Link>
+            </Link> : null}
+            
         </Card>
     );
 }

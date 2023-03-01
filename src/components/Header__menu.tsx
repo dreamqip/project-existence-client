@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '@/styles/Header.module.scss';
-import { Button, Input, Modal, Stack } from '@mantine/core';
+import { Button, TextInput, Modal, Stack } from '@mantine/core';
 import {
   TextCaption,
   BrandMailgun,
@@ -12,6 +12,9 @@ import {
   FileSymlink,
   FileTime,
 } from 'tabler-icons-react';
+import { serializeMetadata } from '@/utils';
+import { getOrganisationFactoryContract, getProvider, getSigner } from '@/contract_interactions';
+import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
 
 export default function Header__menu({
   walletConnected,
@@ -27,12 +30,21 @@ export default function Header__menu({
   const [regModalOpened, setRegModalOpened] = useState(false);
   const [createRecModalOpened, setCreateRecModalOpened] = useState(false);
   const [invaliRecModalOpened, setInvaliRecModalOpened] = useState(false);
+
+  const [orgFormInput, setOrgFormInput] = useState({ name: "", description: "", contacts: "" });
+  const [createOrganisationButtonContent, setCreateOrganisationButtonContent] = useState([<>Create Organisation</>, true] as [JSX.Element, boolean]);
+  const [updateOrganisationButtonContent, setUpdateOrganisationButtonContent] = useState([<>Update Organisation</>, true] as [JSX.Element, boolean]);
+
   return (
     <div>
       {isHomePage ? null : null}
       {isOrganisationsPage ? (
         <div className={styles.header__menu}>
-          <Button radius='md' onClick={() => setOrgModalOpened(true)}>
+          <Button radius='md' onClick={() => {
+            setOrgModalOpened(true);
+            setOrgFormInput({ name: "", description: "", contacts: "" });
+            setCreateOrganisationButtonContent([<>Update Organisation</>, true]);
+          }}>
             Create Organisation
           </Button>
           <Modal
@@ -41,17 +53,46 @@ export default function Header__menu({
             title='To create Organisation fill in the forms please.'
           >
             <Stack>
-              <Input icon={<TextColor />} placeholder='Organisation name' />
-              <Input
+              <TextInput
+                icon={<TextColor />}
+                placeholder='Organisation name'
+                onChange={(event) => setOrgFormInput({ ...orgFormInput, name: event.currentTarget.value })}
+              />
+              <TextInput
                 icon={<TextCaption />}
                 placeholder='Organisation description'
+                onChange={(event) => setOrgFormInput({ ...orgFormInput, description: event.currentTarget.value })}
               />
-              <Input
+              <TextInput
                 icon={<BrandMailgun />}
                 placeholder='Organisation contacts'
+                onChange={(event) => setOrgFormInput({ ...orgFormInput, contacts: event.currentTarget.value })}
               />
-              <Button radius='md' color='red'>
-                Create Organisation
+              <Button radius='md' color='red' disabled={
+                !createOrganisationButtonContent[1] || orgFormInput.name == "" || orgFormInput.description == "" || orgFormInput.contacts == ""
+              } onClick={
+                async (e) => {
+                  setCreateOrganisationButtonContent([<>loading...</>, false]);
+
+                  let signer = getSigner();
+                  if (signer == null) {
+                    setCreateOrganisationButtonContent([<>please connect your wallet</>, false]);
+                    return;
+                  }
+                  let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
+                  if (orgFactory == null) {
+                    setCreateOrganisationButtonContent([<>error</>, false]);
+                    return;
+                  }
+
+                  let rawMetadata = serializeMetadata(orgFormInput);
+                  let tx = await orgFactory.deployOrganisation(rawMetadata, await signer.getAddress());
+                  if (tx.hash == null) return;
+                  await getProvider()?.waitForTransaction(tx.hash);
+                  setCreateOrganisationButtonContent([<>Organisation created ✅</>, false]);
+                }
+              }>
+                {createOrganisationButtonContent[0]}
               </Button>
             </Stack>
           </Modal>
@@ -59,7 +100,11 @@ export default function Header__menu({
       ) : null}
       {isOrganisationPage && !isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
-          <Button radius='md' onClick={() => setOrgModalOpened(true)}>
+          <Button radius='md' onClick={() => {
+            setOrgModalOpened(true);
+            setOrgFormInput({ name: "", description: "", contacts: "" });
+            setUpdateOrganisationButtonContent([<>Update Organisation</>, true]);
+          }}>
             Update Organisation
           </Button>
           <Modal
@@ -68,17 +113,46 @@ export default function Header__menu({
             title='Fill in the forms you want to update.'
           >
             <Stack>
-              <Input icon={<TextColor />} placeholder='Organisation name' />
-              <Input
+              <TextInput
+                icon={<TextColor />}
+                placeholder='Organisation name'
+                onChange={(event) => setOrgFormInput({ ...orgFormInput, name: event.currentTarget.value })}
+              />
+              <TextInput
                 icon={<TextCaption />}
                 placeholder='Organisation description'
+                onChange={(event) => setOrgFormInput({ ...orgFormInput, description: event.currentTarget.value })}
               />
-              <Input
+              <TextInput
                 icon={<BrandMailgun />}
                 placeholder='Organisation contacts'
+                onChange={(event) => setOrgFormInput({ ...orgFormInput, contacts: event.currentTarget.value })}
               />
-              <Button radius='md' color='red'>
-                Update Organisation
+              <Button radius='md' color='red' disabled={
+                !updateOrganisationButtonContent[1] || orgFormInput.name == "" || orgFormInput.description == "" || orgFormInput.contacts == ""
+              } onClick={
+                async (e) => {
+                  setUpdateOrganisationButtonContent([<>loading...</>, false]);
+
+                  let signer = getSigner();
+                  if (signer == null) {
+                    setUpdateOrganisationButtonContent([<>please connect your wallet</>, false]);
+                    return;
+                  }
+                  /*let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
+                  if (orgFactory == null) {
+                    setCreateOrganisationButtonContent([<>error</>, false]);
+                    return;
+                  }
+
+                  let rawMetadata = serializeMetadata(orgFormInput);
+                  let tx = await orgFactory.deployOrganisation(rawMetadata, await signer.getAddress());
+                  if (tx.hash == null) return;
+                  await getProvider()?.waitForTransaction(tx.hash);*/
+                  setUpdateOrganisationButtonContent([<>Organisation edited TODO ✅</>, false]);
+                }
+              } >
+                {updateOrganisationButtonContent}
               </Button>
             </Stack>
           </Modal>
@@ -91,12 +165,12 @@ export default function Header__menu({
             title='To create Register fill in the forms'
           >
             <Stack>
-              <Input icon={<TextColor />} placeholder='Register name' />
-              <Input
+              <TextInput icon={<TextColor />} placeholder='Register name' />
+              <TextInput
                 icon={<TextCaption />}
                 placeholder='Register description'
               />
-              <Input icon={<BrandMailgun />} placeholder='Register contacts' />
+              <TextInput icon={<BrandMailgun />} placeholder='Register contacts' />
               <Button radius='md' color='red'>
                 Deploy Register
               </Button>
@@ -115,12 +189,12 @@ export default function Header__menu({
             title='To create Record fill in the forms'
           >
             <Stack>
-              <Input icon={<Hash />} placeholder='Document hash' />
-              <Input icon={<FileSymlink />} placeholder='Source Document' />
-              <Input icon={<ExternalLink />} placeholder='Reference Document' />
-              <Input icon={<FileTime />} placeholder='Starts at' />
-              <Input icon={<FileTime />} placeholder='Expires at' />
-              <Input icon={<Hash />} placeholder='Past Document Hash' />
+              <TextInput icon={<Hash />} placeholder='Document hash' />
+              <TextInput icon={<FileSymlink />} placeholder='Source Document' />
+              <TextInput icon={<ExternalLink />} placeholder='Reference Document' />
+              <TextInput icon={<FileTime />} placeholder='Starts at' />
+              <TextInput icon={<FileTime />} placeholder='Expires at' />
+              <TextInput icon={<Hash />} placeholder='Past Document Hash' />
               <Button radius='md' color='red'>
                 Create Record
               </Button>
@@ -135,7 +209,7 @@ export default function Header__menu({
             title='To invalidate Record fill in the forms'
           >
             <Stack>
-              <Input icon={<Hash />} placeholder='Document hash' />
+              <TextInput icon={<Hash />} placeholder='Document hash' />
               <Button radius='md' color='red'>
                 Invalidate Record
               </Button>
@@ -150,12 +224,12 @@ export default function Header__menu({
             title='Fill in the forms you want to update.'
           >
             <Stack>
-              <Input icon={<TextColor />} placeholder='Register name' />
-              <Input
+              <TextInput icon={<TextColor />} placeholder='Register name' />
+              <TextInput
                 icon={<TextCaption />}
                 placeholder='Register description'
               />
-              <Input icon={<BrandMailgun />} placeholder='Register contacts' />
+              <TextInput icon={<BrandMailgun />} placeholder='Register contacts' />
               <Button radius='md' color='red'>
                 Update Register
               </Button>

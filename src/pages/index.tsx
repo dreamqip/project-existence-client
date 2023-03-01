@@ -1,11 +1,11 @@
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.scss';
 import OrganisationCard from '@/components/Card';
-import { Button, Title } from '@mantine/core';
+import { Button, Title, Notification } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { getOrganisationContract, getOrganisationFactoryContract, getSigner, OrganisationContract, organisationsOfOwner } from '@/contract_interactions';
 import React from 'react';
-import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import { FEATURED_ORGANISATIONS, ORGANISATION_FACTORY_ADDRESS } from '@/config';
 import { sign } from 'crypto';
 import { parseMetadata, waitFor } from '@/utils';
 import Link from 'next/link';
@@ -13,7 +13,11 @@ import Link from 'next/link';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  const [yourOrganisationsCards, setYourOrganisationsCards] = useState([<React.Fragment key='1'>please connect your wallet</React.Fragment>] as JSX.Element[]);
+  const [yourOrganisationsCards, setYourOrganisationsCards] = useState([<React.Fragment key='1'><Notification
+  disallowClose
+  color="grape"
+  title='Please connect your wallet'
+></Notification></React.Fragment>] as JSX.Element[]);
 
   useEffect(() => {
     let isMounted = true;
@@ -21,19 +25,27 @@ export default function Home() {
     const fetchData = async () => {
       if (isMounted) {
         await waitFor(() => getSigner() != null);
-        setYourOrganisationsCards([<React.Fragment key='1'>loading...</React.Fragment>]);
+        setYourOrganisationsCards([<React.Fragment key='1'><Notification
+        disallowClose
+        color="yellow"
+        title='Loading...'
+      ></Notification></React.Fragment>]);
         let signer = getSigner();
         if (signer == null) return;
 
         let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
         if (orgFactory == null) {
-          setYourOrganisationsCards([<React.Fragment key='1'>error</React.Fragment>])
+          setYourOrganisationsCards([<React.Fragment key='1'><Notification
+          disallowClose
+          color="red"
+          title='Error'
+        ></Notification></React.Fragment>])
           return;
         }
 
         let orgs: OrganisationContract[] = [];
         for await (const orgAddress of organisationsOfOwner(await signer.getAddress(), orgFactory)) {
-          let org = await getOrganisationContract(orgAddress.toString(), true)
+          let org = await getOrganisationContract(orgAddress.toString())
           if (org != null) orgs.push(org);
         }
         let orgCards = await Promise.all(orgs.map(async (org: OrganisationContract, index) => {
@@ -43,7 +55,7 @@ export default function Home() {
             title={metadata.name ?? "name"}
             key={index}
             description={metadata.description ?? "description"}
-            //badge='Featured'
+            badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
             way={'/organisations/' + await org.getAddress()}
           />
         }));
