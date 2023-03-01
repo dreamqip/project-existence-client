@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '@/styles/Header.module.scss';
-import { Button, TextInput, Modal, Stack } from '@mantine/core';
+import { Button, TextInput, Modal, Stack, LoadingOverlay } from '@mantine/core';
 import {
   TextCaption,
   BrandMailgun,
@@ -13,7 +13,11 @@ import {
   FileTime,
 } from 'tabler-icons-react';
 import { serializeMetadata } from '@/utils';
-import { getOrganisationFactoryContract, getProvider, getSigner } from '@/contract_interactions';
+import {
+  getOrganisationFactoryContract,
+  getProvider,
+  getSigner,
+} from '@/contract_interactions';
 import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
 
 export default function Header__menu({
@@ -31,20 +35,32 @@ export default function Header__menu({
   const [createRecModalOpened, setCreateRecModalOpened] = useState(false);
   const [invaliRecModalOpened, setInvaliRecModalOpened] = useState(false);
 
-  const [orgFormInput, setOrgFormInput] = useState({ name: "", description: "", contacts: "" });
-  const [createOrganisationButtonContent, setCreateOrganisationButtonContent] = useState([<>Create Organisation</>, true] as [JSX.Element, boolean]);
-  const [updateOrganisationButtonContent, setUpdateOrganisationButtonContent] = useState([<>Update Organisation</>, true] as [JSX.Element, boolean]);
+  const [orgFormInput, setOrgFormInput] = useState({
+    name: '',
+    description: '',
+    contacts: '',
+  });
+  const [createOrganisationButtonContent, setCreateOrganisationButtonContent] =
+    useState([<>Create Organisation</>, true] as [JSX.Element, boolean]);
+  const [updateOrganisationButtonContent, setUpdateOrganisationButtonContent] =
+    useState([<>Update Organisation</>, true] as [JSX.Element, boolean]);
 
   return (
     <div>
       {isHomePage ? null : null}
       {isOrganisationsPage ? (
         <div className={styles.header__menu}>
-          <Button radius='md' onClick={() => {
-            setOrgModalOpened(true);
-            setOrgFormInput({ name: "", description: "", contacts: "" });
-            setCreateOrganisationButtonContent([<>Update Organisation</>, true]);
-          }}>
+          <Button
+            radius='md'
+            onClick={() => {
+              setOrgModalOpened(true);
+              setOrgFormInput({ name: '', description: '', contacts: '' });
+              setCreateOrganisationButtonContent([
+                <>Update Organisation</>,
+                true,
+              ]);
+            }}
+          >
             Create Organisation
           </Button>
           <Modal
@@ -56,42 +72,80 @@ export default function Header__menu({
               <TextInput
                 icon={<TextColor />}
                 placeholder='Organisation name'
-                onChange={(event) => setOrgFormInput({ ...orgFormInput, name: event.currentTarget.value })}
+                onChange={(event) =>
+                  setOrgFormInput({
+                    ...orgFormInput,
+                    name: event.currentTarget.value,
+                  })
+                }
               />
               <TextInput
                 icon={<TextCaption />}
                 placeholder='Organisation description'
-                onChange={(event) => setOrgFormInput({ ...orgFormInput, description: event.currentTarget.value })}
+                onChange={(event) =>
+                  setOrgFormInput({
+                    ...orgFormInput,
+                    description: event.currentTarget.value,
+                  })
+                }
               />
               <TextInput
                 icon={<BrandMailgun />}
                 placeholder='Organisation contacts'
-                onChange={(event) => setOrgFormInput({ ...orgFormInput, contacts: event.currentTarget.value })}
+                onChange={(event) =>
+                  setOrgFormInput({
+                    ...orgFormInput,
+                    contacts: event.currentTarget.value,
+                  })
+                }
               />
-              <Button radius='md' color='red' disabled={
-                !createOrganisationButtonContent[1] || orgFormInput.name == "" || orgFormInput.description == "" || orgFormInput.contacts == ""
-              } onClick={
-                async (e) => {
-                  setCreateOrganisationButtonContent([<>loading...</>, false]);
+              <Button
+                radius='md'
+                color='red'
+                disabled={
+                  !createOrganisationButtonContent[1] ||
+                  orgFormInput.name == '' ||
+                  orgFormInput.description == '' ||
+                  orgFormInput.contacts == ''
+                }
+                onClick={async (e) => {
+                  setCreateOrganisationButtonContent([
+                    <>
+                      <LoadingOverlay visible={true} overlayBlur={2} />
+                      Loading...
+                    </>,
+                    false,
+                  ]);
 
                   let signer = getSigner();
                   if (signer == null) {
-                    setCreateOrganisationButtonContent([<>please connect your wallet</>, false]);
+                    setCreateOrganisationButtonContent([
+                      <>Please connect your wallet</>,
+                      false,
+                    ]);
                     return;
                   }
-                  let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
+                  let orgFactory = await getOrganisationFactoryContract(
+                    ORGANISATION_FACTORY_ADDRESS,
+                  );
                   if (orgFactory == null) {
                     setCreateOrganisationButtonContent([<>error</>, false]);
                     return;
                   }
 
                   let rawMetadata = serializeMetadata(orgFormInput);
-                  let tx = await orgFactory.deployOrganisation(rawMetadata, await signer.getAddress());
+                  let tx = await orgFactory.deployOrganisation(
+                    rawMetadata,
+                    await signer.getAddress(),
+                  );
                   if (tx.hash == null) return;
                   await getProvider()?.waitForTransaction(tx.hash);
-                  setCreateOrganisationButtonContent([<>Organisation created ✅</>, false]);
-                }
-              }>
+                  setCreateOrganisationButtonContent([
+                    <>Organisation created ✅</>,
+                    false,
+                  ]);
+                }}
+              >
                 {createOrganisationButtonContent[0]}
               </Button>
             </Stack>
@@ -100,11 +154,17 @@ export default function Header__menu({
       ) : null}
       {isOrganisationPage && !isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
-          <Button radius='md' onClick={() => {
-            setOrgModalOpened(true);
-            setOrgFormInput({ name: "", description: "", contacts: "" });
-            setUpdateOrganisationButtonContent([<>Update Organisation</>, true]);
-          }}>
+          <Button
+            radius='md'
+            onClick={() => {
+              setOrgModalOpened(true);
+              setOrgFormInput({ name: '', description: '', contacts: '' });
+              setUpdateOrganisationButtonContent([
+                <>Update Organisation</>,
+                true,
+              ]);
+            }}
+          >
             Update Organisation
           </Button>
           <Modal
@@ -116,27 +176,57 @@ export default function Header__menu({
               <TextInput
                 icon={<TextColor />}
                 placeholder='Organisation name'
-                onChange={(event) => setOrgFormInput({ ...orgFormInput, name: event.currentTarget.value })}
+                onChange={(event) =>
+                  setOrgFormInput({
+                    ...orgFormInput,
+                    name: event.currentTarget.value,
+                  })
+                }
               />
               <TextInput
                 icon={<TextCaption />}
                 placeholder='Organisation description'
-                onChange={(event) => setOrgFormInput({ ...orgFormInput, description: event.currentTarget.value })}
+                onChange={(event) =>
+                  setOrgFormInput({
+                    ...orgFormInput,
+                    description: event.currentTarget.value,
+                  })
+                }
               />
               <TextInput
                 icon={<BrandMailgun />}
                 placeholder='Organisation contacts'
-                onChange={(event) => setOrgFormInput({ ...orgFormInput, contacts: event.currentTarget.value })}
+                onChange={(event) =>
+                  setOrgFormInput({
+                    ...orgFormInput,
+                    contacts: event.currentTarget.value,
+                  })
+                }
               />
-              <Button radius='md' color='red' disabled={
-                !updateOrganisationButtonContent[1] || orgFormInput.name == "" || orgFormInput.description == "" || orgFormInput.contacts == ""
-              } onClick={
-                async (e) => {
-                  setUpdateOrganisationButtonContent([<>loading...</>, false]);
+              <Button
+                radius='md'
+                color='red'
+                disabled={
+                  !updateOrganisationButtonContent[1] ||
+                  orgFormInput.name == '' ||
+                  orgFormInput.description == '' ||
+                  orgFormInput.contacts == ''
+                }
+                onClick={async (e) => {
+                  setUpdateOrganisationButtonContent([
+                    <>
+                      <LoadingOverlay visible={true} overlayBlur={2} />
+                      Loading...
+                    </>,
+                    false,
+                  ]);
 
                   let signer = getSigner();
                   if (signer == null) {
-                    setUpdateOrganisationButtonContent([<>please connect your wallet</>, false]);
+                    setUpdateOrganisationButtonContent([
+                      <>Please connect your wallet</>,
+                      false,
+                    ]);
                     return;
                   }
                   /*let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
@@ -149,9 +239,12 @@ export default function Header__menu({
                   let tx = await orgFactory.deployOrganisation(rawMetadata, await signer.getAddress());
                   if (tx.hash == null) return;
                   await getProvider()?.waitForTransaction(tx.hash);*/
-                  setUpdateOrganisationButtonContent([<>Organisation edited TODO ✅</>, false]);
-                }
-              } >
+                  setUpdateOrganisationButtonContent([
+                    <>Organisation edited TODO ✅</>,
+                    false,
+                  ]);
+                }}
+              >
                 {updateOrganisationButtonContent}
               </Button>
             </Stack>
@@ -170,7 +263,10 @@ export default function Header__menu({
                 icon={<TextCaption />}
                 placeholder='Register description'
               />
-              <TextInput icon={<BrandMailgun />} placeholder='Register contacts' />
+              <TextInput
+                icon={<BrandMailgun />}
+                placeholder='Register contacts'
+              />
               <Button radius='md' color='red'>
                 Deploy Register
               </Button>
@@ -191,7 +287,10 @@ export default function Header__menu({
             <Stack>
               <TextInput icon={<Hash />} placeholder='Document hash' />
               <TextInput icon={<FileSymlink />} placeholder='Source Document' />
-              <TextInput icon={<ExternalLink />} placeholder='Reference Document' />
+              <TextInput
+                icon={<ExternalLink />}
+                placeholder='Reference Document'
+              />
               <TextInput icon={<FileTime />} placeholder='Starts at' />
               <TextInput icon={<FileTime />} placeholder='Expires at' />
               <TextInput icon={<Hash />} placeholder='Past Document Hash' />
@@ -229,7 +328,10 @@ export default function Header__menu({
                 icon={<TextCaption />}
                 placeholder='Register description'
               />
-              <TextInput icon={<BrandMailgun />} placeholder='Register contacts' />
+              <TextInput
+                icon={<BrandMailgun />}
+                placeholder='Register contacts'
+              />
               <Button radius='md' color='red'>
                 Update Register
               </Button>
