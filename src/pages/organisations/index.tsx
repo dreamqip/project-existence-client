@@ -20,7 +20,7 @@ const items = [
   </Link>
 ));
 
-export default function organisations() {
+export default function Organisations() {
   const [featuredOrganisationsCards, setFeaturedOrganisationsCards] = useState([
     <React.Fragment key='1'>please connect your wallet</React.Fragment>,
   ] as JSX.Element[]);
