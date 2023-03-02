@@ -6,10 +6,17 @@ import {
   getSigner,
 } from '@/contract_interactions';
 import { serializeMetadata } from '@/utils';
-import { Button, Stack, TextInput, Text, FileInput } from '@mantine/core';
+import {
+  Button,
+  Stack,
+  TextInput,
+  Text,
+  FileInput,
+  Switch,
+} from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Hash,
   FileSymlink,
@@ -44,9 +51,12 @@ export default function CreateRecordForm(props: {
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   });
   const [docHash, setDocHash] = useState('');
-  const [pastDocHash, setPastDocHash] = useState('');
+  const [pastDocHash, setPastDocHash] = useState(NULL_HASH);
   const [docExists, setDocExists] = useState(false);
   const [pastDocExists, setPastDocExists] = useState(false);
+  console.log(formInput);
+
+  const [checked, setChecked] = useState(false);
 
   function handleDrop(file: File, past: boolean) {
     const reader = new FileReader();
@@ -76,15 +86,16 @@ export default function CreateRecordForm(props: {
         placeholder='Upload Document'
         icon={<FileUpload />}
         onChange={(file) => {
-          console.log(formInput);
           file ? handleDrop(file, false) : console.log('no file');
         }}
       />
       <TextInput
+        withAsterisk
         icon={<Hash />}
         placeholder='Document hash'
         label='Document hash'
-        value={docExists ? docHash : ''}
+        defaultValue={docHash}
+        disabled={docExists}
         onChange={(event) =>
           setFormInput({
             ...formInput,
@@ -93,6 +104,7 @@ export default function CreateRecordForm(props: {
         }
       />
       <TextInput
+        withAsterisk
         icon={<FileSymlink />}
         placeholder='Source Document Link'
         label='Source Document Link'
@@ -104,6 +116,7 @@ export default function CreateRecordForm(props: {
         }
       />
       <TextInput
+        withAsterisk
         icon={<ExternalLink />}
         placeholder='Reference Document Link'
         label='Reference Document Link'
@@ -138,33 +151,38 @@ export default function CreateRecordForm(props: {
           />
         </div>
       </div>
+      <Switch
+        label='Previous record'
+        checked={checked}
+        onChange={(event) => setChecked(event.currentTarget.checked)}
+      />
       <FileInput
         label='Upload Document'
         placeholder='Upload Document'
         icon={<FileUpload />}
+        disabled={!checked}
         onChange={(file) => {
           file ? handleDrop(file, true) : console.log('no file');
         }}
       />
       <TextInput
         icon={<Hash />}
-        value={pastDocExists ? pastDocHash : ''}
-        defaultValue={pastDocExists ? '' : NULL_HASH}
+        defaultValue={pastDocExists ? pastDocHash : ''}
         placeholder='Past Document Hash'
         label='Past Document Hash'
-        onChange={(event) =>
+        disabled={!checked || pastDocExists}
+        onChange={(event) => {
           setFormInput({
             ...formInput,
             pastDocumentHash: event.currentTarget.value,
-          })
-        }
+          });
+        }}
       />
       <Button
         radius='md'
         color='red'
         disabled={
           formInput.documentHash == '' ||
-          formInput.pastDocumentHash == '' ||
           formInput.referenceDocument == '' ||
           formInput.sourceDocument == '' ||
           formInput.startsAt == 0 ||
@@ -185,16 +203,30 @@ export default function CreateRecordForm(props: {
           if (signer == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
               message: 'Please connect your wallet!',
             });
             return;
+            updateNotification({
+              id: 'load-data',
+              message:
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
+            });
           }
 
           let reg = await getRegisterContract(props.registerAddress);
           if (reg == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
               message: 'An error occured.',
+            });
+            updateNotification({
+              id: 'load-data',
+              message:
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
             });
             return;
           }

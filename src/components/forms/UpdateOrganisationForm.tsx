@@ -1,24 +1,43 @@
-import { getOrganisationContract, getProvider, getSigner } from "@/contract_interactions";
-import { serializeMetadata } from "@/utils";
-import { Button, LoadingOverlay, Stack, TextInput } from "@mantine/core";
+import {
+  getOrganisationContract,
+  getProvider,
+  getSigner,
+} from '@/contract_interactions';
+import { serializeMetadata } from '@/utils';
+import { Button, LoadingOverlay, Stack, TextInput } from '@mantine/core';
 import React, { useEffect } from 'react';
-import { useState } from "react";
-import { TextColor, TextCaption, BrandMailgun, Check, X } from "tabler-icons-react";
+import { useState } from 'react';
+import {
+  TextColor,
+  TextCaption,
+  BrandMailgun,
+  Check,
+  X,
+} from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { parseMetadata, waitFor, type Metadata } from '@/utils';
 
-export default function UpdateOrganisationForm(props: { orgAddress: string, update?: () => any, updateModal: () => any }) {
+export default function UpdateOrganisationForm(props: {
+  orgAddress: string;
+  update?: () => any;
+  updateModal: () => any;
+}) {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
     contacts: '',
   });
-  const [buttonContent, setButtonContent] = useState([<>Update Organisation</>, true] as [JSX.Element, boolean]);
-  const [orgMetadata, setOrgMetadata] = useState({} as Metadata)
+  const [buttonContent, setButtonContent] = useState([
+    <>Update Organisation</>,
+    true,
+  ] as [JSX.Element, boolean]);
+  const [orgMetadata, setOrgMetadata] = useState({} as Metadata);
 
   const fetchData = async () => {
     let org = await getOrganisationContract(props.orgAddress);
-    if (!org) { return; }
+    if (!org) {
+      return;
+    }
     let rawMetadata = await org.metadata();
     setOrgMetadata(parseMetadata(rawMetadata));
   };
@@ -30,14 +49,13 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
     return () => {
       isMounted = false;
     };
-  }, [])
-
+  }, []);
 
   return (
     <Stack>
       <TextInput
         icon={<TextColor />}
-        defaultValue={orgMetadata.name ?? ""}
+        defaultValue={orgMetadata.name ?? ''}
         placeholder='Organisation name'
         label='Organisation name'
         onChange={(event) =>
@@ -49,7 +67,7 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
       />
       <TextInput
         icon={<TextCaption />}
-        defaultValue={orgMetadata.description ?? ""}
+        defaultValue={orgMetadata.description ?? ''}
         placeholder='Organisation description'
         label='Organisation description'
         onChange={(event) =>
@@ -61,7 +79,7 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
       />
       <TextInput
         icon={<BrandMailgun />}
-        defaultValue={orgMetadata.contacts ?? ""}
+        defaultValue={orgMetadata.contacts ?? ''}
         placeholder='Organisation contacts'
         label='Organisation contacts'
         onChange={(event) =>
@@ -85,24 +103,30 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
             id: 'load-data',
             loading: true,
             title: 'Deploying register...',
-            message:
-              'You cannot close this notification yet',
+            message: 'You cannot close this notification yet',
             autoClose: false,
             withCloseButton: false,
           });
 
           let signer = getSigner();
           if (signer == null) {
-            setButtonContent([
-              <>Please connect your wallet</>,
-              false,
-            ]);
+            setButtonContent([<>Please connect your wallet</>, false]);
             return;
           }
 
           let org = await getOrganisationContract(props.orgAddress);
           if (org == null) {
-            setButtonContent([<>error</>, false]);
+            showNotification({
+              title: 'Error',
+              color: 'red',
+              message: 'An error occured.',
+            });
+            updateNotification({
+              id: 'load-data',
+              message:
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
+            });
             return;
           }
 
@@ -137,5 +161,5 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
         {buttonContent[0]}
       </Button>
     </Stack>
-  )
+  );
 }

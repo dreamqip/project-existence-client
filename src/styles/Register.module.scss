@@ -79,12 +79,16 @@
 
 .dates{
     display: flex;
-    gap: 10px;
+    gap: 20px;
     .date{
-        border: 1px solid gray;
         padding: 10px;
+        max-width: 250px;
+        @media (max-width: 768px) {
+            border: none;
+        }
     }
     @media (max-width: 768px){
         flex-direction: column;
+        gap: 0px;
     }
 }

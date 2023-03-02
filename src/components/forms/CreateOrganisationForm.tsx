@@ -93,6 +93,12 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               color: 'red',
               message: 'Please connect your wallet!',
             });
+            updateNotification({
+              id: 'load-data',
+              message:
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
+            });
             return;
           }
           let orgFactory = await getOrganisationFactoryContract(
@@ -101,7 +107,14 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           if (orgFactory == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
               message: 'An error occured.',
+            });
+            updateNotification({
+              id: 'load-data',
+              message:
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
             });
             return;
           }

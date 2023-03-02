@@ -1,19 +1,35 @@
-import { getOrganisationContract, getProvider, getSigner } from "@/contract_interactions";
-import { serializeMetadata } from "@/utils";
-import { Button, LoadingOverlay, Stack, TextInput } from "@mantine/core";
-import React from "react";
-import { useState } from "react";
-import { TextColor, TextCaption, BrandMailgun, Check, X } from "tabler-icons-react";
+import {
+  getOrganisationContract,
+  getProvider,
+  getSigner,
+} from '@/contract_interactions';
+import { serializeMetadata } from '@/utils';
+import { Button, LoadingOverlay, Stack, TextInput } from '@mantine/core';
+import React from 'react';
+import { useState } from 'react';
+import {
+  TextColor,
+  TextCaption,
+  BrandMailgun,
+  Check,
+  X,
+} from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 
-
-export default function UpdateOrganisationForm(props: { orgAddress: string, update?: () => any, updateModal: () => any }) {
+export default function UpdateOrganisationForm(props: {
+  orgAddress: string;
+  update?: () => any;
+  updateModal: () => any;
+}) {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
     contacts: '',
   });
-  const [buttonContent, setButtonContent] = useState([<>Deploy Register</>, true] as [JSX.Element, boolean]);
+  const [buttonContent, setButtonContent] = useState([
+    <>Deploy Register</>,
+    true,
+  ] as [JSX.Element, boolean]);
 
   return (
     <Stack>
@@ -64,8 +80,7 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
             id: 'load-data',
             loading: true,
             title: 'Deploying register...',
-            message:
-              'You cannot close this notification yet',
+            message: 'You cannot close this notification yet',
             autoClose: false,
             withCloseButton: false,
           });
@@ -74,18 +89,30 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
           if (signer == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
+              message: 'Please connect your wallet!',
+            });
+            updateNotification({
+              id: 'load-data',
               message:
-                'Please connect your wallet!',
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
             });
             return;
           }
 
-          let org = await getOrganisationContract(props.orgAddress)
+          let org = await getOrganisationContract(props.orgAddress);
           if (org == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
+              message: 'An error occured.',
+            });
+            updateNotification({
+              id: 'load-data',
               message:
-                'An error occured.',
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
             });
             return;
           }
@@ -121,5 +148,5 @@ export default function UpdateOrganisationForm(props: { orgAddress: string, upda
         {buttonContent[0]}
       </Button>
     </Stack>
-  )
+  );
 }
