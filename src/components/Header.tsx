@@ -12,7 +12,7 @@ import {
   ActionIcon,
   Notification,
 } from '@mantine/core';
-import { Search, Wallet } from 'tabler-icons-react';
+import { AlertTriangle, Search, Wallet } from 'tabler-icons-react';
 import { getProvider } from '@/contract_interactions';
 import { NETWORK } from '@/config';
 import {
@@ -21,13 +21,16 @@ import {
   getSigner,
   OrganisationFactoryContract,
 } from '@/contract_interactions';
+import { useRouter } from 'next/router';
 
 const updateProvider = require('../contract_interactions').updateProvider as (
   chain: 'mainnet' | 'testnet' | 'fakenet',
 ) => Promise<boolean>;
 
 export default function Header() {
+  const router = useRouter();
   const [walletConnected, setWalletConnected] = useState(getProvider() != null);
+  const [searchAlert, setSearchAlert] = useState(false);
   const [contractAddr, setContractAddr] = useState({
     address: '',
   });
@@ -71,13 +74,17 @@ export default function Header() {
           <div className={styles.header__search}>
             <ActionIcon
               className={styles.search__button}
-              onClick={() =>
-                searchForOrganisationOrRegister(
+              onClick={async () => {
+                if (await searchForOrganisationOrRegister(
                   contractAddr.address,
                   orgFactory,
-                )
+                ) != null) {
+                  router.push('/organisations/' + contractAddr.address);
+                } else {
+                  setSearchAlert(true);
+                }
               }
-            >
+              }>
               <Search />
             </ActionIcon>
             <TextInput
@@ -88,15 +95,22 @@ export default function Header() {
               onChange={(event) =>
                 setContractAddr({ address: event.target.value })
               }
-              onKeyDown={(event) => {
+              onKeyDown={async (event) => {
                 if (event.key === 'Enter') {
-                  searchForOrganisationOrRegister(
+                  if (await searchForOrganisationOrRegister(
                     contractAddr.address,
                     orgFactory,
-                  );
+                  ) != null) {
+                    router.push('/organisations/' + contractAddr.address);
+                  } else {
+                    setSearchAlert(true);
+                  }
                 }
               }}
             />
+            { searchAlert ? <Notification color="red" title="Alert" onClose={() => setSearchAlert(false)}>
+        Address not found
+      </Notification> : null}
           </div>
         </div>
         <div className={styles.header__right}>

@@ -1,8 +1,8 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { MantineProvider } from '@mantine/core';
-import { NotificationsProvider } from '@mantine/notifications';
 import Layout from '@/components/Layout';
+import { Notifications } from '@mantine/notifications';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -14,11 +14,10 @@ export default function App({ Component, pageProps }: AppProps) {
         colorScheme: 'dark',
       }}
     >
-      <NotificationsProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </NotificationsProvider>
+      <Notifications />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </MantineProvider>
   );
 }

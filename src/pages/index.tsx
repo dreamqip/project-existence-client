@@ -14,10 +14,10 @@ const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   const [yourOrganisationsCards, setYourOrganisationsCards] = useState([<React.Fragment key='1'><Notification
-  disallowClose
-  color="grape"
-  title='Please connect your wallet'
-></Notification></React.Fragment>] as JSX.Element[]);
+    withCloseButton={false}
+    color="blue"
+    title='Please connect your wallet'
+  ></Notification></React.Fragment>] as JSX.Element[]);
 
   useEffect(() => {
     let isMounted = true;
@@ -26,20 +26,20 @@ export default function Home() {
       if (isMounted) {
         await waitFor(() => getSigner() != null);
         setYourOrganisationsCards([<React.Fragment key='1'><Notification
-        disallowClose
-        color="yellow"
-        title='Loading...'
-      ></Notification></React.Fragment>]);
+          withCloseButton={false}
+          color="yellow"
+          title='Loading...'
+        ></Notification></React.Fragment>]);
         let signer = getSigner();
         if (signer == null) return;
 
         let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
         if (orgFactory == null) {
           setYourOrganisationsCards([<React.Fragment key='1'><Notification
-          disallowClose
-          color="red"
-          title='Error'
-        ></Notification></React.Fragment>])
+            withCloseButton={false}
+            color="red"
+            title='Error'
+          ></Notification></React.Fragment>])
           return;
         }
 
@@ -56,6 +56,7 @@ export default function Home() {
             key={index}
             description={metadata.description ?? "description"}
             badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
+            contacts={metadata.contacts ?? "contacts"}
             way={'/organisations/' + await org.getAddress()}
           />
         }));
@@ -84,13 +85,13 @@ export default function Home() {
             </>
           </div>
           <div className={styles.featured}>
-          <Title order={2} className={styles.featured__title}>
-            Explore featured organisations
-          </Title>
-          <Link href='/organisations'>
-            <Button radius='md'>Featured Organisations</Button>
-          </Link>
-        </div>
+            <Title order={2} className={styles.featured__title}>
+              Explore featured organisations
+            </Title>
+            <Link href='/organisations'>
+              <Button radius='md'>Featured Organisations</Button>
+            </Link>
+          </div>
         </div>
       </div>
     </>

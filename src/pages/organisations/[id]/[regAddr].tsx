@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import styles from '@/styles/Register.module.scss';
 import {
@@ -7,10 +7,8 @@ import {
   Table,
   Button,
   CopyButton,
-  Input,
+  TextInput,
   Title,
-  Progress,
-  Alert,
   Modal,
   Group,
   Stack,
@@ -26,48 +24,115 @@ import { Copy } from 'tabler-icons-react';
 import {
   ArrowUpRight,
   Search,
-  AlertCircle,
   Upload,
   X,
-  CircleCheck,
 } from 'tabler-icons-react';
 import { sha256 } from 'crypto-hash';
+import { showNotification, updateNotification } from "@mantine/notifications";
+
+import { useRouter } from 'next/router';
+import { getRecord, getRegisterContract, getSigner, type Record } from '@/contract_interactions';
+import { parseMetadata, waitFor } from '@/utils';
+import { NULL_HASH } from '@/config';
+
+export let update = () => { };
 
 export default function Register() {
-  const [hashValue, setHashValue] = useState('');
+  const router = useRouter();
+
   const [opened, setOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  function handleDrop(files: File[]) {
-    setIsLoading(true);
-    // Perform your file processing logic here
+  const [registerCard, setRegisterCard] = useState(<><Notification
+    withCloseButton={false}
+    color='blue'
+    title='Please connect your wallet'
+  ></Notification></>)
+  const [searchBlock, setSearchBlock] = useState(false);
+  const [docHash, setDocHash] = useState('');
 
-    const file = files[0];
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      // Get the file contents as a Uint8Array
-      const fileContents = new Uint8Array(event?.target?.result as ArrayBuffer);
+   const [searchResult, setSearchResult] = useState({
+    documentHash: NULL_HASH,
+    creator: '0x0000000000000000000000000000000000000000',
+    updater: '0x0000000000000000000000000000000000000000',
 
-      // Calculate the SHA-256 hash of the file contents
-      let hash = await sha256(fileContents);
-      hash = '0x' + hash;
-      // Do something with the hash, for example, log it to the console
-      setHashValue(hash);
-      setIsLoading(false);
-    };
+    sourceDocument: "",
+    referenceDocument: "",
 
-    reader.readAsArrayBuffer(file);
-  }
-  const items = [
+    createdAt: BigInt(0),
+    updatedAt: BigInt(0),
+    startsAt: BigInt(0),
+    expiresAt: BigInt(0),
+
+    pastDocumentHash: NULL_HASH,
+    nextDocumentHash: NULL_HASH
+  } as Record);
+
+
+  const { id, regAddr } = router.query;
+  const orgAddress = id ? typeof id == "string" ? id : id[0] : null;
+  const regAddress = regAddr ? typeof regAddr == "string" ? regAddr : regAddr[0] : null;
+
+  const breadCrumbItems = [
     { title: 'Home', href: '/' },
     { title: 'Organisations', href: '/organisations' },
-    { title: 'Organisation-1', href: `/organisations/organisation-1` },
-    { title: 'Register-1', href: `/organisations/organisation-1/register-1` },
+    { title: id, href: `/organisations/` + id },
+    { title: regAddr, href: `/organisations/` + id + `/` + regAddr },
   ].map((item, index) => (
     <Link href={item.href} key={index}>
       {item.title}
     </Link>
   ));
+
+
+  async function handleDrop(files: File[]) {
+    setIsLoading(true);
+  
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const fileContents = new Uint8Array(event?.target?.result as ArrayBuffer);
+  
+      let hash = await sha256(fileContents);
+      hash = '0x' + hash;
+  
+      setIsLoading(false);
+  
+      // call the search function after the hash value is set
+      await search(hash);
+    };
+  
+    reader.readAsArrayBuffer(file);
+  }
+  
+
+  const fetchData = async () => {
+    let reg = await getRegisterContract(regAddress ?? '');
+    if (!reg) {
+      setRegisterCard(<>error</>)
+      return;
+    }
+
+    let rawMetadata = await reg.metadata();
+    let metadata = parseMetadata(rawMetadata);
+
+    setRegisterCard(<RegisterCard
+      title={metadata.name ?? "name"}
+      description={metadata.description ?? "description"}
+      contacts={metadata.contacts ?? "contacts"}
+    />)
+  };
+  update = () => fetchData()
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted) fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router])
+
   const elements = [
     {
       address:
@@ -100,6 +165,29 @@ export default function Register() {
       action: 'Created',
     },
   ];
+
+  let search = async (hash?: string) => {
+    let _docHash = hash ? hash : docHash;
+    let reg = await getRegisterContract(regAddress ?? "");
+    if (reg == null) return;
+    await waitFor(() => _docHash != undefined);
+    let result = await getRecord(reg, _docHash);
+    if (result.documentHash != NULL_HASH) {
+      setSearchBlock(true);
+      setSearchResult(result);
+      console.log(result);
+    } else {
+      //alert("not found");
+      showNotification({
+        title: 'Error',
+        color: 'red',
+        message:
+          'Record not found.',
+        autoClose: 2000,
+      })
+    }
+  }
+
   const rows = elements.map((element) => (
     <tr key={element.address}>
       <td>
@@ -133,16 +221,11 @@ export default function Register() {
   return (
     <div className={styles.register__container}>
       <Breadcrumbs className={styles.register__breadcrumbs}>
-        {items}
+        {breadCrumbItems}
       </Breadcrumbs>
       <div className={styles.register__body}>
         <div className={styles.register__card}>
-          <RegisterCard
-            title='Test Register'
-            description='This register actively demostrates the possiblities. Contacts: email.'
-            badge='Featured'
-            way=''
-          />
+          {registerCard}
         </div>
         <div className={styles.register__records}>
           <Title order={2} className={styles.records__title}>
@@ -151,14 +234,22 @@ export default function Register() {
 
           <div className={styles.records__check}>
             <div className={styles.records__search}>
-              <ActionIcon className={styles.search__button}>
+              <ActionIcon className={styles.search__button} onClick={() => search()}>
                 <Search />
               </ActionIcon>
-              <Input
+              <TextInput
                 icon={<Search />}
                 placeholder='Enter Document hash'
                 radius='md'
                 size='md'
+                onChange={(event) =>
+                  setDocHash((event.target.value.startsWith("0x") && event.target.value.length == NULL_HASH.length) ? event.target.value : NULL_HASH)
+                }
+                onKeyDown={async (event) => {
+                  if (event.key === 'Enter') {
+                    search();
+                  }
+                }}
               />
             </div>
             <div className={styles.records__drag_file}>
@@ -192,8 +283,9 @@ export default function Register() {
                 </Group>
               </Dropzone>
             </div>
+            {searchBlock ? 
             <div className={styles.records__result}>
-              <Notification disallowClose color='teal' title='Record found!'>
+              <Notification color='teal' title='Record found!'>
                 Click details to get more information about the record
                 <br />
                 <Button
@@ -209,68 +301,48 @@ export default function Register() {
                   opened={opened}
                   onClose={() => setOpened(false)}
                   title='Record'
-                  overlayOpacity={0.55}
-                  overlayBlur={3}
+                  size='lg'
                 >
                   <div className={styles.records__record}>
                     <Stack spacing='sm'>
                       <List>
-                        <List.Item>
+                        <List.Item sx={{overflowWrap: 'break-word'}}>
                           Document hash:
-                          0x7894567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+                          {searchResult.documentHash}
                         </List.Item>
                         <List.Item>
-                          Creator: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+                          {searchResult.creator.toString()}
                         </List.Item>
                         <List.Item>
-                          Updater: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+                          {searchResult.updater.toString()}
                         </List.Item>
                         <List.Item>
-                          Source Document: SOURCE_DOCUMENT_URL
+                          {searchResult.sourceDocument}
                         </List.Item>
                         <List.Item>
-                          Reference Document: REFERENCE_DOCUMENT_URL
+                          {searchResult.referenceDocument}
                         </List.Item>
-                        <List.Item>Created at: 1677419137</List.Item>
-                        <List.Item>Updated at: 1677419145</List.Item>
-                        <List.Item>Starts at: 0</List.Item>
-                        <List.Item>Expires at: 1677419145</List.Item>
-                        <List.Item>
+                        <List.Item>Created at: {searchResult.createdAt.toString()}</List.Item>
+                        <List.Item>Updated at: {searchResult.updatedAt.toString()}</List.Item>
+                        <List.Item>Starts at: {searchResult.startsAt.toString()}</List.Item>
+                        <List.Item>Expires at: {searchResult.expiresAt.toString()}</List.Item>
+                        <List.Item sx={{overflowWrap: 'break-word'}}>
                           Past Document hash:
-                          0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+                          {searchResult.pastDocumentHash}
                         </List.Item>
-                        <List.Item>
+                        <List.Item sx={{overflowWrap: 'break-word'}}>
                           Next Document hash:
-                          0x5464567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+                          {searchResult.nextDocumentHash}
                         </List.Item>
                       </List>
                     </Stack>
                   </div>
                 </Modal>
               </Notification>
-            </div>
-            {hashValue ? (
-              <div className={styles.records__result}>
-                <Notification disallowClose color='teal' title='Hash produced!'>
-                  <Text fz='md' className={styles.result__hash} fw={700}>
-                    {hashValue}
-                  </Text>
-                  <CopyButton value={hashValue}>
-                    {({ copied, copy }) => (
-                      <Button
-                        color={copied ? 'teal' : 'blue'}
-                        onClick={copy}
-                        sx={{ marginRight: '10px' }}
-                      >
-                        <Copy size={20} strokeWidth={2} color={'#000000'} />
-                      </Button>
-                    )}
-                  </CopyButton>
-                </Notification>
-              </div>
-            ) : null}
+            </div> : null}
+
           </div>
-          <div className={styles.records__tabs}>
+          {/* <div className={styles.records__tabs}>
             <Tabs defaultValue='activity'>
               <Tabs.List>
                 <Tabs.Tab value='activity'>Activity</Tabs.Tab>
@@ -290,7 +362,7 @@ export default function Register() {
                 </Table>
               </Tabs.Panel>
             </Tabs>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -76,3 +76,15 @@
         margin: 10px;
     }
 }
+
+.dates{
+    display: flex;
+    gap: 10px;
+    .date{
+        border: 1px solid gray;
+        padding: 10px;
+    }
+    @media (max-width: 768px){
+        flex-direction: column;
+    }
+}

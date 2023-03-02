@@ -24,10 +24,7 @@ export default function organisations() {
 
     const fetchData = async () => {
       if (isMounted) {
-        await waitFor(() => getSigner() != null);
         setFeaturedOrganisationsCards([<React.Fragment key='1'>loading...</React.Fragment>]);
-        let signer = getSigner();
-        if (signer == null) return;
 
         let orgs: OrganisationContract[] = [];
         for (const orgAddress of FEATURED_ORGANISATIONS) {
@@ -43,6 +40,7 @@ export default function organisations() {
             key={index}
             description={metadata.description ?? "description"}
             badge='Featured'
+            contacts={metadata.contacts ?? "contacts"}
             way={'/organisations/' + await org.getAddress()}
           />
         }));

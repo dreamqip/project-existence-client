@@ -14,14 +14,16 @@ import {
 import { Copy } from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { getOrganisationContract, getOrganisationFactoryContract, getRegisterContract, getSigner, OrganisationContract, organisationsOfOwner, RegisterContract, registersOfOrganisation } from '@/contract_interactions';
-import { FEATURED_ORGANISATIONS, ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import { getOrganisationContract, getRegisterContract, getSigner, RegisterContract, registersOfOrganisation } from '@/contract_interactions';
+import { FEATURED_ORGANISATIONS } from '@/config';
 import { parseMetadata, waitFor } from '@/utils';
+
+export let update = () => { };
 
 export default function Organisation() {
   const router = useRouter();
   const { id } = router.query;
-  const items = [
+  const breadCrumbItems = [
     { title: 'Home', href: '/' },
     { title: 'Organisations', href: '/organisations' },
     { title: id, href: `/organisations/` + id },
@@ -81,84 +83,83 @@ export default function Organisation() {
   ));
 
   const [orgCard, setOrgCard] = useState(<><Notification
-    disallowClose
-    color='grape'
+    withCloseButton={false}
+    color='blue'
     title='Please connect your wallet'
   ></Notification></>);
   const [regCards, setRegCards] = useState([<React.Fragment key='1'><Notification
-    disallowClose
-    color='grape'
+    withCloseButton={false}
+    color='blue'
     title='Please connect your wallet'
   ></Notification></React.Fragment>] as JSX.Element[]);
 
+  const fetchData = async () => {
+    setOrgCard(<><Notification
+      withCloseButton={false}
+      color="yellow"
+      title='Loading...'
+    ></Notification></>);
+    setRegCards([<React.Fragment key='1'><Notification
+      withCloseButton={false}
+      color="yellow"
+      title='Loading...'
+    ></Notification></React.Fragment>]);
+
+    let orgAddress: string;
+    if (id == undefined) return;
+    if (typeof id == "string") orgAddress = id;
+    else orgAddress = id[0];
+
+    let org = await getOrganisationContract(orgAddress, true);
+    if (org == null) {
+      setOrgCard(<><Notification
+        withCloseButton={false}
+        color="red"
+        title='Error'
+      ></Notification></>)
+      setRegCards([<React.Fragment key='1'><Notification
+        withCloseButton={false}
+        color="red"
+        title='Error'
+      ></Notification></React.Fragment>]);
+      return;
+    }
+
+    let metadata = parseMetadata(await org.metadata());
+
+    setOrgCard(<OrganisationCard
+      title={metadata.name ?? "name"}
+      description={metadata.description ?? "description"}
+      contacts={metadata.contacts ?? "contacts"}
+      badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
+    />);
+
+    let regs: RegisterContract[] = [];
+    for await (const i of registersOfOrganisation(org)) {
+      let reg = await getRegisterContract(i.toString());
+      if (reg != null) regs.push(reg);
+    }
+
+    let regCards = await Promise.all(regs.map(async (reg: RegisterContract, index) => {
+      let metadata = parseMetadata(await reg.metadata());
+
+      return <RegisterCard
+        title={metadata.name ?? "name"}
+        key={index}
+        description={metadata.description ?? "description"}
+        contacts={metadata.contacts ?? "contacts"}
+        way={'/organisations/' + (await org?.getAddress() ?? "error") + "/" + await reg.getAddress()}
+      />
+    }));
+
+    setRegCards(regCards);
+  };
+
+  update = () => fetchData();
   useEffect(() => {
     let isMounted = true;
 
-    const fetchData = async () => {
-      if (isMounted) {
-        await waitFor(() => getSigner() != null);
-        setOrgCard(<><Notification
-          disallowClose
-          color="yellow"
-          title='Loading...'
-        ></Notification></>);
-        setRegCards([<React.Fragment key='1'><Notification
-          disallowClose
-          color="yellow"
-          title='Loading...'
-        ></Notification></React.Fragment>]);
-        let signer = getSigner();
-        if (signer == null) return;
-
-        let orgAddress: string;
-        if (id == undefined) return;
-        if (typeof id == "string") orgAddress = id;
-        else orgAddress = id[0];
-
-        let org = await getOrganisationContract(orgAddress, true);
-        if (org == null) {
-          setOrgCard(<><Notification
-            disallowClose
-            color="red"
-            title='Error'
-          ></Notification></>)
-          setRegCards([<React.Fragment key='1'><Notification
-            disallowClose
-            color="red"
-            title='Error'
-          ></Notification></React.Fragment>]);
-          return;
-        }
-
-        let metadata = parseMetadata(await org.metadata());
-
-        setOrgCard(<OrganisationCard
-          title={metadata.name ?? "name"}
-          description={metadata.description ?? "description"}
-          badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
-        />);
-
-        let regs: RegisterContract[] = [];
-        for await (const i of registersOfOrganisation(org)) {
-          let reg = await getRegisterContract(i.toString());
-          if (reg != null) regs.push(reg);
-        }
-
-        let regCards = await Promise.all(regs.map(async (reg: RegisterContract, index) => {
-          let metadata = parseMetadata(await reg.metadata());
-
-          return <RegisterCard
-            title={metadata.name ?? "name"}
-            key={index}
-            description={metadata.description ?? "description"}
-            way={'/organisations/' + (await org?.getAddress() ?? "error") + "/" + await reg.getAddress()}
-          />
-        }));
-
-        setRegCards(regCards);
-      }
-    };
-    fetchData();
+    if (isMounted) fetchData();
 
     return () => {
       isMounted = false;
@@ -169,7 +170,7 @@ export default function Organisation() {
   return (
     <div className={styles.organisation__container}>
       <Breadcrumbs className={styles.organisation__breadcrumbs}>
-        {items}
+        {breadCrumbItems}
       </Breadcrumbs>
       <div className={styles.organisation__body}>
         <div className={styles.organisation__card}>
@@ -193,7 +194,7 @@ export default function Organisation() {
                 </div>
               </Tabs.Panel>
 
-              <Tabs.Panel value='activity' pt='xs'>
+              {/* <Tabs.Panel value='activity' pt='xs'>
                 <Table highlightOnHover>
                   <thead>
                     <tr>
@@ -204,7 +205,7 @@ export default function Organisation() {
                   </thead>
                   <tbody>{rows}</tbody>
                 </Table>
-              </Tabs.Panel>
+              </Tabs.Panel> */}
             </Tabs>
           </div>
         </div>

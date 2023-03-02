@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '@/styles/Header.module.scss';
@@ -12,13 +12,14 @@ import {
   FileSymlink,
   FileTime,
 } from 'tabler-icons-react';
-import { serializeMetadata } from '@/utils';
-import {
-  getOrganisationFactoryContract,
-  getProvider,
-  getSigner,
-} from '@/contract_interactions';
-import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import CreateOrganisationForm from './forms/CreateOrganisationForm';
+import UpdateOrganisationForm from './forms/UpdateOrganisationForm';
+import {update as updateOrganisationPage} from '@/pages/organisations/[id]';
+import {update as updateRegisterPage} from '@/pages/organisations/[id]/[regAddr]';
+import DeployRegisterForm from './forms/DeployRegisterForm';
+import CreateRecordForm from './forms/CreateRecordForm';
+import UpdateRegisterForm from './forms/UpdateRegisterForm';
+import InvalidateRecordForm from './forms/InvalidateRecordForm';
 
 export default function Header__menu({
   walletConnected,
@@ -35,30 +36,18 @@ export default function Header__menu({
   const [createRecModalOpened, setCreateRecModalOpened] = useState(false);
   const [invaliRecModalOpened, setInvaliRecModalOpened] = useState(false);
 
-  const [orgFormInput, setOrgFormInput] = useState({
-    name: '',
-    description: '',
-    contacts: '',
-  });
-  const [createOrganisationButtonContent, setCreateOrganisationButtonContent] =
-    useState([<>Create Organisation</>, true] as [JSX.Element, boolean]);
-  const [updateOrganisationButtonContent, setUpdateOrganisationButtonContent] =
-    useState([<>Update Organisation</>, true] as [JSX.Element, boolean]);
+  const orgAddress = isOrganisationPage ? router.query.id ? typeof router.query.id == "string" ? router.query.id : router.query.id[0] : null : null;
+  const regAddress = isRegisterPage ? router.query.regAddr ? typeof router.query.regAddr == "string" ? router.query.regAddr : router.query.regAddr[0] : null : null;
 
   return (
     <div>
       {isHomePage ? null : null}
-      {isOrganisationsPage ? (
+      {isOrganisationsPage && walletConnected ? (
         <div className={styles.header__menu}>
           <Button
             radius='md'
             onClick={() => {
               setOrgModalOpened(true);
-              setOrgFormInput({ name: '', description: '', contacts: '' });
-              setCreateOrganisationButtonContent([
-                <>Update Organisation</>,
-                true,
-              ]);
             }}
           >
             Create Organisation
@@ -68,101 +57,16 @@ export default function Header__menu({
             onClose={() => setOrgModalOpened(false)}
             title='To create Organisation fill in the forms please.'
           >
-            <Stack>
-              <TextInput
-                icon={<TextColor />}
-                placeholder='Organisation name'
-                onChange={(event) =>
-                  setOrgFormInput({
-                    ...orgFormInput,
-                    name: event.currentTarget.value,
-                  })
-                }
-              />
-              <TextInput
-                icon={<TextCaption />}
-                placeholder='Organisation description'
-                onChange={(event) =>
-                  setOrgFormInput({
-                    ...orgFormInput,
-                    description: event.currentTarget.value,
-                  })
-                }
-              />
-              <TextInput
-                icon={<BrandMailgun />}
-                placeholder='Organisation contacts'
-                onChange={(event) =>
-                  setOrgFormInput({
-                    ...orgFormInput,
-                    contacts: event.currentTarget.value,
-                  })
-                }
-              />
-              <Button
-                radius='md'
-                color='red'
-                disabled={
-                  !createOrganisationButtonContent[1] ||
-                  orgFormInput.name == '' ||
-                  orgFormInput.description == '' ||
-                  orgFormInput.contacts == ''
-                }
-                onClick={async (e) => {
-                  setCreateOrganisationButtonContent([
-                    <>
-                      <LoadingOverlay visible={true} overlayBlur={2} />
-                      Loading...
-                    </>,
-                    false,
-                  ]);
-
-                  let signer = getSigner();
-                  if (signer == null) {
-                    setCreateOrganisationButtonContent([
-                      <>Please connect your wallet</>,
-                      false,
-                    ]);
-                    return;
-                  }
-                  let orgFactory = await getOrganisationFactoryContract(
-                    ORGANISATION_FACTORY_ADDRESS,
-                  );
-                  if (orgFactory == null) {
-                    setCreateOrganisationButtonContent([<>error</>, false]);
-                    return;
-                  }
-
-                  let rawMetadata = serializeMetadata(orgFormInput);
-                  let tx = await orgFactory.deployOrganisation(
-                    rawMetadata,
-                    await signer.getAddress(),
-                  );
-                  if (tx.hash == null) return;
-                  await getProvider()?.waitForTransaction(tx.hash);
-                  setCreateOrganisationButtonContent([
-                    <>Organisation created ✅</>,
-                    false,
-                  ]);
-                }}
-              >
-                {createOrganisationButtonContent[0]}
-              </Button>
-            </Stack>
+            <CreateOrganisationForm update={() => setOrgModalOpened(false)} />
           </Modal>
         </div>
       ) : null}
-      {isOrganisationPage && !isRegisterPage && walletConnected ? (
+      {isOrganisationPage && orgAddress && !isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
           <Button
             radius='md'
             onClick={() => {
               setOrgModalOpened(true);
-              setOrgFormInput({ name: '', description: '', contacts: '' });
-              setUpdateOrganisationButtonContent([
-                <>Update Organisation</>,
-                true,
-              ]);
             }}
           >
             Update Organisation
@@ -172,82 +76,7 @@ export default function Header__menu({
             onClose={() => setOrgModalOpened(false)}
             title='Fill in the forms you want to update.'
           >
-            <Stack>
-              <TextInput
-                icon={<TextColor />}
-                placeholder='Organisation name'
-                onChange={(event) =>
-                  setOrgFormInput({
-                    ...orgFormInput,
-                    name: event.currentTarget.value,
-                  })
-                }
-              />
-              <TextInput
-                icon={<TextCaption />}
-                placeholder='Organisation description'
-                onChange={(event) =>
-                  setOrgFormInput({
-                    ...orgFormInput,
-                    description: event.currentTarget.value,
-                  })
-                }
-              />
-              <TextInput
-                icon={<BrandMailgun />}
-                placeholder='Organisation contacts'
-                onChange={(event) =>
-                  setOrgFormInput({
-                    ...orgFormInput,
-                    contacts: event.currentTarget.value,
-                  })
-                }
-              />
-              <Button
-                radius='md'
-                color='red'
-                disabled={
-                  !updateOrganisationButtonContent[1] ||
-                  orgFormInput.name == '' ||
-                  orgFormInput.description == '' ||
-                  orgFormInput.contacts == ''
-                }
-                onClick={async (e) => {
-                  setUpdateOrganisationButtonContent([
-                    <>
-                      <LoadingOverlay visible={true} overlayBlur={2} />
-                      Loading...
-                    </>,
-                    false,
-                  ]);
-
-                  let signer = getSigner();
-                  if (signer == null) {
-                    setUpdateOrganisationButtonContent([
-                      <>Please connect your wallet</>,
-                      false,
-                    ]);
-                    return;
-                  }
-                  /*let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS)
-                  if (orgFactory == null) {
-                    setCreateOrganisationButtonContent([<>error</>, false]);
-                    return;
-                  }
-
-                  let rawMetadata = serializeMetadata(orgFormInput);
-                  let tx = await orgFactory.deployOrganisation(rawMetadata, await signer.getAddress());
-                  if (tx.hash == null) return;
-                  await getProvider()?.waitForTransaction(tx.hash);*/
-                  setUpdateOrganisationButtonContent([
-                    <>Organisation edited TODO ✅</>,
-                    false,
-                  ]);
-                }}
-              >
-                {updateOrganisationButtonContent}
-              </Button>
-            </Stack>
+            <UpdateOrganisationForm orgAddress={orgAddress} update={() => updateOrganisationPage()} updateModal={() => setOrgModalOpened(false)}/>
           </Modal>
           <Button radius='md' onClick={() => setRegModalOpened(true)}>
             Deploy Register
@@ -257,20 +86,7 @@ export default function Header__menu({
             onClose={() => setRegModalOpened(false)}
             title='To create Register fill in the forms'
           >
-            <Stack>
-              <TextInput icon={<TextColor />} placeholder='Register name' />
-              <TextInput
-                icon={<TextCaption />}
-                placeholder='Register description'
-              />
-              <TextInput
-                icon={<BrandMailgun />}
-                placeholder='Register contacts'
-              />
-              <Button radius='md' color='red'>
-                Deploy Register
-              </Button>
-            </Stack>
+            <DeployRegisterForm orgAddress={orgAddress} update={() => updateOrganisationPage()} updateModal={() => setRegModalOpened(false)} />
           </Modal>
         </div>
       ) : null}
@@ -279,25 +95,12 @@ export default function Header__menu({
           <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
             Create Record
           </Button>
-          <Modal
+          <Modal size="lg"
             opened={createRecModalOpened}
             onClose={() => setCreateRecModalOpened(false)}
             title='To create Record fill in the forms'
           >
-            <Stack>
-              <TextInput icon={<Hash />} placeholder='Document hash' />
-              <TextInput icon={<FileSymlink />} placeholder='Source Document' />
-              <TextInput
-                icon={<ExternalLink />}
-                placeholder='Reference Document'
-              />
-              <TextInput icon={<FileTime />} placeholder='Starts at' />
-              <TextInput icon={<FileTime />} placeholder='Expires at' />
-              <TextInput icon={<Hash />} placeholder='Past Document Hash' />
-              <Button radius='md' color='red'>
-                Create Record
-              </Button>
-            </Stack>
+            <CreateRecordForm updateModal={() => setCreateRecModalOpened(false)} update={() => updateRegisterPage()} registerAddress={regAddress ?? ""}/>
           </Modal>
           <Button radius='md' onClick={() => setInvaliRecModalOpened(true)}>
             Invalidate Record
@@ -307,12 +110,7 @@ export default function Header__menu({
             onClose={() => setInvaliRecModalOpened(false)}
             title='To invalidate Record fill in the forms'
           >
-            <Stack>
-              <TextInput icon={<Hash />} placeholder='Document hash' />
-              <Button radius='md' color='red'>
-                Invalidate Record
-              </Button>
-            </Stack>
+            <InvalidateRecordForm updateModal={() => setInvaliRecModalOpened(false)} update={() => updateRegisterPage()} registerAddress={regAddress ?? ''} />
           </Modal>
           <Button radius='md' onClick={() => setRegModalOpened(true)}>
             Update Register
@@ -322,20 +120,7 @@ export default function Header__menu({
             onClose={() => setRegModalOpened(false)}
             title='Fill in the forms you want to update.'
           >
-            <Stack>
-              <TextInput icon={<TextColor />} placeholder='Register name' />
-              <TextInput
-                icon={<TextCaption />}
-                placeholder='Register description'
-              />
-              <TextInput
-                icon={<BrandMailgun />}
-                placeholder='Register contacts'
-              />
-              <Button radius='md' color='red'>
-                Update Register
-              </Button>
-            </Stack>
+            <UpdateRegisterForm update={() => updateRegisterPage()} regAddress={regAddress ?? ""} updateModal={() => setRegModalOpened(false)} />
           </Modal>
         </div>
       ) : null}

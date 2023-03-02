@@ -6,7 +6,7 @@ export function waitFor(conditionFunction: () => boolean) {
     return new Promise(poll);
 }
 
-type Metadata = {
+export type Metadata = {
     name?: string;
     description?: string;
     contacts?: string;
