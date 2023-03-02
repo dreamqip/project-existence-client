@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '@/styles/Header.module.scss';
@@ -54,6 +54,9 @@ export default function Header__menu({
   const [regModalOpened, setRegModalOpened] = useState(false);
   const [createRecModalOpened, setCreateRecModalOpened] = useState(false);
   const [invaliRecModalOpened, setInvaliRecModalOpened] = useState(false);
+  const [orgFactory, setOrgFactory] = useState<
+    OrganisationFactoryContract | undefined
+  >(undefined);
   const [contractAddr, setContractAddr] = useState({
     address: '',
   });
@@ -73,6 +76,30 @@ export default function Header__menu({
       : null
     : null;
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      if (isMounted) {
+        let signer = getSigner();
+        if (signer == null) return;
+
+        let factory = await getOrganisationFactoryContract(
+          ORGANISATION_FACTORY_ADDRESS,
+        );
+        if (factory != null) {
+          setOrgFactory(factory);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <div>
       <div className={styles.header__burger}>
@@ -87,10 +114,6 @@ export default function Header__menu({
           <ActionIcon
             className={styles.search__button}
             onClick={async () => {
-              let orgFactory = await getOrganisationFactoryContract(
-                ORGANISATION_FACTORY_ADDRESS,
-              );
-              if (orgFactory == null) return;
               if (
                 (await searchForOrganisationOrRegister(
                   contractAddr.address,
@@ -115,10 +138,6 @@ export default function Header__menu({
             }
             onKeyDown={async (event) => {
               if (event.key === 'Enter') {
-                let orgFactory = await getOrganisationFactoryContract(
-                  ORGANISATION_FACTORY_ADDRESS,
-                );
-                if (orgFactory == null) return;
                 if (
                   (await searchForOrganisationOrRegister(
                     contractAddr.address,

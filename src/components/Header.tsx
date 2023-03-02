@@ -22,6 +22,7 @@ import {
   OrganisationFactoryContract,
 } from '@/contract_interactions';
 import { useRouter } from 'next/router';
+import { showNotification, updateNotification } from '@mantine/notifications';
 
 const updateProvider = require('../contract_interactions').updateProvider as (
   chain: 'mainnet' | 'testnet' | 'fakenet',
@@ -75,16 +76,22 @@ export default function Header() {
             <ActionIcon
               className={styles.search__button}
               onClick={async () => {
-                if (await searchForOrganisationOrRegister(
-                  contractAddr.address,
-                  orgFactory,
-                ) != null) {
+                if (
+                  (await searchForOrganisationOrRegister(
+                    contractAddr.address,
+                    orgFactory,
+                  )) != null
+                ) {
                   router.push('/organisations/' + contractAddr.address);
                 } else {
-                  setSearchAlert(true);
+                  showNotification({
+                    title: 'Error',
+                    color: 'red',
+                    message: 'Contract not found.',
+                  });
                 }
-              }
-              }>
+              }}
+            >
               <Search />
             </ActionIcon>
             <TextInput
@@ -97,20 +104,23 @@ export default function Header() {
               }
               onKeyDown={async (event) => {
                 if (event.key === 'Enter') {
-                  if (await searchForOrganisationOrRegister(
-                    contractAddr.address,
-                    orgFactory,
-                  ) != null) {
+                  if (
+                    (await searchForOrganisationOrRegister(
+                      contractAddr.address,
+                      orgFactory,
+                    )) != null
+                  ) {
                     router.push('/organisations/' + contractAddr.address);
                   } else {
-                    setSearchAlert(true);
+                    showNotification({
+                      title: 'Error',
+                      color: 'red',
+                      message: 'Contract not found.',
+                    });
                   }
                 }
               }}
             />
-            { searchAlert ? <Notification color="red" title="Alert" onClose={() => setSearchAlert(false)}>
-        Address not found
-      </Notification> : null}
           </div>
         </div>
         <div className={styles.header__right}>
@@ -121,8 +131,18 @@ export default function Header() {
               color='dark'
               radius='md'
               onClick={async (event) => {
-                await updateProvider(NETWORK);
-                setWalletConnected(getProvider() != null);
+                try {
+                  await updateProvider(NETWORK);
+                  const connectedProvider = getProvider();
+                  if (connectedProvider) {
+                    setWalletConnected(true);
+                  } else {
+                    throw new Error('Failed to connect to wallet');
+                  }
+                } catch (error) {
+                  console.error(error);
+                  // Display error message to user
+                }
               }}
             >
               {walletConnected ? <>Connected ✅</> : <>Connect</>}
