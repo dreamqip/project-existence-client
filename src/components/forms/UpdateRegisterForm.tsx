@@ -1,19 +1,36 @@
-import { getOrganisationContract, getProvider, getRegisterContract, getSigner } from "@/contract_interactions";
-import { serializeMetadata } from "@/utils";
-import { Button, LoadingOverlay, Stack, TextInput } from "@mantine/core";
-import React from "react";
-import { useState } from "react";
-import { TextColor, TextCaption, BrandMailgun, Check, X } from "tabler-icons-react";
+import {
+  getOrganisationContract,
+  getProvider,
+  getRegisterContract,
+  getSigner,
+} from '@/contract_interactions';
+import { serializeMetadata } from '@/utils';
+import { Button, LoadingOverlay, Stack, TextInput } from '@mantine/core';
+import React from 'react';
+import { useState } from 'react';
+import {
+  TextColor,
+  TextCaption,
+  BrandMailgun,
+  Check,
+  X,
+} from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 
-
-export default function UpdateRegisterForm(props: { regAddress: string, update?: () => any, updateModal: () => any }) {
+export default function UpdateRegisterForm(props: {
+  regAddress: string;
+  update?: () => any;
+  updateModal: () => any;
+}) {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
     contacts: '',
   });
-  const [buttonContent, setButtonContent] = useState([<>Update Register</>, true] as [JSX.Element, boolean]);
+  const [buttonContent, setButtonContent] = useState([
+    <>Update Register</>,
+    true,
+  ] as [JSX.Element, boolean]);
 
   return (
     <Stack>
@@ -64,8 +81,7 @@ export default function UpdateRegisterForm(props: { regAddress: string, update?:
             id: 'load-data',
             loading: true,
             title: 'Updating register...',
-            message:
-              'You cannot close this notification yet',
+            message: 'You cannot close this notification yet',
             autoClose: false,
             withCloseButton: false,
           });
@@ -74,18 +90,30 @@ export default function UpdateRegisterForm(props: { regAddress: string, update?:
           if (signer == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
+              message: 'Please connect your wallet!',
+            });
+            updateNotification({
+              id: 'load-data',
               message:
-                'Please connect your wallet!',
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
             });
             return;
           }
 
-          let reg = await getRegisterContract(props.regAddress)
+          let reg = await getRegisterContract(props.regAddress);
           if (reg == null) {
             showNotification({
               title: 'Error',
+              color: 'red',
+              message: 'An error occured.',
+            });
+            updateNotification({
+              id: 'load-data',
               message:
-                'An error occured.',
+                'Notification will close in 2 seconds, you can close this notification now',
+              autoClose: 2000,
             });
             return;
           }
@@ -121,5 +149,5 @@ export default function UpdateRegisterForm(props: { regAddress: string, update?:
         {buttonContent[0]}
       </Button>
     </Stack>
-  )
+  );
 }
