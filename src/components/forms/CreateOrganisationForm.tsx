@@ -1,18 +1,31 @@
 import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
-import { getSigner, getOrganisationFactoryContract, getProvider } from '@/contract_interactions';
+import {
+  getSigner,
+  getOrganisationFactoryContract,
+  getProvider,
+} from '@/contract_interactions';
 import { serializeMetadata } from '@/utils';
 import { TextInput, Button, LoadingOverlay, Stack } from '@mantine/core';
 import React, { useState } from 'react';
-import { BrandMailgun, TextCaption, TextColor, Check, Cross, X } from 'tabler-icons-react';
+import {
+  BrandMailgun,
+  TextCaption,
+  TextColor,
+  Check,
+  Cross,
+  X,
+} from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { update } from '@/pages/organisations/[id]';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 
-
 export default function CreateOrganisationForm(props: { update: () => any }) {
   const router = useRouter();
-  const [buttonContent, setButtonContent] = useState([<>Create Organisation</>, true] as [JSX.Element, boolean]);
+  const [buttonContent, setButtonContent] = useState([
+    <>Create Organisation</>,
+    true,
+  ] as [JSX.Element, boolean]);
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
@@ -68,8 +81,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
             id: 'load-data',
             loading: true,
             title: 'Creating organisation...',
-            message:
-              'You cannot close this notification yet',
+            message: 'You cannot close this notification yet',
             autoClose: false,
             withCloseButton: false,
           });
@@ -78,8 +90,8 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           if (signer == null) {
             showNotification({
               title: 'Error',
-              message:
-                'Please connect your wallet!',
+              color: 'red',
+              message: 'Please connect your wallet!',
             });
             return;
           }
@@ -89,8 +101,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           if (orgFactory == null) {
             showNotification({
               title: 'Error',
-              message:
-                'An error occured.',
+              message: 'An error occured.',
             });
             return;
           }

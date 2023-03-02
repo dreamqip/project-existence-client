@@ -16,7 +16,7 @@ import {
   Group,
   Modal,
   Stack,
-  Notification
+  Notification,
 } from '@mantine/core';
 import {
   Search,
@@ -30,10 +30,14 @@ import {
   FileTime,
 } from 'tabler-icons-react';
 import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import { update as updateOrganisationPage } from '@/pages/organisations/[id]';
 import CreateOrganisationForm from './forms/CreateOrganisationForm';
 import UpdateOrganisationForm from './forms/UpdateOrganisationForm';
-import {update as updateOrganisationPage} from '@/pages/organisations/[id]'
+import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAddr]';
 import DeployRegisterForm from './forms/DeployRegisterForm';
+import CreateRecordForm from './forms/CreateRecordForm';
+import UpdateRegisterForm from './forms/UpdateRegisterForm';
+import InvalidateRecordForm from './forms/InvalidateRecordForm';
 
 export default function Header__menu({
   walletConnected,
@@ -54,7 +58,20 @@ export default function Header__menu({
     address: '',
   });
   const [searchAlert, setSearchAlert] = useState(false);
-  const orgAddress = isOrganisationPage ? router.query.id ? typeof router.query.id == "string" ? router.query.id : router.query.id[0] : null : null;
+  const orgAddress = isOrganisationPage
+    ? router.query.id
+      ? typeof router.query.id == 'string'
+        ? router.query.id
+        : router.query.id[0]
+      : null
+    : null;
+  const regAddress = isRegisterPage
+    ? router.query.regAddr
+      ? typeof router.query.regAddr == 'string'
+        ? router.query.regAddr
+        : router.query.regAddr[0]
+      : null
+    : null;
 
   return (
     <div>
@@ -68,163 +85,171 @@ export default function Header__menu({
           position='right'
         >
           <ActionIcon
-              className={styles.search__button}
-              onClick={async () => {
-                let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS);
-                if(orgFactory == null) return;
-                if (await searchForOrganisationOrRegister(
+            className={styles.search__button}
+            onClick={async () => {
+              let orgFactory = await getOrganisationFactoryContract(
+                ORGANISATION_FACTORY_ADDRESS,
+              );
+              if (orgFactory == null) return;
+              if (
+                (await searchForOrganisationOrRegister(
                   contractAddr.address,
                   orgFactory,
-                ) != null) {
+                )) != null
+              ) {
+                router.push('/organisations/' + contractAddr.address);
+              } else {
+                setSearchAlert(true);
+              }
+            }}
+          >
+            <Search />
+          </ActionIcon>
+          <TextInput
+            icon={<Search />}
+            placeholder='Enter Org or Reg address'
+            radius='md'
+            size='md'
+            onChange={(event) =>
+              setContractAddr({ address: event.target.value })
+            }
+            onKeyDown={async (event) => {
+              if (event.key === 'Enter') {
+                let orgFactory = await getOrganisationFactoryContract(
+                  ORGANISATION_FACTORY_ADDRESS,
+                );
+                if (orgFactory == null) return;
+                if (
+                  (await searchForOrganisationOrRegister(
+                    contractAddr.address,
+                    orgFactory,
+                  )) != null
+                ) {
                   router.push('/organisations/' + contractAddr.address);
                 } else {
                   setSearchAlert(true);
                 }
               }
-
-              }>
-              <Search />
-            </ActionIcon>
-            <TextInput
-              icon={<Search />}
-              placeholder='Enter Org or Reg address'
-              radius='md'
-              size='md'
-              onChange={(event) =>
-                setContractAddr({ address: event.target.value })
-              }
-              onKeyDown={async (event) => {
-                if (event.key === 'Enter') {
-                  let orgFactory = await getOrganisationFactoryContract(ORGANISATION_FACTORY_ADDRESS);
-                  if(orgFactory == null) return;
-                  if (await searchForOrganisationOrRegister(
-                    contractAddr.address,
-                    orgFactory,
-                  ) != null) {
-                    router.push('/organisations/' + contractAddr.address);
-                  } else {
-                    setSearchAlert(true);
-                  }
-                }
-              }}
-            />
-            { searchAlert ? <Notification color="red" title="Alert" onClose={() => setSearchAlert(false)}>
-        Address not found
-      </Notification> : null}
-      {isHomePage ? null : null}
-      {isOrganisationsPage ? (
-        <div className={styles.header__mobile_menu}>
-          <Button
-            radius='md'
-            onClick={() => {
-              setOrgModalOpened(true);
             }}
-          >
-            Create Organisation
-          </Button>
-          <Modal
-            opened={orgModalOpened}
-            onClose={() => setOrgModalOpened(false)}
-            title='To create Organisation fill in the forms please.'
-          >
-            <CreateOrganisationForm update={() => setOrgModalOpened(false)}/>
-          </Modal>
-        </div>
-      ) : null}
-      {isOrganisationPage && orgAddress && !isRegisterPage && walletConnected ? (
-        <div className={styles.header__mobile_menu}>
-          <Button
-            radius='md'
-            onClick={() => {
-              setOrgModalOpened(true);
-            }}
-          >
-            Update Organisation
-          </Button>
-          <Modal
-            opened={orgModalOpened}
-            onClose={() => setOrgModalOpened(false)}
-            title='Fill in the forms you want to update.'
-          >
-            <UpdateOrganisationForm orgAddress={orgAddress} update={() => updateOrganisationPage()}/>
-          </Modal>
-          <Button radius='md' onClick={() => setRegModalOpened(true)}>
-            Deploy Register
-          </Button>
-          <Modal
-            opened={regModalOpened}
-            onClose={() => setRegModalOpened(false)}
-            title='To create Register fill in the forms'
-          >
-            <DeployRegisterForm orgAddress={orgAddress} update={() => updateOrganisationPage()}/>
-          </Modal>
-        </div>
-      ) : null}
-      {isRegisterPage && walletConnected ? (
-        <div className={styles.header__mobile_menu}>
-          <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
-            Create Record
-          </Button>
-          <Modal
-            opened={createRecModalOpened}
-            onClose={() => setCreateRecModalOpened(false)}
-            title='To create Record fill in the forms'
-          >
-            <Stack>
-              <TextInput icon={<Hash />} placeholder='Document hash' />
-              <TextInput icon={<FileSymlink />} placeholder='Source Document' />
-              <TextInput
-                icon={<ExternalLink />}
-                placeholder='Reference Document'
-              />
-              <TextInput icon={<FileTime />} placeholder='Starts at' />
-              <TextInput icon={<FileTime />} placeholder='Expires at' />
-              <TextInput icon={<Hash />} placeholder='Past Document Hash' />
-              <Button radius='md' color='red'>
+          />
+          {searchAlert ? (
+            <Notification
+              color='red'
+              title='Alert'
+              onClose={() => setSearchAlert(false)}
+            >
+              Address not found
+            </Notification>
+          ) : null}
+          {isHomePage ? null : null}
+          {isOrganisationsPage && walletConnected ? (
+            <div className={styles.header__mobile_menu}>
+              <Button
+                radius='md'
+                onClick={() => {
+                  setOrgModalOpened(true);
+                }}
+              >
+                Create Organisation
+              </Button>
+              <Modal
+                opened={orgModalOpened}
+                onClose={() => setOrgModalOpened(false)}
+                title='To create Organisation fill in the forms please.'
+              >
+                <CreateOrganisationForm
+                  update={() => setOrgModalOpened(false)}
+                />
+              </Modal>
+            </div>
+          ) : null}
+          {isOrganisationPage &&
+          orgAddress &&
+          !isRegisterPage &&
+          walletConnected ? (
+            <div className={styles.header__mobile_menu}>
+              <Button
+                radius='md'
+                onClick={() => {
+                  setOrgModalOpened(true);
+                }}
+              >
+                Update Organisation
+              </Button>
+              <Modal
+                opened={orgModalOpened}
+                onClose={() => setOrgModalOpened(false)}
+                title='Fill in the forms you want to update.'
+              >
+                <UpdateOrganisationForm
+                  orgAddress={orgAddress}
+                  update={() => updateOrganisationPage()}
+                  updateModal={() => setOrgModalOpened(false)}
+                />
+              </Modal>
+              <Button radius='md' onClick={() => setRegModalOpened(true)}>
+                Deploy Register
+              </Button>
+              <Modal
+                opened={regModalOpened}
+                onClose={() => setRegModalOpened(false)}
+                title='To create Register fill in the forms'
+              >
+                <DeployRegisterForm
+                  orgAddress={orgAddress}
+                  update={() => updateOrganisationPage()}
+                  updateModal={() => setRegModalOpened(false)}
+                />
+              </Modal>
+            </div>
+          ) : null}
+          {isRegisterPage && walletConnected ? (
+            <div className={styles.header__mobile_menu}>
+              <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
                 Create Record
               </Button>
-            </Stack>
-          </Modal>
-          <Button radius='md' onClick={() => setInvaliRecModalOpened(true)}>
-            Invalidate Record
-          </Button>
-          <Modal
-            opened={invaliRecModalOpened}
-            onClose={() => setInvaliRecModalOpened(false)}
-            title='To invalidate Record fill in the forms'
-          >
-            <Stack>
-              <TextInput icon={<Hash />} placeholder='Document hash' />
-              <Button radius='md' color='red'>
+              <Modal
+                size='lg'
+                opened={createRecModalOpened}
+                onClose={() => setCreateRecModalOpened(false)}
+                title='To create Record fill in the forms'
+              >
+                <CreateRecordForm
+                  updateModal={() => setCreateRecModalOpened(false)}
+                  update={() => updateRegisterPage()}
+                  registerAddress={regAddress ?? ''}
+                />
+              </Modal>
+              <Button radius='md' onClick={() => setInvaliRecModalOpened(true)}>
                 Invalidate Record
               </Button>
-            </Stack>
-          </Modal>
-          <Button radius='md' onClick={() => setRegModalOpened(true)}>
-            Update Register
-          </Button>
-          <Modal
-            opened={regModalOpened}
-            onClose={() => setRegModalOpened(false)}
-            title='Fill in the forms you want to update.'
-          >
-            <Stack>
-              <TextInput icon={<TextColor />} placeholder='Register name' />
-              <TextInput
-                icon={<TextCaption />}
-                placeholder='Register description'
-              />
-              <TextInput
-                icon={<BrandMailgun />}
-                placeholder='Register contacts'
-              />
-              <Button radius='md' color='red'>
+              <Modal
+                opened={invaliRecModalOpened}
+                onClose={() => setInvaliRecModalOpened(false)}
+                title='To invalidate Record fill in the forms'
+              >
+                <InvalidateRecordForm
+                  updateModal={() => setInvaliRecModalOpened(false)}
+                  update={() => updateRegisterPage()}
+                  registerAddress={regAddress ?? ''}
+                />
+              </Modal>
+              <Button radius='md' onClick={() => setRegModalOpened(true)}>
                 Update Register
               </Button>
-            </Stack>
-          </Modal>
-        </div>
-      ) : null}
+              <Modal
+                opened={regModalOpened}
+                onClose={() => setRegModalOpened(false)}
+                title='Fill in the forms you want to update.'
+              >
+                <UpdateRegisterForm
+                  update={() => updateRegisterPage()}
+                  regAddress={regAddress ?? ''}
+                  updateModal={() => setRegModalOpened(false)}
+                />
+              </Modal>
+            </div>
+          ) : null}
         </Drawer>
         <Group position='center'>
           <Button onClick={() => setOpened(true)} variant='subtle' compact>

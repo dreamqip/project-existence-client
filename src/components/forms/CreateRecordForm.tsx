@@ -1,32 +1,52 @@
-import { ORGANISATION_FACTORY_ADDRESS } from "@/config";
-import { getOrganisationFactoryContract, getProvider, getRegisterContract, getSigner } from "@/contract_interactions";
-import { serializeMetadata } from "@/utils";
-import { Button, Stack, TextInput, Text, FileInput } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
-import { showNotification, updateNotification } from "@mantine/notifications";
-import { useState } from "react";
-import { Hash, FileSymlink, ExternalLink, FileTime, Check, FileUpload, X } from "tabler-icons-react";
+import { NULL_HASH, ORGANISATION_FACTORY_ADDRESS } from '@/config';
+import {
+  getOrganisationFactoryContract,
+  getProvider,
+  getRegisterContract,
+  getSigner,
+} from '@/contract_interactions';
+import { serializeMetadata } from '@/utils';
+import { Button, Stack, TextInput, Text, FileInput } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
+import { showNotification, updateNotification } from '@mantine/notifications';
+import { useState } from 'react';
+import {
+  Hash,
+  FileSymlink,
+  ExternalLink,
+  FileTime,
+  Check,
+  FileUpload,
+  X,
+} from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import styles from '@/styles/Register.module.scss';
 import { sha256 } from 'crypto-hash';
 
-export default function CreateRecordForm(props: { updateModal: () => any, update: () => any, registerAddress: string }) {
+export default function CreateRecordForm(props: {
+  updateModal: () => any;
+  update: () => any;
+  registerAddress: string;
+}) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
-  const [buttonContent, setButtonContent] = useState([<>Create Record</>, true] as [JSX.Element, boolean]);
+  const [buttonContent, setButtonContent] = useState([
+    <>Create Record</>,
+    true,
+  ] as [JSX.Element, boolean]);
   const [formInput, setFormInput] = useState({
     documentHash: '',
     sourceDocument: '',
     referenceDocument: '',
     startsAt: 0,
     expiresAt: 0,
-    pastDocumentHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+    pastDocumentHash:
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
   });
   const [docHash, setDocHash] = useState('');
   const [pastDocHash, setPastDocHash] = useState('');
   const [docExists, setDocExists] = useState(false);
   const [pastDocExists, setPastDocExists] = useState(false);
-
 
   function handleDrop(file: File, past: boolean) {
     const reader = new FileReader();
@@ -38,13 +58,12 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
       if (past) {
         setPastDocExists(true);
         setPastDocHash(hash);
-        setFormInput({ ...formInput, pastDocumentHash: hash })
+        setFormInput({ ...formInput, pastDocumentHash: hash });
       } else {
         setDocExists(true);
         setDocHash(hash);
-        setFormInput({ ...formInput, documentHash: hash })
+        setFormInput({ ...formInput, documentHash: hash });
       }
-
     };
 
     reader.readAsArrayBuffer(file);
@@ -65,32 +84,57 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
         icon={<Hash />}
         placeholder='Document hash'
         label='Document hash'
-        value={docExists ? docHash : undefined}
-        onChange={(event) => setFormInput({ ...formInput, documentHash: event.currentTarget.value })}
+        value={docExists ? docHash : ''}
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            documentHash: event.currentTarget.value,
+          })
+        }
       />
       <TextInput
         icon={<FileSymlink />}
         placeholder='Source Document Link'
         label='Source Document Link'
-        onChange={(event) => setFormInput({ ...formInput, sourceDocument: event.currentTarget.value })}
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            sourceDocument: event.currentTarget.value,
+          })
+        }
       />
       <TextInput
         icon={<ExternalLink />}
         placeholder='Reference Document Link'
         label='Reference Document Link'
-        onChange={(event) => setFormInput({ ...formInput, referenceDocument: event.currentTarget.value })}
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            referenceDocument: event.currentTarget.value,
+          })
+        }
       />
       <div className={styles.dates}>
         <div className={styles.date}>
           <Text>Starts at</Text>
           <DatePicker
-            onChange={(value) => setFormInput({ ...formInput, startsAt: (() => value?.getTime() ?? 0)() })}
+            onChange={(value) =>
+              setFormInput({
+                ...formInput,
+                startsAt: (() => value?.getTime() ?? 0)(),
+              })
+            }
           />
         </div>
         <div className={styles.date}>
           <Text>Expires at</Text>
           <DatePicker
-            onChange={(value) => setFormInput({ ...formInput, expiresAt: (() => value?.getTime() ?? 0)() })}
+            onChange={(value) =>
+              setFormInput({
+                ...formInput,
+                expiresAt: (() => value?.getTime() ?? 0)(),
+              })
+            }
           />
         </div>
       </div>
@@ -104,13 +148,16 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
       />
       <TextInput
         icon={<Hash />}
-        //{pastDocExists ? value = }
-        // defaultValue={pastDocExists ? undefined : "0x0000000000000000000000000000000000000000000000000000000000000000"}
-        // value={pastDocExists ? pastDocHash : undefined}
-        value={pastDocExists ? pastDocHash : "0x0000000000000000000000000000000000000000000000000000000000000000"}
+        value={pastDocExists ? pastDocHash : ''}
+        defaultValue={pastDocExists ? '' : NULL_HASH}
         placeholder='Past Document Hash'
         label='Past Document Hash'
-        onChange={(event) => setFormInput({ ...formInput, pastDocumentHash: event.currentTarget.value })}
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            pastDocumentHash: event.currentTarget.value,
+          })
+        }
       />
       <Button
         radius='md'
@@ -129,8 +176,7 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
             id: 'load-data',
             loading: true,
             title: 'Creating record...',
-            message:
-              'You cannot close this notification yet',
+            message: 'You cannot close this notification yet',
             autoClose: false,
             withCloseButton: false,
           });
@@ -139,20 +185,16 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
           if (signer == null) {
             showNotification({
               title: 'Error',
-              message:
-                'Please connect your wallet!',
+              message: 'Please connect your wallet!',
             });
             return;
           }
 
-          let reg = await getRegisterContract(
-            props.registerAddress,
-          );
+          let reg = await getRegisterContract(props.registerAddress);
           if (reg == null) {
             showNotification({
               title: 'Error',
-              message:
-                'An error occured.',
+              message: 'An error occured.',
             });
             return;
           }
@@ -164,8 +206,8 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
               formInput.referenceDocument,
               BigInt(formInput.startsAt),
               BigInt(formInput.expiresAt),
-              formInput.pastDocumentHash
-            )
+              formInput.pastDocumentHash,
+            );
             if (tx.hash == null) return;
 
             await getProvider()?.waitForTransaction(tx.hash);
@@ -190,10 +232,9 @@ export default function CreateRecordForm(props: { updateModal: () => any, update
             });
           }
         }}
-
       >
         {buttonContent[0]}
       </Button>
     </Stack>
-  )
+  );
 }
