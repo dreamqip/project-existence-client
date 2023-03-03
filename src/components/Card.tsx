@@ -30,7 +30,11 @@ export default function MyCard(props: {
   return (
     <Card shadow='sm' p='lg' radius='md' withBorder>
       <Card.Section>
-        <Image src={banner} height={160} alt='Card' />
+        {banner ? (
+          <Image src={banner} height={160} alt='Card' />
+        ) : (
+          <Image src={randomImage} height={160} alt='Card' />
+        )}
       </Card.Section>
       <Group position='apart' mt='md' mb='xs'>
         <Text fz='xl' weight={600}>
