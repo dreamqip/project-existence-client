@@ -209,6 +209,17 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   autoClose: 2000,
                 });
                 break;
+              case 'CALL_EXCEPTION':
+                updateNotification({
+                  id: 'load-data',
+                  color: 'red',
+                  title: 'Transaction rejected: '+error.reason,
+                  message:
+                    'Notification will close in 2 seconds, you can close this notification now',
+                  icon: <X />,
+                  autoClose: 2000,
+                });
+                break;
               default:
                 updateNotification({
                   id: 'load-data',

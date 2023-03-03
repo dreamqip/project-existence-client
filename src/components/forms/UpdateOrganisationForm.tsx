@@ -209,16 +209,42 @@ export default function UpdateOrganisationForm(props: {
               autoClose: 2000,
             });
             if (props.update) props.update();
-          } catch {
-            updateNotification({
-              id: 'load-data',
-              color: 'red',
-              title: 'Transaction rejected.',
-              message:
-                'Notification will close in 2 seconds, you can close this notification now',
-              icon: <X />,
-              autoClose: 2000,
-            });
+          } catch (error: any) {
+            switch (error.code as string) {
+              case 'ACTION_REJECTED':
+                updateNotification({
+                  id: 'load-data',
+                  color: 'red',
+                  title: 'Transaction rejected by user.',
+                  message:
+                    'Notification will close in 2 seconds, you can close this notification now',
+                  icon: <X />,
+                  autoClose: 2000,
+                });
+                break;
+              case 'CALL_EXCEPTION':
+                updateNotification({
+                  id: 'load-data',
+                  color: 'red',
+                  title: 'Transaction rejected: '+error.reason,
+                  message:
+                    'Notification will close in 2 seconds, you can close this notification now',
+                  icon: <X />,
+                  autoClose: 2000,
+                });
+                break;
+              default:
+                updateNotification({
+                  id: 'load-data',
+                  color: 'red',
+                  title: 'Transaction error.',
+                  message:
+                    'Notification will close in 2 seconds, you can close this notification now',
+                  icon: <X />,
+                  autoClose: 2000,
+                });
+                break;
+            }
           }
         }}
       >
