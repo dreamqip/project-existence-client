@@ -35,6 +35,7 @@ const REGISTER_ABI = [
   'function organisation() public view returns (address)',
   'function metadata() public view returns (string)',
   'function records(bytes32 id) public view returns (bytes32,address,address,string,string,uint256,uint256,uint256,uint256,bytes32,bytes32)',
+  'function hasRole(bytes32 role, address account) public view returns (bool)',
 ];
 
 // For values that have a simple meaning in JavaScript, the types are fairly straightforward; strings and booleans are returned as JavaScript strings and booleans.
@@ -81,6 +82,7 @@ type RegisterContract = ethers.Contract & {
   organisation: () => Promise<AddressLike>;
   metadata: () => Promise<string>;
   records: (documentHash: DataHexString) => Promise<[DataHexString, AddressLike, AddressLike, string, string, BigInt, BigInt, BigInt, BigInt, DataHexString, DataHexString]>;
+  hasRole: (role: DataHexString, account: AddressLike) => Promise<boolean>;
 };
 export type Record = {
   documentHash: DataHexString;
@@ -104,6 +106,11 @@ export type {
   OrganisationContract,
   RegisterContract,
 };
+
+export const RECORD_CREATOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("RECORD_CREATOR"));
+export const RECORD_INVALIDATOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("RECORD_INVALIDATOR"));
+export const REGISTER_EDITOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("REGISTER_EDITOR"));
+console.log(RECORD_CREATOR_ROLE)
 
 let networkId = 0xfa;
 if (NETWORK === 'testnet') networkId = 0xfa2;
