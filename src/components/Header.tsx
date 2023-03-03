@@ -82,7 +82,7 @@ export default function Header() {
                   contractAddr.address,
                   orgFactory,
                 )
-                if(searchResult == null){
+                if (searchResult == null) {
                   showNotification({
                     title: 'Error',
                     color: 'red',
@@ -116,7 +116,7 @@ export default function Header() {
                     contractAddr.address,
                     orgFactory,
                   )
-                  if(searchResult == null){
+                  if (searchResult == null) {
                     showNotification({
                       title: 'Error',
                       color: 'red',
@@ -132,7 +132,7 @@ export default function Header() {
                   } else {
                     router.push('/organisations/' + (await searchResult[0].getAddress()) + "/" + contractAddr.address);
                   }
-                  }
+                }
               }}
             />
           </div>
