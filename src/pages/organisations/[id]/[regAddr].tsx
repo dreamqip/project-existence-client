@@ -33,7 +33,7 @@ import {
   type Record,
 } from '@/contract_interactions';
 import { parseMetadata, waitFor } from '@/utils';
-import { NULL_HASH } from '@/config';
+import { NULL_ADDR, NULL_HASH } from '@/config';
 
 export let update = () => {};
 
@@ -413,7 +413,7 @@ export default function Register() {
                               </CopyButton>
                               Creator:
                             </Text>
-                            {searchResult.creator.toString() != NULL_HASH
+                            {searchResult.creator.toString() != NULL_ADDR
                               ? searchResult.creator.toString()
                               : '-'}
                           </List.Item>
@@ -441,7 +441,7 @@ export default function Register() {
                               </CopyButton>
                               Updater:
                             </Text>
-                            {searchResult.updater.toString() != NULL_HASH
+                            {searchResult.updater.toString() != NULL_ADDR
                               ? searchResult.updater.toString()
                               : '-'}
                           </List.Item>
