@@ -5,7 +5,6 @@ import styles from '@/styles/Header.module.scss';
 import {
   getOrganisationFactoryContract,
   searchForOrganisationOrRegister,
-  getSigner,
   OrganisationFactoryContract,
 } from '@/contract_interactions';
 import {
@@ -38,8 +37,16 @@ import DeployRegisterForm from './forms/DeployRegisterForm';
 import CreateRecordForm from './forms/CreateRecordForm';
 import UpdateRegisterForm from './forms/UpdateRegisterForm';
 import InvalidateRecordForm from './forms/InvalidateRecordForm';
+import {
+  getOrganisationContract,
+  getRegisterContract,
+  getSigner,
+  RECORD_CREATOR_ROLE,
+  RECORD_INVALIDATOR_ROLE,
+  REGISTER_EDITOR_ROLE,
+} from '@/contract_interactions';
 
-export default function Header__menu({
+export default function HeaderMenu({
   walletConnected,
 }: {
   walletConnected: boolean;
@@ -54,6 +61,7 @@ export default function Header__menu({
   const [regModalOpened, setRegModalOpened] = useState(false);
   const [createRecModalOpened, setCreateRecModalOpened] = useState(false);
   const [invaliRecModalOpened, setInvaliRecModalOpened] = useState(false);
+
   const [orgFactory, setOrgFactory] = useState<
     OrganisationFactoryContract | undefined
   >(undefined);
@@ -76,29 +84,83 @@ export default function Header__menu({
       : null
     : null;
 
+  const [isOrgOwner, setIsOrgOwner] = useState(false);
+  const [regPermissions, setRegPermissions] = useState({
+    recordCreator: false,
+    recordInvalidator: false,
+    registerEditor: false,
+  });
+
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async () => {
-      if (isMounted) {
-        let signer = getSigner();
-        if (signer == null) return;
-
-        let factory = await getOrganisationFactoryContract(
-          ORGANISATION_FACTORY_ADDRESS,
-        );
-        if (factory != null) {
-          setOrgFactory(factory);
-        }
+    if (!walletConnected) setIsOrgOwner(false);
+    if (!orgAddress) {
+      setIsOrgOwner(false);
+      return;
+    }
+    (async () => {
+      let signer = await getSigner();
+      if (!signer) {
+        setIsOrgOwner(false);
+        return;
       }
-    };
-
-    fetchData();
-
+      let address = await signer.getAddress();
+      let org = await getOrganisationContract(orgAddress);
+      if (!org) {
+        setIsOrgOwner(false);
+        return;
+      }
+      setIsOrgOwner((await org.owner()).toString() == address);
+    })();
     return () => {
-      isMounted = false;
+      // unmount
     };
-  }, []);
+  }, [walletConnected, orgAddress]);
+
+  useEffect(() => {
+    if (!walletConnected)
+      setRegPermissions({
+        recordCreator: false,
+        recordInvalidator: false,
+        registerEditor: false,
+      });
+    if (!regAddress) {
+      setRegPermissions({
+        recordCreator: false,
+        recordInvalidator: false,
+        registerEditor: false,
+      });
+      return;
+    }
+    (async () => {
+      let signer = await getSigner();
+      if (!signer) {
+        setRegPermissions({
+          recordCreator: false,
+          recordInvalidator: false,
+          registerEditor: false,
+        });
+        return;
+      }
+      let address = await signer.getAddress();
+      let reg = await getRegisterContract(regAddress);
+      if (!reg) {
+        setRegPermissions({
+          recordCreator: false,
+          recordInvalidator: false,
+          registerEditor: false,
+        });
+        return;
+      }
+      setRegPermissions({
+        recordCreator: await reg.hasRole(RECORD_CREATOR_ROLE, address),
+        recordInvalidator: await reg.hasRole(RECORD_INVALIDATOR_ROLE, address),
+        registerEditor: await reg.hasRole(REGISTER_EDITOR_ROLE, address),
+      });
+    })();
+    return () => {
+      // unmount
+    };
+  }, [walletConnected, regAddress]);
 
   return (
     <div>
@@ -192,6 +254,7 @@ export default function Header__menu({
                 onClick={() => {
                   setOrgModalOpened(true);
                 }}
+                disabled={!isOrgOwner}
               >
                 Update Organisation
               </Button>
@@ -206,7 +269,11 @@ export default function Header__menu({
                   updateModal={() => setOrgModalOpened(false)}
                 />
               </Modal>
-              <Button radius='md' onClick={() => setRegModalOpened(true)}>
+              <Button
+                radius='md'
+                onClick={() => setRegModalOpened(true)}
+                disabled={!isOrgOwner}
+              >
                 Deploy Register
               </Button>
               <Modal
@@ -224,7 +291,11 @@ export default function Header__menu({
           ) : null}
           {isRegisterPage && walletConnected ? (
             <div className={styles.header__mobile_menu}>
-              <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
+              <Button
+                radius='md'
+                onClick={() => setCreateRecModalOpened(true)}
+                disabled={!regPermissions.recordCreator}
+              >
                 Create Record
               </Button>
               <Modal
@@ -239,7 +310,11 @@ export default function Header__menu({
                   registerAddress={regAddress ?? ''}
                 />
               </Modal>
-              <Button radius='md' onClick={() => setInvaliRecModalOpened(true)}>
+              <Button
+                radius='md'
+                onClick={() => setInvaliRecModalOpened(true)}
+                disabled={!regPermissions.recordInvalidator}
+              >
                 Invalidate Record
               </Button>
               <Modal
@@ -253,7 +328,11 @@ export default function Header__menu({
                   registerAddress={regAddress ?? ''}
                 />
               </Modal>
-              <Button radius='md' onClick={() => setRegModalOpened(true)}>
+              <Button
+                radius='md'
+                onClick={() => setRegModalOpened(true)}
+                disabled={!regPermissions.registerEditor}
+              >
                 Update Register
               </Button>
               <Modal
