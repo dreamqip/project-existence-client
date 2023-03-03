@@ -80,12 +80,16 @@ export default function MyCard(props: {
             Link: {link.toString()}
           </Link>
         ) : null}
-        <Text size='sm' color='dimmed'>
-          Phone: {phone}
-        </Text>
-        <Text size='sm' color='dimmed'>
-          Email: {email}
-        </Text>
+        {phone ? (
+          <Text size='sm' color='dimmed'>
+            Phone: {phone}
+          </Text>
+        ) : null}
+        {email ? (
+          <Text size='sm' color='dimmed'>
+            Email: {email}
+          </Text>
+        ) : null}
       </div>
 
       {way != undefined ? (
