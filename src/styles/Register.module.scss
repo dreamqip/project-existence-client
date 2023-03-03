@@ -23,14 +23,10 @@
     &__breadcrumbs{
         display: flex;
         flex-wrap: wrap;
-        overflow: hidden !important;
-        a{
-            overflow: hidden !important;
-        }
         @media (max-width: 425px) {
             flex-direction: column;
             align-items: flex-start;
-        }
+        }   
     }
 }
 
@@ -125,3 +121,10 @@
     }
   }
 
+  .bread_link{
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    @media (max-width: 768px){
+        max-width: 100%;
+    }
+}

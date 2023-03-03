@@ -27,9 +27,6 @@
     &__breadcrumbs{
         display: flex;
         flex-wrap: wrap;
-        a{
-            overflow: hidden;
-        }
     }
 }
 
@@ -62,3 +59,10 @@
     }
 }
 
+.bread_link{
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    @media (max-width: 768px){
+        max-width: 100%;
+    }
+}

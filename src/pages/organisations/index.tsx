@@ -15,7 +15,7 @@ const items = [
   { title: 'Home', href: '/' },
   { title: 'Organisations', href: '/organisations' },
 ].map((item, index) => (
-  <Link href={item.href} key={index}>
+  <Link href={item.href} key={index} className={styles.bread_link}>
     {item.title}
   </Link>
 ));

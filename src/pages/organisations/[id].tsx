@@ -9,16 +9,22 @@ import {
   CopyButton,
   Button,
   Title,
-  Notification
+  Notification,
 } from '@mantine/core';
 import { Copy } from 'tabler-icons-react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { getOrganisationContract, getRegisterContract, getSigner, RegisterContract, registersOfOrganisation } from '@/contract_interactions';
+import {
+  getOrganisationContract,
+  getRegisterContract,
+  getSigner,
+  RegisterContract,
+  registersOfOrganisation,
+} from '@/contract_interactions';
 import { FEATURED_ORGANISATIONS } from '@/config';
 import { parseMetadata, waitFor } from '@/utils';
 
-export let update = () => { };
+export let update = () => {};
 
 export default function Organisation() {
   const router = useRouter();
@@ -28,7 +34,7 @@ export default function Organisation() {
     { title: 'Organisations', href: '/organisations' },
     { title: id, href: `/organisations/` + id },
   ].map((item, index) => (
-    <Link href={item.href} key={index}>
+    <Link href={item.href} key={index} className={styles.bread_link}>
       {item.title}
     </Link>
   ));
@@ -82,59 +88,89 @@ export default function Organisation() {
     </tr>
   ));
 
-  const [orgCard, setOrgCard] = useState(<><Notification
-    withCloseButton={false}
-    color='blue'
-    title='Please connect your wallet'
-  ></Notification></>);
-  const [regCards, setRegCards] = useState([<React.Fragment key='1'><Notification
-    withCloseButton={false}
-    color='blue'
-    title='Please connect your wallet'
-  ></Notification></React.Fragment>] as JSX.Element[]);
+  const [orgCard, setOrgCard] = useState(
+    <>
+      <Notification
+        withCloseButton={false}
+        color='blue'
+        title='Please connect your wallet'
+      ></Notification>
+    </>,
+  );
+  const [regCards, setRegCards] = useState([
+    <React.Fragment key='1'>
+      <Notification
+        withCloseButton={false}
+        color='blue'
+        title='Please connect your wallet'
+      ></Notification>
+    </React.Fragment>,
+  ] as JSX.Element[]);
 
   const fetchData = async () => {
-    setOrgCard(<><Notification
-      withCloseButton={false}
-      color="yellow"
-      title='Loading...'
-    ></Notification></>);
-    setRegCards([<React.Fragment key='1'><Notification
-      withCloseButton={false}
-      color="yellow"
-      title='Loading...'
-    ></Notification></React.Fragment>]);
+    setOrgCard(
+      <>
+        <Notification
+          withCloseButton={false}
+          color='yellow'
+          title='Loading...'
+        ></Notification>
+      </>,
+    );
+    setRegCards([
+      <React.Fragment key='1'>
+        <Notification
+          withCloseButton={false}
+          color='yellow'
+          title='Loading...'
+        ></Notification>
+      </React.Fragment>,
+    ]);
 
     let orgAddress: string;
     if (id == undefined) return;
-    if (typeof id == "string") orgAddress = id;
+    if (typeof id == 'string') orgAddress = id;
     else orgAddress = id[0];
 
     let org = await getOrganisationContract(orgAddress, true);
     if (org == null) {
-      setOrgCard(<><Notification
-        withCloseButton={false}
-        color="red"
-        title='Error'
-      ></Notification></>)
-      setRegCards([<React.Fragment key='1'><Notification
-        withCloseButton={false}
-        color="red"
-        title='Error'
-      ></Notification></React.Fragment>]);
+      setOrgCard(
+        <>
+          <Notification
+            withCloseButton={false}
+            color='red'
+            title='Error'
+          ></Notification>
+        </>,
+      );
+      setRegCards([
+        <React.Fragment key='1'>
+          <Notification
+            withCloseButton={false}
+            color='red'
+            title='Error'
+          ></Notification>
+        </React.Fragment>,
+      ]);
       return;
     }
 
     let metadata = parseMetadata(await org.metadata());
 
-    setOrgCard(<OrganisationCard
-      title={metadata.name ?? "name"}
-      description={metadata.description ?? "description"}
-      link={metadata.contacts?.link ?? ''}
-      phone={metadata.contacts?.phone ?? ''}
-      email={metadata.contacts?.email ?? ''}
-      badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
-    />);
+    setOrgCard(
+      <OrganisationCard
+        title={metadata.name ?? 'name'}
+        description={metadata.description ?? 'description'}
+        link={metadata.contacts?.link ?? ''}
+        phone={metadata.contacts?.phone ?? ''}
+        email={metadata.contacts?.email ?? ''}
+        badge={
+          FEATURED_ORGANISATIONS.includes(await org.getAddress())
+            ? 'Featured'
+            : undefined
+        }
+      />,
+    );
 
     let regs: RegisterContract[] = [];
     for await (const i of registersOfOrganisation(org)) {
@@ -142,19 +178,28 @@ export default function Organisation() {
       if (reg != null) regs.push(reg);
     }
 
-    let regCards = await Promise.all(regs.map(async (reg: RegisterContract, index) => {
-      let metadata = parseMetadata(await reg.metadata());
+    let regCards = await Promise.all(
+      regs.map(async (reg: RegisterContract, index) => {
+        let metadata = parseMetadata(await reg.metadata());
 
-      return <RegisterCard
-        title={metadata.name ?? "name"}
-        key={index}
-        description={metadata.description ?? "description"}
-        link={metadata.contacts?.link ?? ''}
-        phone={metadata.contacts?.phone ?? ''}
-        email={metadata.contacts?.email ?? ''}
-        way={'/organisations/' + (await org?.getAddress() ?? "error") + "/" + await reg.getAddress()}
-      />
-    }));
+        return (
+          <RegisterCard
+            title={metadata.name ?? 'name'}
+            key={index}
+            description={metadata.description ?? 'description'}
+            link={metadata.contacts?.link ?? ''}
+            phone={metadata.contacts?.phone ?? ''}
+            email={metadata.contacts?.email ?? ''}
+            way={
+              '/organisations/' +
+              ((await org?.getAddress()) ?? 'error') +
+              '/' +
+              (await reg.getAddress())
+            }
+          />
+        );
+      }),
+    );
 
     setRegCards(regCards);
   };
@@ -170,16 +215,13 @@ export default function Organisation() {
     };
   }, [router]);
 
-
   return (
     <div className={styles.organisation__container}>
       <Breadcrumbs className={styles.organisation__breadcrumbs}>
         {breadCrumbItems}
       </Breadcrumbs>
       <div className={styles.organisation__body}>
-        <div className={styles.organisation__card}>
-          {orgCard}
-        </div>
+        <div className={styles.organisation__card}>{orgCard}</div>
 
         <div className={styles.organisation__registers}>
           <Title order={2} className={styles.registers__title}>
@@ -193,9 +235,7 @@ export default function Organisation() {
               </Tabs.List>
 
               <Tabs.Panel value='items' pt='xs'>
-                <div className={styles.registers__list}>
-                  {regCards}
-                </div>
+                <div className={styles.registers__list}>{regCards}</div>
               </Tabs.Panel>
 
               {/* <Tabs.Panel value='activity' pt='xs'>

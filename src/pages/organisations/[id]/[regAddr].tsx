@@ -86,7 +86,7 @@ export default function Register() {
     { title: id, href: `/organisations/` + id },
     { title: regAddr, href: `/organisations/` + id + `/` + regAddr },
   ].map((item, index) => (
-    <Link href={item.href} key={index}>
+    <Link href={item.href} key={index} className={styles.bread_link}>
       {item.title}
     </Link>
   ));
