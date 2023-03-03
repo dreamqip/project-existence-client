@@ -54,9 +54,11 @@ export default function CreateRecordForm(props: {
   const [pastDocHash, setPastDocHash] = useState(NULL_HASH);
   const [docExists, setDocExists] = useState(false);
   const [pastDocExists, setPastDocExists] = useState(false);
-  console.log(formInput);
 
-  const [checked, setChecked] = useState(false);
+  const [checkedPast, setCheckedPast] = useState(false);
+  const [checkedDates, setCheckedDates] = useState(false);
+  const [checkedSource, setCheckedSource] = useState(false);
+  const [checkedReference, setCheckedReference] = useState(false);
 
   function handleDrop(file: File, past: boolean) {
     const reader = new FileReader();
@@ -103,11 +105,16 @@ export default function CreateRecordForm(props: {
           })
         }
       />
+      <Switch
+        label='Do you want to include link source document'
+        checked={checkedSource}
+        onChange={(event) => setCheckedSource(event.currentTarget.checked)}
+      />
       <TextInput
-        withAsterisk
         icon={<FileSymlink />}
         placeholder='Source Document Link'
         label='Source Document Link'
+        className={`${checkedSource ? '' : styles.hide}`}
         onChange={(event) =>
           setFormInput({
             ...formInput,
@@ -115,11 +122,17 @@ export default function CreateRecordForm(props: {
           })
         }
       />
+      <Switch
+        label='Do you want to include reference to the document?'
+        checked={checkedReference}
+        onChange={(event) => setCheckedReference(event.currentTarget.checked)}
+      />
       <TextInput
-        withAsterisk
+        className={`${checkedReference ? '' : styles.hide}`}
         icon={<ExternalLink />}
         placeholder='Reference Document Link'
         label='Reference Document Link'
+        disabled={!checkedReference}
         onChange={(event) =>
           setFormInput({
             ...formInput,
@@ -127,7 +140,12 @@ export default function CreateRecordForm(props: {
           })
         }
       />
-      <div className={styles.dates}>
+      <Switch
+        label='Do you want to include starts at and expires at?'
+        checked={checkedDates}
+        onChange={(event) => setCheckedDates(event.currentTarget.checked)}
+      />
+      <div className={`${styles.dates} ${checkedDates ? '' : styles.hide}`}>
         <div className={styles.date}>
           <Text>Starts at</Text>
           <DatePicker
@@ -152,15 +170,15 @@ export default function CreateRecordForm(props: {
         </div>
       </div>
       <Switch
-        label='Previous record'
-        checked={checked}
-        onChange={(event) => setChecked(event.currentTarget.checked)}
+        label='Does the past record exist?'
+        checked={checkedPast}
+        onChange={(event) => setCheckedPast(event.currentTarget.checked)}
       />
       <FileInput
         label='Upload Document'
         placeholder='Upload Document'
         icon={<FileUpload />}
-        disabled={!checked}
+        className={`${checkedPast ? '' : styles.hide}`}
         onChange={(file) => {
           file ? handleDrop(file, true) : console.log('no file');
         }}
@@ -170,7 +188,8 @@ export default function CreateRecordForm(props: {
         defaultValue={pastDocExists ? pastDocHash : ''}
         placeholder='Past Document Hash'
         label='Past Document Hash'
-        disabled={!checked || pastDocExists}
+        disabled={pastDocExists}
+        className={`${checkedPast ? '' : styles.hide}`}
         onChange={(event) => {
           setFormInput({
             ...formInput,
@@ -183,10 +202,11 @@ export default function CreateRecordForm(props: {
         color='red'
         disabled={
           formInput.documentHash == '' ||
-          formInput.referenceDocument == '' ||
-          formInput.sourceDocument == '' ||
-          formInput.startsAt == 0 ||
-          formInput.expiresAt == 0
+          (checkedReference && formInput.referenceDocument == '') ||
+          (checkedSource && formInput.sourceDocument == '') ||
+          (checkedDates && formInput.startsAt == 0) ||
+          (checkedDates && formInput.expiresAt == 0) ||
+          (checkedPast && formInput.pastDocumentHash == NULL_HASH)
         }
         onClick={async (e) => {
           props.updateModal();
