@@ -13,6 +13,8 @@ import {
   BrandMailgun,
   Check,
   X,
+  ExternalLink,
+  Phone,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { parseMetadata, waitFor, type Metadata } from '@/utils';
@@ -22,16 +24,23 @@ export default function UpdateOrganisationForm(props: {
   update?: () => any;
   updateModal: () => any;
 }) {
+  const [orgMetadata, setOrgMetadata] = useState({} as Metadata);
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
-    contacts: '',
+    contacts: {
+      link: '',
+      phone: '',
+      email: '',
+    },
   });
+
+  console.log(formInput);
   const [buttonContent, setButtonContent] = useState([
     <>Update Organisation</>,
     true,
   ] as [JSX.Element, boolean]);
-  const [orgMetadata, setOrgMetadata] = useState({} as Metadata);
+  
 
   const fetchData = async () => {
     let org = await getOrganisationContract(props.orgAddress);
@@ -51,13 +60,27 @@ export default function UpdateOrganisationForm(props: {
     };
   }, []);
 
+  useEffect(() => {
+    if (orgMetadata.name && orgMetadata.description && orgMetadata.contacts) {
+      setFormInput({
+        name: orgMetadata.name,
+        description: orgMetadata.description,
+        contacts: {
+          link: orgMetadata.contacts.link || '',
+          phone: orgMetadata.contacts.phone || '',
+          email: orgMetadata.contacts.email || '',
+        },
+      });
+    }
+  }, [orgMetadata]);
+
   return (
     <Stack>
       <TextInput
         icon={<TextColor />}
-        defaultValue={orgMetadata.name ?? ''}
         placeholder='Organisation name'
         label='Organisation name'
+        defaultValue={orgMetadata.name ?? ''}
         onChange={(event) =>
           setFormInput({
             ...formInput,
@@ -77,25 +100,63 @@ export default function UpdateOrganisationForm(props: {
           })
         }
       />
-      <TextInput
-        icon={<BrandMailgun />}
-        defaultValue={orgMetadata.contacts ?? ''}
-        placeholder='Organisation contacts'
-        label='Organisation contacts'
-        onChange={(event) =>
-          setFormInput({
-            ...formInput,
-            contacts: event.currentTarget.value,
-          })
-        }
-      />
+      <div>
+        Contacts
+        <TextInput
+          icon={<ExternalLink />}
+          placeholder='Link'
+          label='Link'
+          defaultValue={orgMetadata.contacts?.link ?? ''}
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                link: event.currentTarget.value,
+              },
+            })
+          }
+        />
+        <TextInput sx={{marginTop: "5px"}}
+          icon={<Phone />}
+          placeholder='Phone'
+          label='Phone'
+          defaultValue={orgMetadata.contacts?.phone ?? ''}
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                phone: event.currentTarget.value,
+              },
+            })
+          }
+        />
+        <TextInput sx={{marginTop: "5px"}}
+          icon={<BrandMailgun />}
+          defaultValue={orgMetadata.contacts?.email ?? ''}
+          placeholder='Email'
+          label='Email'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                email: event.currentTarget.value,
+              },
+            })
+          }
+        />
+      </div>
       <Button
         radius='md'
         color='red'
         disabled={
           formInput.name == '' ||
           formInput.description == '' ||
-          formInput.contacts == ''
+          (formInput.contacts.link == '' &&
+            formInput.contacts.phone == '' &&
+            formInput.contacts.email == '')
         }
         onClick={async (e) => {
           props.updateModal();

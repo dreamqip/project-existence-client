@@ -22,6 +22,7 @@ const ORGANISATION_ABI = [
   'event OrganisationMetadataUpdated (address organisation, string metadata)',
   'function registers(uint256 id) public view returns (address)',
   'function metadata() public view returns (string)',
+  'function owner() public view returns (address)',
 ];
 const REGISTER_ABI = [
   'function createRecord(bytes32 _documentHash, string _sourceDocument, string _referenceDocument, uint256 _startsAt, uint256 _expiresAt, bytes32 _pastDocumentHash) public',
@@ -64,6 +65,7 @@ type OrganisationContract = ethers.Contract & {
   deployRegister: (metadata: string) => Promise<Transaction>;
   registers: (id: number) => Promise<AddressLike>;
   metadata: () => Promise<string>;
+  owner: () => Promise<AddressLike>;
 };
 type RegisterContract = ethers.Contract & {
   createRecord: (
@@ -107,18 +109,19 @@ let networkId = 0xfa;
 if (NETWORK === 'testnet') networkId = 0xfa2;
 if (NETWORK === 'fakenet') networkId = 0xfa3;
 
-let readOnlyProvider: ethers.JsonRpcProvider;
+let rpcLink: string;
 switch (NETWORK) {
   case 'mainnet':
-    readOnlyProvider = new ethers.JsonRpcProvider("https://rpc.ankr.com/fantom", networkId)
+    rpcLink = "https://rpc.ankr.com/fantom";
     break;
   case 'testnet':
-    readOnlyProvider = new ethers.JsonRpcProvider("https://rpc.ankr.com/fantom_testnet", networkId)
+    rpcLink = "https://rpc.ankr.com/fantom_testnet";
     break;
   case 'fakenet':
-    readOnlyProvider = new ethers.JsonRpcProvider("http://localhost:18545", networkId)
+    rpcLink = "http://localhost:18545";
     break;
 }
+let readOnlyProvider = new ethers.JsonRpcProvider(rpcLink, networkId);
 
 let provider: ethers.BrowserProvider | null = null; // null if updateProvider was not called or updateProvider didn't found the provider
 let signer: ethers.Signer | null = null;
@@ -129,14 +132,50 @@ export async function updateProvider() {
       rawProvider == null
         ? null
         : new ethers.BrowserProvider(rawProvider as any, networkId);
-    if (provider == null) return null;
+    if (provider == null) return;
+
+    try {
+      await provider.send('wallet_switchEthereumChain', [{ chainId: "0x" + networkId.toString(16) }]);
+    } catch (switchError: any) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          await provider.send(
+            "wallet_addEthereumChain",
+            [{
+              chainId: "0x" + networkId.toString(16),
+              rpcUrls: [rpcLink],
+              chainName: "Fantom " + NETWORK,
+              nativeCurrency: {
+                name: "FTM",
+                symbol: "FTM",
+                decimals: 18
+              },
+              blockExplorerUrls: []
+            }]
+          );
+          await provider.send('wallet_switchEthereumChain', [{ chainId: "0x" + networkId.toString(16) }]);
+        } catch (addError) {
+          provider = null;
+          return;
+        }
+        provider = null;
+        return;
+      }
+      provider = null;
+      return;
+    }
 
     signer = await provider.getSigner();
 
-    return provider;
+    return;
   } catch {
-    return null;
+    return;
   }
+}
+export async function disconnectProvider() {
+  provider = null;
+  signer = null;
 }
 export function getProvider() {
   return provider;

@@ -13,7 +13,7 @@ import {
   Notification,
 } from '@mantine/core';
 import { AlertTriangle, Search, Wallet } from 'tabler-icons-react';
-import { getProvider } from '@/contract_interactions';
+import { disconnectProvider, getProvider, updateProvider } from '@/contract_interactions';
 import { NETWORK } from '@/config';
 import {
   getOrganisationFactoryContract,
@@ -23,10 +23,6 @@ import {
 } from '@/contract_interactions';
 import { useRouter } from 'next/router';
 import { showNotification, updateNotification } from '@mantine/notifications';
-
-const updateProvider = require('../contract_interactions').updateProvider as (
-  chain: 'mainnet' | 'testnet' | 'fakenet',
-) => Promise<boolean>;
 
 export default function Header() {
   const router = useRouter();
@@ -131,21 +127,22 @@ export default function Header() {
               color='dark'
               radius='md'
               onClick={async (event) => {
-                try {
-                  await updateProvider(NETWORK);
+                if (!walletConnected) {
+                  await updateProvider();
                   const connectedProvider = getProvider();
                   if (connectedProvider) {
                     setWalletConnected(true);
                   } else {
-                    throw new Error('Failed to connect to wallet');
+                    setWalletConnected(false);
+                    // TODO: display notification
                   }
-                } catch (error) {
-                  console.error(error);
-                  // Display error message to user
+                } else {
+                  await disconnectProvider();
+                  setWalletConnected(false);
                 }
               }}
             >
-              {walletConnected ? <>Connected ✅</> : <>Connect</>}
+              {walletConnected ? <>Disconnect</> : <>Connect</>}
             </Button>
           </div>
           <Header__mobile_menu

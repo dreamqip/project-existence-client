@@ -1,15 +1,17 @@
 import React from 'react';
-import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
+import { Card, Image, Text, Badge, Button, Group, Stack } from '@mantine/core';
 import Link from 'next/link';
 
 export default function MyCard(props: {
   title: string;
   description: string;
-  contacts: string;
+  link?: string;
+  phone?: string;
+  email?: string;
   badge?: string;
   way?: string;
 }) {
-  const { title, description, contacts, badge, way } = props;
+  const { title, description, link, phone, email, badge, way } = props;
   return (
     <Card shadow='sm' p='lg' radius='md' withBorder>
       <Card.Section>
@@ -27,12 +29,22 @@ export default function MyCard(props: {
             : null
         }
       </Group>
-      <Text size='md' color='dimmed' sx={{overflowWrap: 'break-word'}}>
+      <Text size='md' color='dimmed' sx={{ overflowWrap: 'break-word' }}>
         {description}
       </Text>
-      <Text size='sm' color='dimmed'>
-        {contacts}
-      </Text>
+      <Stack>
+        {link ? <Link  href={link.toString()}>
+          {link.toString()}
+        </Link> : null}
+
+        <Text size='sm' color='dimmed'>
+          {phone}
+        </Text>
+        <Text size='sm' color='dimmed'>
+          {email}
+        </Text>
+      </Stack>
+
       {
         way != undefined ?
           <Link href={way}>

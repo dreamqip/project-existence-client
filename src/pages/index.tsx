@@ -50,13 +50,15 @@ export default function Home() {
         }
         let orgCards = await Promise.all(orgs.map(async (org: OrganisationContract, index) => {
           let metadata = parseMetadata(await org.metadata());
-
+          
           return <OrganisationCard
             title={metadata.name ?? "name"}
             key={index}
             description={metadata.description ?? "description"}
             badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
-            contacts={metadata.contacts ?? "contacts"}
+            link={metadata.contacts?.link ?? ''}
+            phone={metadata.contacts?.phone ?? ''}
+            email={metadata.contacts?.email ?? ''}
             way={'/organisations/' + await org.getAddress()}
           />
         }));

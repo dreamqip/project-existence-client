@@ -130,7 +130,9 @@ export default function Organisation() {
     setOrgCard(<OrganisationCard
       title={metadata.name ?? "name"}
       description={metadata.description ?? "description"}
-      contacts={metadata.contacts ?? "contacts"}
+      link={metadata.contacts?.link ?? ''}
+      phone={metadata.contacts?.phone ?? ''}
+      email={metadata.contacts?.email ?? ''}
       badge={FEATURED_ORGANISATIONS.includes(await org.getAddress()) ? 'Featured' : undefined}
     />);
 
@@ -147,7 +149,9 @@ export default function Organisation() {
         title={metadata.name ?? "name"}
         key={index}
         description={metadata.description ?? "description"}
-        contacts={metadata.contacts ?? "contacts"}
+        link={metadata.contacts?.link ?? ''}
+        phone={metadata.contacts?.phone ?? ''}
+        email={metadata.contacts?.email ?? ''}
         way={'/organisations/' + (await org?.getAddress() ?? "error") + "/" + await reg.getAddress()}
       />
     }));

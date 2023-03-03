@@ -20,6 +20,7 @@ import DeployRegisterForm from './forms/DeployRegisterForm';
 import CreateRecordForm from './forms/CreateRecordForm';
 import UpdateRegisterForm from './forms/UpdateRegisterForm';
 import InvalidateRecordForm from './forms/InvalidateRecordForm';
+import { getOrganisationContract, getSigner } from '@/contract_interactions';
 
 export default function Header__menu({
   walletConnected,
@@ -38,6 +39,33 @@ export default function Header__menu({
 
   const orgAddress = isOrganisationPage ? router.query.id ? typeof router.query.id == "string" ? router.query.id : router.query.id[0] : null : null;
   const regAddress = isRegisterPage ? router.query.regAddr ? typeof router.query.regAddr == "string" ? router.query.regAddr : router.query.regAddr[0] : null : null;
+
+  const [isOrgOwner, setIsOrgOwner] = useState(false);
+
+  useEffect(() => {
+    if(!walletConnected) setIsOrgOwner(false);
+    if(!orgAddress) {
+      setIsOrgOwner(false);
+      return;
+    }
+    (async () => {
+      let signer = await getSigner();
+      if(!signer){
+        setIsOrgOwner(false);
+        return;
+      }
+      let address = await signer.getAddress();
+      let org = await getOrganisationContract(orgAddress);
+      if(!org){
+        setIsOrgOwner(false);
+        return;
+      }    
+      setIsOrgOwner((await org.owner()).toString() == address)
+    })()
+    return () => {
+      // unmount
+    }    
+  }, [walletConnected, orgAddress])
 
   return (
     <div>
@@ -68,6 +96,7 @@ export default function Header__menu({
             onClick={() => {
               setOrgModalOpened(true);
             }}
+            disabled={!isOrgOwner}
           >
             Update Organisation
           </Button>
@@ -78,7 +107,7 @@ export default function Header__menu({
           >
             <UpdateOrganisationForm orgAddress={orgAddress} update={() => updateOrganisationPage()} updateModal={() => setOrgModalOpened(false)}/>
           </Modal>
-          <Button radius='md' onClick={() => setRegModalOpened(true)}>
+          <Button radius='md' onClick={() => setRegModalOpened(true)} disabled={!isOrgOwner}>
             Deploy Register
           </Button>
           <Modal

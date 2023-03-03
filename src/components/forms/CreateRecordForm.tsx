@@ -83,28 +83,32 @@ export default function CreateRecordForm(props: {
 
   return (
     <Stack>
-      <FileInput
-        label='Upload Document'
-        placeholder='Upload Document'
-        icon={<FileUpload />}
-        onChange={(file) => {
-          file ? handleDrop(file, false) : console.log('no file');
-        }}
-      />
-      <TextInput
-        withAsterisk
-        icon={<Hash />}
-        placeholder='Document hash'
-        label='Document hash'
-        defaultValue={docHash}
-        disabled={docExists}
-        onChange={(event) =>
-          setFormInput({
-            ...formInput,
-            documentHash: event.currentTarget.value,
-          })
-        }
-      />
+      <div className='DocumentHash'>
+        <FileInput
+          label='Upload Document'
+          placeholder='Upload Document'
+          icon={<FileUpload />}
+          onChange={(file) => {
+            file ? handleDrop(file, false) : console.log('no file');
+          }}
+        />
+        <TextInput
+          sx={{ marginTop: '5px' }}
+          withAsterisk
+          icon={<Hash />}
+          placeholder='Document hash'
+          label='Document hash'
+          defaultValue={docHash}
+          disabled={docExists}
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              documentHash: event.currentTarget.value,
+            })
+          }
+        />
+      </div>
+
       <Switch
         label='Do you want to include link source document'
         checked={checkedSource}
@@ -174,29 +178,33 @@ export default function CreateRecordForm(props: {
         checked={checkedPast}
         onChange={(event) => setCheckedPast(event.currentTarget.checked)}
       />
-      <FileInput
-        label='Upload Document'
-        placeholder='Upload Document'
-        icon={<FileUpload />}
-        className={`${checkedPast ? '' : styles.hide}`}
-        onChange={(file) => {
-          file ? handleDrop(file, true) : console.log('no file');
-        }}
-      />
-      <TextInput
-        icon={<Hash />}
-        defaultValue={pastDocExists ? pastDocHash : ''}
-        placeholder='Past Document Hash'
-        label='Past Document Hash'
-        disabled={pastDocExists}
-        className={`${checkedPast ? '' : styles.hide}`}
-        onChange={(event) => {
-          setFormInput({
-            ...formInput,
-            pastDocumentHash: event.currentTarget.value,
-          });
-        }}
-      />
+      <div className='pastDocumentHash'>
+        <FileInput
+          label='Upload Document'
+          placeholder='Upload Document'
+          icon={<FileUpload />}
+          className={`${checkedPast ? '' : styles.hide}`}
+          onChange={(file) => {
+            file ? handleDrop(file, true) : console.log('no file');
+          }}
+        />
+        <TextInput
+          sx={{ marginTop: '5px' }}
+          icon={<Hash />}
+          defaultValue={pastDocExists ? pastDocHash : ''}
+          placeholder='Past Document Hash'
+          label='Past Document Hash'
+          disabled={pastDocExists}
+          className={`${checkedPast ? '' : styles.hide}`}
+          onChange={(event) => {
+            setFormInput({
+              ...formInput,
+              pastDocumentHash: event.currentTarget.value,
+            });
+          }}
+        />
+      </div>
+
       <Button
         radius='md'
         color='red'

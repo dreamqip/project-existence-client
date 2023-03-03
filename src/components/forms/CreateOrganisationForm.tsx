@@ -5,7 +5,7 @@ import {
   getProvider,
 } from '@/contract_interactions';
 import { serializeMetadata } from '@/utils';
-import { TextInput, Button, LoadingOverlay, Stack } from '@mantine/core';
+import { TextInput, Button, LoadingOverlay, Stack, Textarea } from '@mantine/core';
 import React, { useState } from 'react';
 import {
   BrandMailgun,
@@ -14,6 +14,8 @@ import {
   Check,
   Cross,
   X,
+  Phone,
+  ExternalLink,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { update } from '@/pages/organisations/[id]';
@@ -29,7 +31,11 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
-    contacts: '',
+    contacts: {
+      link: '',
+      phone: '',
+      email: '',
+    },
   });
 
   return (
@@ -45,7 +51,8 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           })
         }
       />
-      <TextInput
+
+      <Textarea
         icon={<TextCaption />}
         placeholder='Organisation description'
         label='Organisation description'
@@ -56,24 +63,61 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           })
         }
       />
-      <TextInput
-        icon={<BrandMailgun />}
-        placeholder='Organisation contacts'
-        label='Organisation contacts'
-        onChange={(event) =>
-          setFormInput({
-            ...formInput,
-            contacts: event.currentTarget.value,
-          })
-        }
-      />
+      <div>
+        Contacts
+        <TextInput
+          icon={<ExternalLink />}
+          placeholder='Link'
+          label='Link'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                link: event.currentTarget.value,
+              },
+            })
+          }
+        />
+        <TextInput sx={{ marginTop: "5px" }}
+          icon={<Phone />}
+          placeholder='Phone'
+          label='Phone'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                phone: event.currentTarget.value,
+              },
+            })
+          }
+        />
+        <TextInput sx={{ marginTop: "5px" }}
+          icon={<BrandMailgun />}
+          placeholder='Email'
+          label='Email'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                email: event.currentTarget.value,
+              },
+            })
+          }
+        />
+      </div>
+
       <Button
         radius='md'
         color='red'
         disabled={
           formInput.name == '' ||
           formInput.description == '' ||
-          formInput.contacts == ''
+          (formInput.contacts.link == '' &&
+            formInput.contacts.phone == '' &&
+            formInput.contacts.email == '')
         }
         onClick={async (e) => {
           props.update();
@@ -140,16 +184,31 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               });
             }, 3000);
             router.push('/');
-          } catch {
-            updateNotification({
-              id: 'load-data',
-              color: 'red',
-              title: 'Transaction rejected.',
-              message:
-                'Notification will close in 2 seconds, you can close this notification now',
-              icon: <X />,
-              autoClose: 2000,
-            });
+          } catch (error: any) {
+            switch (error.code as string) {
+              case "ACTION_REJECTED":
+                updateNotification({
+                  id: 'load-data',
+                  color: 'red',
+                  title: 'Transaction rejected by user.',
+                  message:
+                    'Notification will close in 2 seconds, you can close this notification now',
+                  icon: <X />,
+                  autoClose: 2000,
+                });
+                break;
+              default:
+                updateNotification({
+                  id: 'load-data',
+                  color: 'red',
+                  title: 'Transaction error.',
+                  message:
+                    'Notification will close in 2 seconds, you can close this notification now',
+                  icon: <X />,
+                  autoClose: 2000,
+                });
+                break;
+            }
           }
         }}
       >

@@ -13,6 +13,8 @@ import {
   BrandMailgun,
   Check,
   X,
+  Phone,
+  ExternalLink,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 
@@ -24,7 +26,11 @@ export default function UpdateOrganisationForm(props: {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
-    contacts: '',
+    contacts: {
+      link: '',
+      phone: '',
+      email: '',
+    },
   });
   const [buttonContent, setButtonContent] = useState([
     <>Deploy Register</>,
@@ -55,24 +61,60 @@ export default function UpdateOrganisationForm(props: {
           })
         }
       />
-      <TextInput
-        icon={<BrandMailgun />}
-        placeholder='Register contacts'
-        label='Register contacts'
-        onChange={(event) =>
-          setFormInput({
-            ...formInput,
-            contacts: event.currentTarget.value,
-          })
-        }
-      />
+      <div>
+        Contacts
+        <TextInput
+          icon={<ExternalLink />}
+          placeholder='Link'
+          label='Link'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                link: event.currentTarget.value,
+              },
+            })
+          }
+        />
+        <TextInput sx={{marginTop: "5px"}}
+          icon={<Phone />}
+          placeholder='Phone'
+          label='Phone'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                phone: event.currentTarget.value,
+              },
+            })
+          }
+        />
+        <TextInput sx={{marginTop: "5px"}}
+          icon={<BrandMailgun />}
+          placeholder='Email'
+          label='Email'
+          onChange={(event) =>
+            setFormInput({
+              ...formInput,
+              contacts: {
+                ...formInput.contacts,
+                email: event.currentTarget.value,
+              },
+            })
+          }
+        />
+      </div>
       <Button
         radius='md'
         color='red'
         disabled={
           formInput.name == '' ||
           formInput.description == '' ||
-          formInput.contacts == ''
+          (formInput.contacts.link == '' &&
+            formInput.contacts.phone == '' &&
+            formInput.contacts.email == '')
         }
         onClick={async (e) => {
           props.updateModal();
