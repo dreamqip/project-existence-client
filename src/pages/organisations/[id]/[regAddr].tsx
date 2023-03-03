@@ -92,7 +92,7 @@ export default function Register() {
   ));
 
   function transformToDate(milliseconds: string) {
-    const numbers = parseInt(milliseconds);
+    const numbers = parseInt(milliseconds) * 1000;
     const dateObj = new Date(numbers);
 
     const year = dateObj.getFullYear();
