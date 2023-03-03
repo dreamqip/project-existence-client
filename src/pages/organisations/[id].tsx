@@ -235,7 +235,29 @@ export default function Organisation() {
               </Tabs.List>
 
               <Tabs.Panel value='items' pt='xs'>
-                <div className={styles.registers__list}>{regCards}</div>
+                {regCards.length != 0 ? (
+                  <div className={styles.registers__list}>{regCards}</div>
+                ) : (
+                  <div>
+                    <Notification
+                      withCloseButton={false}
+                      color='blue'
+                      title='Don`t have a Register?'
+                    ></Notification>
+                    <Notification
+                      sx={{ marginTop: '10px' }}
+                      withCloseButton={false}
+                      color='blue'
+                      title='What are you waiting for? Go create one!'
+                    ></Notification>
+                    <Notification
+                      sx={{ marginTop: '10px' }}
+                      withCloseButton={false}
+                      color='blue'
+                      title='Connect wallet and click deploy Register.'
+                    ></Notification>
+                  </div>
+                )}
               </Tabs.Panel>
 
               {/* <Tabs.Panel value='activity' pt='xs'>
