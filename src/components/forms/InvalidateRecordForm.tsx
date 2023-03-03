@@ -69,7 +69,8 @@ export default function InvalidateRecordForm(props: {
         icon={<Hash />}
         placeholder='Document hash'
         label='Document hash'
-        value={docExists ? docHash : ''}
+        defaultValue={docHash}
+        disabled={docExists}
         onChange={(event) =>
           setFormInput({
             ...formInput,

@@ -17,6 +17,7 @@ import {
   ExternalLink,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
+const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
 
 export default function UpdateOrganisationForm(props: {
   orgAddress: string;
@@ -77,7 +78,8 @@ export default function UpdateOrganisationForm(props: {
             })
           }
         />
-        <TextInput sx={{marginTop: "5px"}}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<Phone />}
           placeholder='Phone'
           label='Phone'
@@ -91,7 +93,8 @@ export default function UpdateOrganisationForm(props: {
             })
           }
         />
-        <TextInput sx={{marginTop: "5px"}}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
           label='Email'
@@ -114,7 +117,8 @@ export default function UpdateOrganisationForm(props: {
           formInput.description == '' ||
           (formInput.contacts.link == '' &&
             formInput.contacts.phone == '' &&
-            formInput.contacts.email == '')
+            formInput.contacts.email == '') ||
+          emailRegex.test(formInput.contacts.email) == false
         }
         onClick={async (e) => {
           props.updateModal();

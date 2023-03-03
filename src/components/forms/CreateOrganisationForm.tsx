@@ -28,6 +28,8 @@ import { update } from '@/pages/organisations/[id]';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 
+const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
+
 export default function CreateOrganisationForm(props: { update: () => any }) {
   const router = useRouter();
   const [buttonContent, setButtonContent] = useState([
@@ -43,7 +45,6 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
       email: '',
     },
   });
-
   return (
     <Stack>
       <TextInput
@@ -125,7 +126,8 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           formInput.description == '' ||
           (formInput.contacts.link == '' &&
             formInput.contacts.phone == '' &&
-            formInput.contacts.email == '')
+            formInput.contacts.email == '') ||
+          emailRegex.test(formInput.contacts.email) == false
         }
         onClick={async (e) => {
           props.update();

@@ -21,7 +21,7 @@ import { Dropzone } from '@mantine/dropzone';
 import RegisterCard from '@/components/Card';
 import Link from 'next/link';
 import { Copy } from 'tabler-icons-react';
-import { ArrowUpRight, Search, Upload, X } from 'tabler-icons-react';
+import { ArrowUpRight, Search, Upload, X, Check } from 'tabler-icons-react';
 import { sha256 } from 'crypto-hash';
 import { showNotification, updateNotification } from '@mantine/notifications';
 
@@ -90,6 +90,23 @@ export default function Register() {
       {item.title}
     </Link>
   ));
+
+  function transformToDate(milliseconds: string) {
+    const numbers = parseInt(milliseconds);
+    const dateObj = new Date(numbers);
+
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth() + 1;
+    const day = dateObj.getDate();
+
+    const formattedDate = `${day}-${month}-${year}`;
+
+    return (
+      <div>
+        {formattedDate} {numbers}
+      </div>
+    );
+  }
 
   async function handleDrop(files: File[]) {
     setIsLoading(true);
@@ -192,7 +209,14 @@ export default function Register() {
     if (result.documentHash != NULL_HASH) {
       setSearchBlock(true);
       setSearchResult(result);
-      console.log(result);
+      showNotification({
+        color: 'teal',
+        title: 'Record found successfully',
+        message:
+          'Notification will close in 2 seconds, you can close this notification now',
+        icon: <Check />,
+        autoClose: 2000,
+      });
     } else {
       //alert("not found");
       showNotification({
@@ -458,7 +482,9 @@ export default function Register() {
                               Created at:
                             </Text>{' '}
                             {searchResult.createdAt.toString() != '0'
-                              ? searchResult.createdAt.toString()
+                              ? transformToDate(
+                                  searchResult.createdAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item>
@@ -466,7 +492,9 @@ export default function Register() {
                               Updated at:
                             </Text>{' '}
                             {searchResult.updatedAt.toString() != '0'
-                              ? searchResult.updatedAt.toString()
+                              ? transformToDate(
+                                  searchResult.updatedAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item>
@@ -474,7 +502,9 @@ export default function Register() {
                               Starts at:
                             </Text>
                             {searchResult.startsAt.toString() != '0'
-                              ? searchResult.startsAt.toString()
+                              ? transformToDate(
+                                  searchResult.startsAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item>
@@ -482,7 +512,9 @@ export default function Register() {
                               Expires at:
                             </Text>
                             {searchResult.expiresAt.toString() != '0'
-                              ? searchResult.expiresAt.toString()
+                              ? transformToDate(
+                                  searchResult.expiresAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item sx={{ overflowWrap: 'break-word' }}>

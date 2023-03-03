@@ -19,6 +19,7 @@ import {
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { parseMetadata, waitFor, type Metadata } from '@/utils';
+const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
 
 export default function UpdateRegisterForm(props: {
   regAddress: string;
@@ -157,7 +158,8 @@ export default function UpdateRegisterForm(props: {
           formInput.description == '' ||
           (formInput.contacts.link == '' &&
             formInput.contacts.phone == '' &&
-            formInput.contacts.email == '')
+            formInput.contacts.email == '') ||
+          emailRegex.test(formInput.contacts.email) == false
         }
         onClick={async (e) => {
           props.updateModal();
