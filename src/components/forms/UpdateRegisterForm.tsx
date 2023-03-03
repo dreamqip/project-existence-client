@@ -150,6 +150,7 @@ export default function UpdateRegisterForm(props: {
           }
         />
         <TextInput
+          withAsterisk
           sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
