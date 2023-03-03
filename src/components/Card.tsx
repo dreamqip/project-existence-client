@@ -12,7 +12,7 @@ const images = [
   '/image7.jpg',
   '/image8.jpg',
   '/image9.jpg',
-  '/image0.jpg',
+  '/image10.jpg',
 ];
 
 export default function MyCard(props: {
