@@ -254,7 +254,7 @@ export default function Organisation() {
                       sx={{ marginTop: '10px' }}
                       withCloseButton={false}
                       color='blue'
-                      title='Connect wallet and click deploy Register.'
+                      title='Connect wallet and click `Deploy Register`.'
                     ></Notification>
                   </div>
                 )}
