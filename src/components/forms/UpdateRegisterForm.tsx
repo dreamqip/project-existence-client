@@ -16,6 +16,7 @@ import {
   X,
   Phone,
   ExternalLink,
+  PictureInPictureOff,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { parseMetadata, waitFor, type Metadata } from '@/utils';
@@ -29,6 +30,7 @@ export default function UpdateRegisterForm(props: {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
+    banner: '',
     contacts: {
       link: '',
       phone: '',
@@ -65,6 +67,7 @@ export default function UpdateRegisterForm(props: {
       setFormInput({
         name: regMetadata.name,
         description: regMetadata.description,
+        banner: regMetadata.banner || '',
         contacts: {
           link: regMetadata.contacts.link || '',
           phone: regMetadata.contacts.phone || '',
@@ -97,6 +100,19 @@ export default function UpdateRegisterForm(props: {
           setFormInput({
             ...formInput,
             description: event.currentTarget.value,
+          })
+        }
+      />
+      <TextInput
+        sx={{ marginTop: '5px' }}
+        icon={<PictureInPictureOff />}
+        placeholder='Logo/Banner'
+        label='Logo/Banner'
+        defaultValue={regMetadata.banner ?? ''}
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            banner: event.currentTarget.value,
           })
         }
       />
@@ -238,7 +254,7 @@ export default function UpdateRegisterForm(props: {
                 updateNotification({
                   id: 'load-data',
                   color: 'red',
-                  title: 'Transaction rejected: '+error.reason,
+                  title: 'Transaction rejected: ' + error.reason,
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,

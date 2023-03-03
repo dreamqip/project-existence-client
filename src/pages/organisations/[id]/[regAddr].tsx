@@ -150,6 +150,7 @@ export default function Register() {
       <RegisterCard
         title={metadata.name ?? 'name'}
         description={metadata.description ?? 'description'}
+        banner={metadata.banner ?? ''}
         link={metadata.contacts?.link ?? ''}
         phone={metadata.contacts?.phone ?? ''}
         email={metadata.contacts?.email ?? ''}

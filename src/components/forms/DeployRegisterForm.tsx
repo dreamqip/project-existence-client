@@ -15,6 +15,7 @@ import {
   X,
   Phone,
   ExternalLink,
+  PictureInPictureOff,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
@@ -27,6 +28,7 @@ export default function UpdateOrganisationForm(props: {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
+    banner: '',
     contacts: {
       link: '',
       phone: '',
@@ -59,6 +61,18 @@ export default function UpdateOrganisationForm(props: {
           setFormInput({
             ...formInput,
             description: event.currentTarget.value,
+          })
+        }
+      />
+      <TextInput
+        sx={{ marginTop: '5px' }}
+        icon={<PictureInPictureOff />}
+        placeholder='Logo/Banner'
+        label='Logo/Banner'
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            banner: event.currentTarget.value,
           })
         }
       />
@@ -197,7 +211,7 @@ export default function UpdateOrganisationForm(props: {
                 updateNotification({
                   id: 'load-data',
                   color: 'red',
-                  title: 'Transaction rejected: '+error.reason,
+                  title: 'Transaction rejected: ' + error.reason,
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,

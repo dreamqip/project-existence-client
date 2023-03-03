@@ -81,6 +81,7 @@ export default function Home() {
             title={metadata.name ?? 'name'}
             key={index}
             description={metadata.description ?? 'description'}
+            banner={metadata.banner ?? ''}
             badge={
               FEATURED_ORGANISATIONS.includes(await org.getAddress())
                 ? 'Featured'

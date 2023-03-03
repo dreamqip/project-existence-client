@@ -22,6 +22,7 @@ import {
   X,
   Phone,
   ExternalLink,
+  PictureInPictureOff,
 } from 'tabler-icons-react';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { update } from '@/pages/organisations/[id]';
@@ -40,6 +41,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
   const [formInput, setFormInput] = useState({
     name: '',
     description: '',
+    banner: '',
     contacts: {
       link: '',
       phone: '',
@@ -68,6 +70,18 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           setFormInput({
             ...formInput,
             description: event.currentTarget.value,
+          })
+        }
+      />
+      <TextInput
+        sx={{ marginTop: '5px' }}
+        icon={<PictureInPictureOff />}
+        placeholder='Logo/Banner'
+        label='Logo/Banner'
+        onChange={(event) =>
+          setFormInput({
+            ...formInput,
+            banner: event.currentTarget.value,
           })
         }
       />
@@ -213,7 +227,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 updateNotification({
                   id: 'load-data',
                   color: 'red',
-                  title: 'Transaction rejected: '+error.reason,
+                  title: 'Transaction rejected: ' + error.reason,
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
