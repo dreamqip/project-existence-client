@@ -16,6 +16,7 @@ import { AlertTriangle, Search, Wallet } from 'tabler-icons-react';
 import {
   disconnectProvider,
   getProvider,
+  OrganisationContract,
   updateProvider,
 } from '@/contract_interactions';
 import { NETWORK } from '@/config';
@@ -77,20 +78,25 @@ export default function Header() {
             <ActionIcon
               className={styles.search__button}
               onClick={async () => {
-                if (
-                  (await searchForOrganisationOrRegister(
-                    contractAddr.address,
-                    orgFactory,
-                  )) != null
-                ) {
-                  router.push('/organisations/' + contractAddr.address);
-                } else {
+                let searchResult = await searchForOrganisationOrRegister(
+                  contractAddr.address,
+                  orgFactory,
+                )
+                if (searchResult == null) {
                   showNotification({
                     title: 'Error',
                     color: 'red',
-                    message: 'Contract not found.',
+                    message: 'Contract or organisation not found.',
                     autoClose: 2000,
                   });
+                  return;
+                }
+                if (
+                  searchResult[1] == 'org'
+                ) {
+                  router.push('/organisations/' + contractAddr.address);
+                } else {
+                  router.push('/organisations/' + (await searchResult[0].getAddress()) + "/" + contractAddr.address);
                 }
               }}
             >
@@ -106,20 +112,25 @@ export default function Header() {
               }
               onKeyDown={async (event) => {
                 if (event.key === 'Enter') {
-                  if (
-                    (await searchForOrganisationOrRegister(
-                      contractAddr.address,
-                      orgFactory,
-                    )) != null
-                  ) {
-                    router.push('/organisations/' + contractAddr.address);
-                  } else {
+                  let searchResult = await searchForOrganisationOrRegister(
+                    contractAddr.address,
+                    orgFactory,
+                  )
+                  if (searchResult == null) {
                     showNotification({
                       title: 'Error',
                       color: 'red',
-                      message: 'Contract not found.',
+                      message: 'Contract or organisation not found.',
                       autoClose: 2000,
                     });
+                    return;
+                  }
+                  if (
+                    searchResult[1] == 'org'
+                  ) {
+                    router.push('/organisations/' + contractAddr.address);
+                  } else {
+                    router.push('/organisations/' + (await searchResult[0].getAddress()) + "/" + contractAddr.address);
                   }
                 }
               }}

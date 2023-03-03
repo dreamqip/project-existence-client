@@ -110,7 +110,6 @@ export type {
 export const RECORD_CREATOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("RECORD_CREATOR"));
 export const RECORD_INVALIDATOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("RECORD_INVALIDATOR"));
 export const REGISTER_EDITOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("REGISTER_EDITOR"));
-console.log(RECORD_CREATOR_ROLE)
 
 let networkId = 0xfa;
 if (NETWORK === 'testnet') networkId = 0xfa2;
@@ -230,14 +229,14 @@ export async function getRecord(reg: RegisterContract, fileHash: DataHexString) 
 export async function searchForOrganisationOrRegister(
   address: string,
   orgFactory?: OrganisationFactoryContract,
-): Promise<OrganisationContract | RegisterContract | null> {
+): Promise<[OrganisationContract | RegisterContract, "org" | "reg"] | null> {
   let possibleOrganisation = await getOrganisationContract(address);
   if (possibleOrganisation != null) {
     // it is an organisation (possibly, fake)
     if (orgFactory && !(await orgFactory.organisations(address))) {
       return null; // organisation is not official
     }
-    return possibleOrganisation;
+    return [possibleOrganisation, "org"];
   }
 
   let possibleRegister = await getRegisterContract(address);
@@ -257,7 +256,7 @@ export async function searchForOrganisationOrRegister(
         }
       }
     }
-    return possibleRegister;
+    return [possibleRegister, "reg"];
   }
 
   return null;
@@ -270,15 +269,7 @@ export async function getOrganisationFactoryContract(
   if (!skipCheck) {
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
-      if (
-        !bytecode.includes(
-          ethers
-            .keccak256(ethers.toUtf8Bytes('deployOrganisation(string,address)'))
-            .slice(2, 10),
-        )
-      ) {
-        return null;
-      }
+      if (!bytecode.includes(ethers.keccak256(ethers.toUtf8Bytes('deployOrganisation(string,address)')).slice(2, 10))) return null;
     } catch { return null }
   }
   return new ethers.Contract(
@@ -295,15 +286,8 @@ export async function getOrganisationContract(
   if (!skipCheck) {
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
-      if (
-        !bytecode.includes(
-          ethers
-            .keccak256(ethers.toUtf8Bytes('editOrganisationMetadata(string)'))
-            .slice(2, 10),
-        )
-      ) {
-        return null;
-      }
+      if (!bytecode.includes(ethers.keccak256(ethers.toUtf8Bytes('editOrganisationMetadata(string)')).slice(2, 10))) return null;
+      if (!bytecode.includes(ethers.keccak256(ethers.toUtf8Bytes('deployRegister(string)')).slice(2, 10))) return null;
     } catch { return null }
   }
   return new ethers.Contract(
