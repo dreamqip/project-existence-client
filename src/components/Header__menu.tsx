@@ -14,8 +14,8 @@ import {
 } from 'tabler-icons-react';
 import CreateOrganisationForm from './forms/CreateOrganisationForm';
 import UpdateOrganisationForm from './forms/UpdateOrganisationForm';
-import {update as updateOrganisationPage} from '@/pages/organisations/[id]';
-import {update as updateRegisterPage} from '@/pages/organisations/[id]/[regAddr]';
+import { update as updateOrganisationPage } from '@/pages/organisations/[id]';
+import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAddr]';
 import DeployRegisterForm from './forms/DeployRegisterForm';
 import CreateRecordForm from './forms/CreateRecordForm';
 import UpdateRegisterForm from './forms/UpdateRegisterForm';
@@ -37,35 +37,47 @@ export default function Header__menu({
   const [createRecModalOpened, setCreateRecModalOpened] = useState(false);
   const [invaliRecModalOpened, setInvaliRecModalOpened] = useState(false);
 
-  const orgAddress = isOrganisationPage ? router.query.id ? typeof router.query.id == "string" ? router.query.id : router.query.id[0] : null : null;
-  const regAddress = isRegisterPage ? router.query.regAddr ? typeof router.query.regAddr == "string" ? router.query.regAddr : router.query.regAddr[0] : null : null;
+  const orgAddress = isOrganisationPage
+    ? router.query.id
+      ? typeof router.query.id == 'string'
+        ? router.query.id
+        : router.query.id[0]
+      : null
+    : null;
+  const regAddress = isRegisterPage
+    ? router.query.regAddr
+      ? typeof router.query.regAddr == 'string'
+        ? router.query.regAddr
+        : router.query.regAddr[0]
+      : null
+    : null;
 
   const [isOrgOwner, setIsOrgOwner] = useState(false);
 
   useEffect(() => {
-    if(!walletConnected) setIsOrgOwner(false);
-    if(!orgAddress) {
+    if (!walletConnected) setIsOrgOwner(false);
+    if (!orgAddress) {
       setIsOrgOwner(false);
       return;
     }
     (async () => {
       let signer = await getSigner();
-      if(!signer){
+      if (!signer) {
         setIsOrgOwner(false);
         return;
       }
       let address = await signer.getAddress();
       let org = await getOrganisationContract(orgAddress);
-      if(!org){
+      if (!org) {
         setIsOrgOwner(false);
         return;
-      }    
-      setIsOrgOwner((await org.owner()).toString() == address)
-    })()
+      }
+      setIsOrgOwner((await org.owner()).toString() == address);
+    })();
     return () => {
       // unmount
-    }    
-  }, [walletConnected, orgAddress])
+    };
+  }, [walletConnected, orgAddress]);
 
   return (
     <div>
@@ -89,7 +101,10 @@ export default function Header__menu({
           </Modal>
         </div>
       ) : null}
-      {isOrganisationPage && orgAddress && !isRegisterPage && walletConnected ? (
+      {isOrganisationPage &&
+      orgAddress &&
+      !isRegisterPage &&
+      walletConnected ? (
         <div className={styles.header__menu}>
           <Button
             radius='md'
@@ -105,9 +120,17 @@ export default function Header__menu({
             onClose={() => setOrgModalOpened(false)}
             title='Fill in the forms you want to update.'
           >
-            <UpdateOrganisationForm orgAddress={orgAddress} update={() => updateOrganisationPage()} updateModal={() => setOrgModalOpened(false)}/>
+            <UpdateOrganisationForm
+              orgAddress={orgAddress}
+              update={() => updateOrganisationPage()}
+              updateModal={() => setOrgModalOpened(false)}
+            />
           </Modal>
-          <Button radius='md' onClick={() => setRegModalOpened(true)} disabled={!isOrgOwner}>
+          <Button
+            radius='md'
+            onClick={() => setRegModalOpened(true)}
+            disabled={!isOrgOwner}
+          >
             Deploy Register
           </Button>
           <Modal
@@ -115,7 +138,11 @@ export default function Header__menu({
             onClose={() => setRegModalOpened(false)}
             title='To create Register fill in the forms'
           >
-            <DeployRegisterForm orgAddress={orgAddress} update={() => updateOrganisationPage()} updateModal={() => setRegModalOpened(false)} />
+            <DeployRegisterForm
+              orgAddress={orgAddress}
+              update={() => updateOrganisationPage()}
+              updateModal={() => setRegModalOpened(false)}
+            />
           </Modal>
         </div>
       ) : null}
@@ -124,12 +151,17 @@ export default function Header__menu({
           <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
             Create Record
           </Button>
-          <Modal size="lg"
+          <Modal
+            size='lg'
             opened={createRecModalOpened}
             onClose={() => setCreateRecModalOpened(false)}
             title='To create Record fill in the forms'
           >
-            <CreateRecordForm updateModal={() => setCreateRecModalOpened(false)} update={() => updateRegisterPage()} registerAddress={regAddress ?? ""}/>
+            <CreateRecordForm
+              updateModal={() => setCreateRecModalOpened(false)}
+              update={() => updateRegisterPage()}
+              registerAddress={regAddress ?? ''}
+            />
           </Modal>
           <Button radius='md' onClick={() => setInvaliRecModalOpened(true)}>
             Invalidate Record
@@ -139,7 +171,11 @@ export default function Header__menu({
             onClose={() => setInvaliRecModalOpened(false)}
             title='To invalidate Record fill in the forms'
           >
-            <InvalidateRecordForm updateModal={() => setInvaliRecModalOpened(false)} update={() => updateRegisterPage()} registerAddress={regAddress ?? ''} />
+            <InvalidateRecordForm
+              updateModal={() => setInvaliRecModalOpened(false)}
+              update={() => updateRegisterPage()}
+              registerAddress={regAddress ?? ''}
+            />
           </Modal>
           <Button radius='md' onClick={() => setRegModalOpened(true)}>
             Update Register
@@ -149,7 +185,11 @@ export default function Header__menu({
             onClose={() => setRegModalOpened(false)}
             title='Fill in the forms you want to update.'
           >
-            <UpdateRegisterForm update={() => updateRegisterPage()} regAddress={regAddress ?? ""} updateModal={() => setRegModalOpened(false)} />
+            <UpdateRegisterForm
+              update={() => updateRegisterPage()}
+              regAddress={regAddress ?? ''}
+              updateModal={() => setRegModalOpened(false)}
+            />
           </Modal>
         </div>
       ) : null}

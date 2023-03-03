@@ -23,6 +23,14 @@
     &__breadcrumbs{
         display: flex;
         flex-wrap: wrap;
+        overflow: hidden !important;
+        a{
+            overflow: hidden !important;
+        }
+        @media (max-width: 425px) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
     }
 }
 
@@ -75,6 +83,13 @@
     &__hash{
         margin: 10px;
     }
+    &__notification{
+        min-height: 100px;
+        button{
+            margin-top: 25px;
+            
+        }
+    }
 }
 
 .dates{
@@ -97,3 +112,16 @@
 .hide{
     display: none;
 }
+
+.link{
+    color: #C1C2C5;;
+  }
+
+  .record{
+    &__list{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+  }
+

@@ -36,5 +36,8 @@
         @media (max-width: 425px){
             grid-template-columns: 1fr;
         }
+        div{
+            height: max-content !important;
+        }
     }
 }

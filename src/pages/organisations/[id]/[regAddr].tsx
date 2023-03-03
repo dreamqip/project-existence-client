@@ -33,7 +33,7 @@ import {
   type Record,
 } from '@/contract_interactions';
 import { parseMetadata, waitFor } from '@/utils';
-import { NULL_HASH } from '@/config';
+import { NULL_ADDR, NULL_HASH } from '@/config';
 
 export let update = () => {};
 
@@ -307,64 +307,235 @@ export default function Register() {
             </div>
             {searchBlock ? (
               <div className={styles.records__result}>
-                <Notification color='teal' title='Record found!'>
-                  Click details to get more information about the record
-                  <br />
-                  <Button
-                    className={styles.records__link_btn}
-                    onClick={() => setOpened(true)}
-                    rightIcon={
-                      <ArrowUpRight
-                        size={40}
-                        strokeWidth={2}
-                        color={'#ffffff'}
-                      />
-                    }
-                  >
-                    Details
-                  </Button>
+                <Notification
+                  color='teal'
+                  title='The last record successfully requested.'
+                  onClose={() => setSearchBlock(false)}
+                >
+                  <div className={styles.result__notification}>
+                    <Text>
+                      Click details to get more information about the record
+                    </Text>
+                    <Button
+                      className={styles.records__link_btn}
+                      onClick={() => setOpened(true)}
+                      rightIcon={
+                        <ArrowUpRight
+                          size={40}
+                          strokeWidth={2}
+                          color={'#ffffff'}
+                        />
+                      }
+                    >
+                      Details
+                    </Button>
+                  </div>
+
                   <Modal
+                    className={styles.record__modal}
                     opened={opened}
                     onClose={() => setOpened(false)}
                     title='Record'
-                    size='lg'
+                    size='xl'
                   >
                     <div className={styles.records__record}>
                       <Stack spacing='sm'>
-                        <List>
-                          <List.Item sx={{ overflowWrap: 'break-word' }}>
-                            Document hash:
+                        <List className={styles.record__list}>
+                          <List.Item>
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              <CopyButton value={searchResult.documentHash}>
+                                {({ copied, copy }) => (
+                                  <Button
+                                    className={styles.myCopy}
+                                    size='xs'
+                                    compact
+                                    color={copied ? 'teal' : 'blue'}
+                                    onClick={copy}
+                                    sx={{ marginRight: '10px' }}
+                                  >
+                                    <Copy
+                                      size={20}
+                                      strokeWidth={2}
+                                      color={'#000000'}
+                                    />
+                                  </Button>
+                                )}
+                              </CopyButton>
+                              Document hash:
+                            </Text>
                             {searchResult.documentHash}
                           </List.Item>
                           <List.Item>
-                            {searchResult.creator.toString()}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              <CopyButton
+                                value={searchResult.creator.toString()}
+                              >
+                                {({ copied, copy }) => (
+                                  <Button
+                                    className={styles.myCopy}
+                                    size='xs'
+                                    compact
+                                    color={copied ? 'teal' : 'blue'}
+                                    onClick={copy}
+                                    sx={{ marginRight: '10px' }}
+                                  >
+                                    <Copy
+                                      size={20}
+                                      strokeWidth={2}
+                                      color={'#000000'}
+                                    />
+                                  </Button>
+                                )}
+                              </CopyButton>
+                              Creator:
+                            </Text>
+                            {searchResult.creator.toString() != NULL_ADDR
+                              ? searchResult.creator.toString()
+                              : '-'}
                           </List.Item>
                           <List.Item>
-                            {searchResult.updater.toString()}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              <CopyButton
+                                value={searchResult.updater.toString()}
+                              >
+                                {({ copied, copy }) => (
+                                  <Button
+                                    className={styles.myCopy}
+                                    size='xs'
+                                    compact
+                                    color={copied ? 'teal' : 'blue'}
+                                    onClick={copy}
+                                    sx={{ marginRight: '10px' }}
+                                  >
+                                    <Copy
+                                      size={20}
+                                      strokeWidth={2}
+                                      color={'#000000'}
+                                    />
+                                  </Button>
+                                )}
+                              </CopyButton>
+                              Updater:
+                            </Text>
+                            {searchResult.updater.toString() != NULL_ADDR
+                              ? searchResult.updater.toString()
+                              : '-'}
                           </List.Item>
-                          <List.Item>{searchResult.sourceDocument}</List.Item>
                           <List.Item>
-                            {searchResult.referenceDocument}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              Source Document:
+                            </Text>
+                            {searchResult.sourceDocument != '' ? (
+                              <Link
+                                className={styles.link}
+                                target='_blank'
+                                href={searchResult.sourceDocument}
+                              >
+                                {searchResult.sourceDocument}
+                              </Link>
+                            ) : (
+                              '-'
+                            )}
                           </List.Item>
                           <List.Item>
-                            Created at: {searchResult.createdAt.toString()}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              Reference Document
+                            </Text>
+                            {searchResult.referenceDocument != '' ? (
+                              <Link
+                                className={styles.link}
+                                target='_blank'
+                                href={searchResult.referenceDocument}
+                              >
+                                {searchResult.referenceDocument}
+                              </Link>
+                            ) : (
+                              '-'
+                            )}
                           </List.Item>
                           <List.Item>
-                            Updated at: {searchResult.updatedAt.toString()}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              Created at:
+                            </Text>{' '}
+                            {searchResult.createdAt.toString() != '0'
+                              ? searchResult.createdAt.toString()
+                              : '-'}
                           </List.Item>
                           <List.Item>
-                            Starts at: {searchResult.startsAt.toString()}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              Updated at:
+                            </Text>{' '}
+                            {searchResult.updatedAt.toString() != '0'
+                              ? searchResult.updatedAt.toString()
+                              : '-'}
                           </List.Item>
                           <List.Item>
-                            Expires at: {searchResult.expiresAt.toString()}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              Starts at:
+                            </Text>
+                            {searchResult.startsAt.toString() != '0'
+                              ? searchResult.startsAt.toString()
+                              : '-'}
+                          </List.Item>
+                          <List.Item>
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              Expires at:
+                            </Text>
+                            {searchResult.expiresAt.toString() != '0'
+                              ? searchResult.expiresAt.toString()
+                              : '-'}
                           </List.Item>
                           <List.Item sx={{ overflowWrap: 'break-word' }}>
-                            Past Document hash:
-                            {searchResult.pastDocumentHash}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              <CopyButton value={searchResult.pastDocumentHash}>
+                                {({ copied, copy }) => (
+                                  <Button
+                                    className={styles.myCopy}
+                                    size='xs'
+                                    compact
+                                    color={copied ? 'teal' : 'blue'}
+                                    onClick={copy}
+                                    sx={{ marginRight: '10px' }}
+                                  >
+                                    <Copy
+                                      size={20}
+                                      strokeWidth={2}
+                                      color={'#000000'}
+                                    />
+                                  </Button>
+                                )}
+                              </CopyButton>
+                              Past Document hash:
+                            </Text>
+                            {searchResult.pastDocumentHash != NULL_HASH
+                              ? searchResult.pastDocumentHash
+                              : '-'}
                           </List.Item>
                           <List.Item sx={{ overflowWrap: 'break-word' }}>
-                            Next Document hash:
-                            {searchResult.nextDocumentHash}
+                            <Text sx={{ color: 'white', fontWeight: 'bold' }}>
+                              <CopyButton value={searchResult.nextDocumentHash}>
+                                {({ copied, copy }) => (
+                                  <Button
+                                    className={styles.myCopy}
+                                    size='xs'
+                                    compact
+                                    color={copied ? 'teal' : 'blue'}
+                                    onClick={copy}
+                                    sx={{ marginRight: '10px' }}
+                                  >
+                                    <Copy
+                                      size={20}
+                                      strokeWidth={2}
+                                      color={'#000000'}
+                                    />
+                                  </Button>
+                                )}
+                              </CopyButton>
+                              Next Document hash:
+                            </Text>
+                            {searchResult.nextDocumentHash != NULL_HASH
+                              ? searchResult.nextDocumentHash
+                              : '-'}
                           </List.Item>
                         </List>
                       </Stack>

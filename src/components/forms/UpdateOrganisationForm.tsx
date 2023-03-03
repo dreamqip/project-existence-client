@@ -40,7 +40,6 @@ export default function UpdateOrganisationForm(props: {
     <>Update Organisation</>,
     true,
   ] as [JSX.Element, boolean]);
-  
 
   const fetchData = async () => {
     let org = await getOrganisationContract(props.orgAddress);
@@ -117,7 +116,8 @@ export default function UpdateOrganisationForm(props: {
             })
           }
         />
-        <TextInput sx={{marginTop: "5px"}}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<Phone />}
           placeholder='Phone'
           label='Phone'
@@ -132,7 +132,8 @@ export default function UpdateOrganisationForm(props: {
             })
           }
         />
-        <TextInput sx={{marginTop: "5px"}}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           defaultValue={orgMetadata.contacts?.email ?? ''}
           placeholder='Email'
@@ -163,12 +164,11 @@ export default function UpdateOrganisationForm(props: {
           showNotification({
             id: 'load-data',
             loading: true,
-            title: 'Deploying register...',
+            title: 'Updating organisation...',
             message: 'You cannot close this notification yet',
             autoClose: false,
             withCloseButton: false,
           });
-
           let signer = getSigner();
           if (signer == null) {
             setButtonContent([<>Please connect your wallet</>, false]);
@@ -199,7 +199,7 @@ export default function UpdateOrganisationForm(props: {
             updateNotification({
               id: 'load-data',
               color: 'teal',
-              title: 'Register was successfully deployed',
+              title: 'Organisation was successfully updated.',
               message:
                 'Notification will close in 2 seconds, you can close this notification now',
               icon: <Check />,

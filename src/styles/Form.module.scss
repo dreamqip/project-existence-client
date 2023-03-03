@@ -1,0 +1,14 @@
+.contacts{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    &__title{
+        color: whitesmoke;
+    }
+}
+
+.link{
+    color: #909296;
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }

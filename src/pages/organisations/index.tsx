@@ -22,7 +22,13 @@ const items = [
 
 export default function Organisations() {
   const [featuredOrganisationsCards, setFeaturedOrganisationsCards] = useState([
-    <React.Fragment key='1'>please connect your wallet</React.Fragment>,
+    <React.Fragment key='1'>
+      <Notification
+        withCloseButton={false}
+        color='yellow'
+        title='Loading...'
+      ></Notification>
+    </React.Fragment>,
   ] as JSX.Element[]);
 
   useEffect(() => {
@@ -59,7 +65,6 @@ export default function Organisations() {
                 link={metadata.contacts?.link ?? ''}
                 phone={metadata.contacts?.phone ?? ''}
                 email={metadata.contacts?.email ?? ''}
-                
                 way={'/organisations/' + (await org.getAddress())}
               />
             );

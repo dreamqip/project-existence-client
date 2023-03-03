@@ -27,6 +27,9 @@
     &__breadcrumbs{
         display: flex;
         flex-wrap: wrap;
+        a{
+            overflow: hidden;
+        }
     }
 }
 

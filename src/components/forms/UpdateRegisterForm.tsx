@@ -41,13 +41,12 @@ export default function UpdateRegisterForm(props: {
 
   const [regMetadata, setRegMetadata] = useState({} as Metadata);
 
-
   const fetchData = async () => {
-    let org = await getOrganisationContract(props.regAddress);
-    if (!org) {
+    let reg = await getRegisterContract(props.regAddress);
+    if (!reg) {
       return;
     }
-    let rawMetadata = await org.metadata();
+    let rawMetadata = await reg.metadata();
     setRegMetadata(parseMetadata(rawMetadata));
   };
   useEffect(() => {
@@ -60,8 +59,19 @@ export default function UpdateRegisterForm(props: {
     };
   }, []);
 
-
-
+  useEffect(() => {
+    if (regMetadata.name && regMetadata.description && regMetadata.contacts) {
+      setFormInput({
+        name: regMetadata.name,
+        description: regMetadata.description,
+        contacts: {
+          link: regMetadata.contacts.link || '',
+          phone: regMetadata.contacts.phone || '',
+          email: regMetadata.contacts.email || '',
+        },
+      });
+    }
+  }, [regMetadata]);
 
   return (
     <Stack>
@@ -106,7 +116,8 @@ export default function UpdateRegisterForm(props: {
             })
           }
         />
-        <TextInput sx={{marginTop: "5px"}}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<Phone />}
           placeholder='Phone'
           label='Phone'
@@ -121,7 +132,8 @@ export default function UpdateRegisterForm(props: {
             })
           }
         />
-        <TextInput sx={{marginTop: "5px"}}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
           label='Email'

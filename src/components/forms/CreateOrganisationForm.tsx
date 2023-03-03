@@ -5,7 +5,13 @@ import {
   getProvider,
 } from '@/contract_interactions';
 import { serializeMetadata } from '@/utils';
-import { TextInput, Button, LoadingOverlay, Stack, Textarea } from '@mantine/core';
+import {
+  TextInput,
+  Button,
+  LoadingOverlay,
+  Stack,
+  Textarea,
+} from '@mantine/core';
 import React, { useState } from 'react';
 import {
   BrandMailgun,
@@ -79,7 +85,8 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
             })
           }
         />
-        <TextInput sx={{ marginTop: "5px" }}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<Phone />}
           placeholder='Phone'
           label='Phone'
@@ -93,7 +100,8 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
             })
           }
         />
-        <TextInput sx={{ marginTop: "5px" }}
+        <TextInput
+          sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
           label='Email'
@@ -183,10 +191,9 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 autoClose: 2000,
               });
             }, 3000);
-            router.push('/');
           } catch (error: any) {
             switch (error.code as string) {
-              case "ACTION_REJECTED":
+              case 'ACTION_REJECTED':
                 updateNotification({
                   id: 'load-data',
                   color: 'red',
@@ -210,6 +217,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 break;
             }
           }
+          router.push('/');
         }}
       >
         {buttonContent[0]}
