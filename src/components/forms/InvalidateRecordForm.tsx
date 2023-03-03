@@ -99,6 +99,7 @@ export default function InvalidateRecordForm(props: {
               title: 'Error',
               color: 'red',
               message: 'Please connect your wallet!',
+              autoClose: 2000,
             });
             updateNotification({
               id: 'load-data',
@@ -115,6 +116,7 @@ export default function InvalidateRecordForm(props: {
               title: 'Error',
               color: 'red',
               message: 'An error occured.',
+              autoClose: 2000,
             });
             updateNotification({
               id: 'load-data',

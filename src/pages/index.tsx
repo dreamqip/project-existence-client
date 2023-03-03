@@ -1,7 +1,7 @@
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.scss';
 import OrganisationCard from '@/components/Card';
-import { Button, Title, Notification } from '@mantine/core';
+import { Button, Title, Notification, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import {
   getOrganisationContract,
@@ -15,10 +15,15 @@ import { FEATURED_ORGANISATIONS, ORGANISATION_FACTORY_ADDRESS } from '@/config';
 import { sign } from 'crypto';
 import { parseMetadata, waitFor } from '@/utils';
 import Link from 'next/link';
+import CreateOrganisationForm from '@/components/forms/CreateOrganisationForm';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export let updateHome = () => {};
+
 export default function Home() {
+  const [orgModalOpened, setOrgModalOpened] = useState(false);
+
   const [yourOrganisationsCards, setYourOrganisationsCards] = useState([
     <React.Fragment key='1'>
       <Notification
@@ -29,74 +34,77 @@ export default function Home() {
     </React.Fragment>,
   ] as JSX.Element[]);
 
+  const fetchData = async () => {
+    await waitFor(() => getSigner() != null);
+    setYourOrganisationsCards([
+      <React.Fragment key='1'>
+        <Notification
+          withCloseButton={false}
+          color='yellow'
+          title='Loading...'
+        ></Notification>
+      </React.Fragment>,
+    ]);
+    let signer = getSigner();
+    if (signer == null) return;
+
+    let orgFactory = await getOrganisationFactoryContract(
+      ORGANISATION_FACTORY_ADDRESS,
+    );
+    if (orgFactory == null) {
+      setYourOrganisationsCards([
+        <React.Fragment key='1'>
+          <Notification
+            withCloseButton={false}
+            color='red'
+            title='Error'
+          ></Notification>
+        </React.Fragment>,
+      ]);
+      return;
+    }
+
+    let orgs: OrganisationContract[] = [];
+    for await (const orgAddress of organisationsOfOwner(
+      await signer.getAddress(),
+      orgFactory,
+    )) {
+      let org = await getOrganisationContract(orgAddress.toString());
+      if (org != null) orgs.push(org);
+    }
+    let orgCards = await Promise.all(
+      orgs.map(async (org: OrganisationContract, index) => {
+        let metadata = parseMetadata(await org.metadata());
+
+        return (
+          <OrganisationCard
+            title={metadata.name ?? 'name'}
+            key={index}
+            description={metadata.description ?? 'description'}
+            badge={
+              FEATURED_ORGANISATIONS.includes(await org.getAddress())
+                ? 'Featured'
+                : undefined
+            }
+            link={metadata.contacts?.link ?? ''}
+            phone={metadata.contacts?.phone ?? ''}
+            email={metadata.contacts?.email ?? ''}
+            way={'/organisations/' + (await org.getAddress())}
+          />
+        );
+      }),
+    );
+
+    setYourOrganisationsCards(orgCards);
+  };
+
+  updateHome = () => fetchData();
   useEffect(() => {
     let isMounted = true;
 
-    const fetchData = async () => {
-      if (isMounted) {
-        await waitFor(() => getSigner() != null);
-        setYourOrganisationsCards([
-          <React.Fragment key='1'>
-            <Notification
-              withCloseButton={false}
-              color='yellow'
-              title='Loading...'
-            ></Notification>
-          </React.Fragment>,
-        ]);
-        let signer = getSigner();
-        if (signer == null) return;
-
-        let orgFactory = await getOrganisationFactoryContract(
-          ORGANISATION_FACTORY_ADDRESS,
-        );
-        if (orgFactory == null) {
-          setYourOrganisationsCards([
-            <React.Fragment key='1'>
-              <Notification
-                withCloseButton={false}
-                color='red'
-                title='Error'
-              ></Notification>
-            </React.Fragment>,
-          ]);
-          return;
-        }
-
-        let orgs: OrganisationContract[] = [];
-        for await (const orgAddress of organisationsOfOwner(
-          await signer.getAddress(),
-          orgFactory,
-        )) {
-          let org = await getOrganisationContract(orgAddress.toString());
-          if (org != null) orgs.push(org);
-        }
-        let orgCards = await Promise.all(
-          orgs.map(async (org: OrganisationContract, index) => {
-            let metadata = parseMetadata(await org.metadata());
-
-            return (
-              <OrganisationCard
-                title={metadata.name ?? 'name'}
-                key={index}
-                description={metadata.description ?? 'description'}
-                badge={
-                  FEATURED_ORGANISATIONS.includes(await org.getAddress())
-                    ? 'Featured'
-                    : undefined
-                }
-                link={metadata.contacts?.link ?? ''}
-                phone={metadata.contacts?.phone ?? ''}
-                email={metadata.contacts?.email ?? ''}
-                way={'/organisations/' + (await org.getAddress())}
-              />
-            );
-          }),
-        );
-
-        setYourOrganisationsCards(orgCards);
-      }
-    };
+    if (isMounted) {
+      fetchData();
+    }
 
     fetchData();
 
@@ -121,7 +129,43 @@ export default function Home() {
             Your Organisations
           </Title>
           <div className={styles.your_organisations__cards}>
-            <>{yourOrganisationsCards}</>
+            <>
+              {yourOrganisationsCards.length == 0 ? (
+                <div>
+                  <Notification
+                    withCloseButton={false}
+                    color='blue'
+                    title='Don`t have an organisation?'
+                  ></Notification>
+                  <Notification
+                    sx={{ marginTop: '10px' }}
+                    withCloseButton={false}
+                    color='blue'
+                    title='What are you waiting for? Go create one!'
+                  ></Notification>
+                  <Button
+                    sx={{ marginTop: '20px' }}
+                    radius='md'
+                    onClick={() => {
+                      setOrgModalOpened(true);
+                    }}
+                  >
+                    Create Organisation
+                  </Button>
+                  <Modal
+                    opened={orgModalOpened}
+                    onClose={() => setOrgModalOpened(false)}
+                    title='To create Organisation fill in the forms please.'
+                  >
+                    <CreateOrganisationForm
+                      update={() => setOrgModalOpened(false)}
+                    />
+                  </Modal>
+                </div>
+              ) : (
+                yourOrganisationsCards
+              )}
+            </>
           </div>
         </div>
       </div>

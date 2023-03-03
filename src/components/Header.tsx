@@ -13,7 +13,11 @@ import {
   Notification,
 } from '@mantine/core';
 import { AlertTriangle, Search, Wallet } from 'tabler-icons-react';
-import { disconnectProvider, getProvider, updateProvider } from '@/contract_interactions';
+import {
+  disconnectProvider,
+  getProvider,
+  updateProvider,
+} from '@/contract_interactions';
 import { NETWORK } from '@/config';
 import {
   getOrganisationFactoryContract,
@@ -23,6 +27,7 @@ import {
 } from '@/contract_interactions';
 import { useRouter } from 'next/router';
 import { showNotification, updateNotification } from '@mantine/notifications';
+import { updateHome } from '@/pages';
 
 export default function Header() {
   const router = useRouter();
@@ -84,6 +89,7 @@ export default function Header() {
                     title: 'Error',
                     color: 'red',
                     message: 'Contract not found.',
+                    autoClose: 2000,
                   });
                 }
               }}
@@ -112,6 +118,7 @@ export default function Header() {
                       title: 'Error',
                       color: 'red',
                       message: 'Contract not found.',
+                      autoClose: 2000,
                     });
                   }
                 }
@@ -134,11 +141,17 @@ export default function Header() {
                     setWalletConnected(true);
                   } else {
                     setWalletConnected(false);
-                    // TODO: display notification
+                    showNotification({
+                      title: 'Error',
+                      color: 'red',
+                      message: 'Wallet has not been connected.',
+                      autoClose: 2000,
+                    });
                   }
                 } else {
                   await disconnectProvider();
                   setWalletConnected(false);
+                  updateHome();
                 }
               }}
             >

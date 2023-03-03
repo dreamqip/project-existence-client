@@ -27,6 +27,7 @@ import { showNotification, updateNotification } from '@mantine/notifications';
 import { update } from '@/pages/organisations/[id]';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
+import { updateHome } from '@/pages';
 
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
 
@@ -146,6 +147,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               title: 'Error',
               color: 'red',
               message: 'Please connect your wallet!',
+              autoClose: 2000,
             });
             updateNotification({
               id: 'load-data',
@@ -163,6 +165,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               title: 'Error',
               color: 'red',
               message: 'An error occured.',
+              autoClose: 2000,
             });
             updateNotification({
               id: 'load-data',
@@ -219,6 +222,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 break;
             }
           }
+          updateHome();
           router.push('/');
         }}
       >

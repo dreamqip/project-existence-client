@@ -1,17 +1,19 @@
 import React from 'react';
-import {
-  Card,
-  Image,
-  Text,
-  Badge,
-  Button,
-  Group,
-  Stack,
-  Flex,
-} from '@mantine/core';
+import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
-import { format } from 'path';
+const images = [
+  '/image1.png',
+  '/image2.png',
+  '/image3.png',
+  '/image4.png',
+  '/image5.png',
+  '/image6.png',
+  '/image7.png',
+  '/image8.png',
+  '/image9.png',
+  '/image10.png',
+];
 
 export default function MyCard(props: {
   title: string;
@@ -23,10 +25,11 @@ export default function MyCard(props: {
   way?: string;
 }) {
   const { title, description, link, phone, email, badge, way } = props;
+  const randomImage = images[Math.floor(Math.random() * images.length)];
   return (
     <Card shadow='sm' p='lg' radius='md' withBorder>
       <Card.Section>
-        <Image src='/card.png' height={160} alt='Norway' />
+        <Image src='/card.png' height={160} alt='Card' />
       </Card.Section>
       <Group position='apart' mt='md' mb='xs'>
         <Text fz='xl' weight={600}>

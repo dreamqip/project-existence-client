@@ -183,6 +183,7 @@ export default function UpdateOrganisationForm(props: {
               title: 'Error',
               color: 'red',
               message: 'An error occured.',
+              autoClose: 2000,
             });
             updateNotification({
               id: 'load-data',
