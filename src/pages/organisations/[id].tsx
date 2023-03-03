@@ -233,7 +233,7 @@ export default function Organisation() {
             <Tabs defaultValue='items'>
               <Tabs.List>
                 <Tabs.Tab value='items'>Items</Tabs.Tab>
-                <Tabs.Tab value='activity'>Activity</Tabs.Tab>
+                {/* <Tabs.Tab value='activity'>Activity</Tabs.Tab> */}
               </Tabs.List>
 
               <Tabs.Panel value='items' pt='xs'>

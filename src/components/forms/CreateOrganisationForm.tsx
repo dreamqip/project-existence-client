@@ -117,6 +117,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           }
         />
         <TextInput
+          withAsterisk
           sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'

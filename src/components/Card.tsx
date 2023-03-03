@@ -2,6 +2,20 @@ import React from 'react';
 import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
+
+function hashString(str: string) {
+  let hash = 0;
+  if (str.length == 0) {
+    return hash;
+  }
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
 const images = [
   '/image1.jpg',
   '/image2.jpg',
@@ -12,7 +26,7 @@ const images = [
   '/image7.jpg',
   '/image8.jpg',
   '/image9.jpg',
-  '/image0.jpg',
+  '/image10.jpg',
 ];
 
 export default function MyCard(props: {
@@ -26,7 +40,10 @@ export default function MyCard(props: {
   way?: string;
 }) {
   const { title, description, banner, link, phone, email, badge, way } = props;
-  const randomImage = images[Math.floor(Math.random() * images.length)];
+
+  const randomIndex = hashString(title);
+  const randomImage = images[randomIndex % images.length];
+
   return (
     <Card shadow='sm' p='lg' radius='md' withBorder>
       <Card.Section>
