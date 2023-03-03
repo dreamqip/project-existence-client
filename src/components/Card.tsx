@@ -3,33 +3,34 @@ import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
 const images = [
-  '/image1.png',
-  '/image2.png',
-  '/image3.png',
-  '/image4.png',
-  '/image5.png',
-  '/image6.png',
-  '/image7.png',
-  '/image8.png',
-  '/image9.png',
-  '/image10.png',
+  '/image1.jpg',
+  '/image2.jpg',
+  '/image3.jpg',
+  '/image4.jpg',
+  '/image5.jpg',
+  '/image6.jpg',
+  '/image7.jpg',
+  '/image8.jpg',
+  '/image9.jpg',
+  '/image10.jpg',
 ];
 
 export default function MyCard(props: {
   title: string;
   description: string;
+  banner?: string;
   link?: string;
   phone?: string;
   email?: string;
   badge?: string;
   way?: string;
 }) {
-  const { title, description, link, phone, email, badge, way } = props;
+  const { title, description, banner, link, phone, email, badge, way } = props;
   const randomImage = images[Math.floor(Math.random() * images.length)];
   return (
     <Card shadow='sm' p='lg' radius='md' withBorder>
       <Card.Section>
-        <Image src='/card.png' height={160} alt='Card' />
+        <Image src={banner} height={160} alt='Card' />
       </Card.Section>
       <Group position='apart' mt='md' mb='xs'>
         <Text fz='xl' weight={600}>
