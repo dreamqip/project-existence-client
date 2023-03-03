@@ -20,7 +20,7 @@ import DeployRegisterForm from './forms/DeployRegisterForm';
 import CreateRecordForm from './forms/CreateRecordForm';
 import UpdateRegisterForm from './forms/UpdateRegisterForm';
 import InvalidateRecordForm from './forms/InvalidateRecordForm';
-import { getOrganisationContract, getSigner } from '@/contract_interactions';
+import { getOrganisationContract, getRegisterContract, getSigner, RECORD_CREATOR_ROLE, RECORD_INVALIDATOR_ROLE, REGISTER_EDITOR_ROLE } from '@/contract_interactions';
 
 export default function Header__menu({
   walletConnected,
@@ -53,6 +53,11 @@ export default function Header__menu({
     : null;
 
   const [isOrgOwner, setIsOrgOwner] = useState(false);
+  const [regPermissions, setRegPermissions] = useState({
+    recordCreator: false,
+    recordInvalidator: false,
+    registerEditor: false,
+  });
 
   useEffect(() => {
     if (!walletConnected) setIsOrgOwner(false);
@@ -78,6 +83,51 @@ export default function Header__menu({
       // unmount
     };
   }, [walletConnected, orgAddress]);
+
+  useEffect(() => {
+    if (!walletConnected) setRegPermissions({
+      recordCreator: false,
+      recordInvalidator: false,
+      registerEditor: false,
+    });
+    if (!regAddress) {
+      setRegPermissions({
+        recordCreator: false,
+        recordInvalidator: false,
+        registerEditor: false,
+      });
+      return;
+    }
+    (async () => {
+      let signer = await getSigner();
+      if (!signer) {
+        setRegPermissions({
+          recordCreator: false,
+          recordInvalidator: false,
+          registerEditor: false,
+        });
+        return;
+      }
+      let address = await signer.getAddress();
+      let reg = await getRegisterContract(regAddress);
+      if (!reg) {
+        setRegPermissions({
+          recordCreator: false,
+          recordInvalidator: false,
+          registerEditor: false,
+        });
+        return;
+      }
+      setRegPermissions({
+        recordCreator: await reg.hasRole(RECORD_CREATOR_ROLE, address),
+        recordInvalidator: await reg.hasRole(RECORD_INVALIDATOR_ROLE, address),
+        registerEditor: await reg.hasRole(REGISTER_EDITOR_ROLE, address),
+      });
+    })();
+    return () => {
+      // unmount
+    };
+  }, [walletConnected, regAddress]);
 
   return (
     <div>
@@ -148,7 +198,7 @@ export default function Header__menu({
       ) : null}
       {isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
-          <Button radius='md' onClick={() => setCreateRecModalOpened(true)}>
+          <Button radius='md' onClick={() => setCreateRecModalOpened(true)} disabled={!regPermissions.recordCreator}>
             Create Record
           </Button>
           <Modal
@@ -163,7 +213,7 @@ export default function Header__menu({
               registerAddress={regAddress ?? ''}
             />
           </Modal>
-          <Button radius='md' onClick={() => setInvaliRecModalOpened(true)}>
+          <Button radius='md' onClick={() => setInvaliRecModalOpened(true)} disabled={!regPermissions.recordInvalidator}>
             Invalidate Record
           </Button>
           <Modal
@@ -177,7 +227,7 @@ export default function Header__menu({
               registerAddress={regAddress ?? ''}
             />
           </Modal>
-          <Button radius='md' onClick={() => setRegModalOpened(true)}>
+          <Button radius='md' onClick={() => setRegModalOpened(true)} disabled={!regPermissions.registerEditor}>
             Update Register
           </Button>
           <Modal
