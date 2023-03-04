@@ -3,6 +3,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { DataHexString } from 'ethers/types/utils/data';
 import { AddressLike } from 'ethers/types/address';
 import { NETWORK } from './config';
+import { toFunctionSelector } from './utils';
 
 const ORGANISATION_FACTORY_ABI = [
   'function deployOrganisation (string _organisationMetadata, address _organisationOwner) public',
@@ -269,7 +270,7 @@ export async function getOrganisationFactoryContract(
   if (!skipCheck) {
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
-      if (!bytecode.includes(ethers.keccak256(ethers.toUtf8Bytes('deployOrganisation(string,address)')).slice(2, 10))) return null;
+      if (!bytecode.includes(toFunctionSelector('deployOrganisation(string,address)'))) return null;
     } catch { return null }
   }
   return new ethers.Contract(
@@ -286,8 +287,8 @@ export async function getOrganisationContract(
   if (!skipCheck) {
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
-      if (!bytecode.includes(ethers.keccak256(ethers.toUtf8Bytes('editOrganisationMetadata(string)')).slice(2, 10))) return null;
-      if (!bytecode.includes(ethers.keccak256(ethers.toUtf8Bytes('deployRegister(string)')).slice(2, 10))) return null;
+      if (!bytecode.includes(toFunctionSelector('editOrganisationMetadata(string)'))) return null;
+      if (!bytecode.includes(toFunctionSelector('deployRegister(string)'))) return null;
     } catch { return null }
   }
   return new ethers.Contract(
@@ -305,11 +306,7 @@ export async function getRegisterContract(
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
       if (
-        !bytecode.includes(
-          ethers
-            .keccak256(ethers.toUtf8Bytes('editRegisterMetadata(string)'))
-            .slice(2, 10),
-        )
+        !bytecode.includes(toFunctionSelector('editRegisterMetadata(string)'))
       ) {
         return null;
       }
