@@ -147,25 +147,29 @@ export default function Register() {
   const rows = activityElements.map((element, index) => (
     <tr key={index}>
       <td>
-        <CopyButton value={element.address}>
-          {({ copied, copy }) => (
-            <Button
-              color={copied ? 'teal' : 'blue'}
-              onClick={copy}
-              sx={{ marginRight: '10px' }}
-              size='xs'
-              compact
-            >
-              <Copy size={20} strokeWidth={2} color={'#000000'} />
-            </Button>
-          )}
-        </CopyButton>
-        {element.address}
+        {element.address == '' ? null :
+          <>
+            <CopyButton value={element.address}>
+              {({ copied, copy }) => (
+                <Button
+                  color={copied ? 'teal' : 'blue'}
+                  onClick={copy}
+                  sx={{ marginRight: '10px' }}
+                  size='xs'
+                  compact
+                >
+                  <Copy size={20} strokeWidth={2} color={'#000000'} />
+                </Button>
+              )}
+            </CopyButton>
+            {element.address}
+          </>
+        }
       </td>
       <td>{element.action}</td>
       <td>{element.date}</td>
     </tr>
-  )).reverse();
+  ));
 
   const fetchData = async () => {
     let reg = await getRegisterContract(regAddress ?? '');
@@ -208,22 +212,24 @@ export default function Register() {
         ])
       } else {
         let transactions = txs.transactions
-        setActivityElements(transactions.map((item) => {
+        setActivityElements(transactions.sort((a, b) => a.timestamp > b.timestamp ? 0 : 1).map((item) => {
           let action = item.functionSelector;
           let address = '';
           switch (item.functionSelector) {
             case toFunctionSelector('createRecord(bytes32,string,string,uint256,uint256,bytes32)'):
               action = 'Create Record';
+              address = "0x" + item.rawInput.slice(10, 74);
               break;
             case toFunctionSelector('invalidateRecord(bytes32)'):
               action = 'Invalidate Record';
+              address = "0x" + item.rawInput.slice(10, 74);
               break;
             case toFunctionSelector('editRegisterMetadata(string)'):
               action = 'Update Register';
               break;
           }
           return {
-            address: "0x"+item.rawInput.slice(10, 74),
+            address: address,
             date: timestampToDate(item.timestamp * 1000, true),
             action: action,
           };

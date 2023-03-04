@@ -87,8 +87,7 @@ export default function Organisation() {
         <td>{element.action}</td>
         <td>{element.date}</td>
       </tr>
-    ))
-    .reverse();
+    ));
 
   const [orgCard, setOrgCard] = useState(
     <>
@@ -250,7 +249,7 @@ export default function Organisation() {
       ]);
       let i = regAddresses.length - 1;
       setActivityElements(
-        transactions.map((item) => {
+        transactions.sort((a, b) => a.timestamp > b.timestamp ? 0 : 1).map((item) => {
           let action = item.functionSelector;
           let address = '';
           switch (item.functionSelector) {
