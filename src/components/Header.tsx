@@ -74,7 +74,7 @@ export default function Header() {
                     title: 'Error',
                     color: 'red',
                     message: 'Contract or organisation not found.',
-                    autoClose: 2000,
+                    autoClose: 5000,
                   });
                   return;
                 }
@@ -111,7 +111,7 @@ export default function Header() {
                       title: 'Error',
                       color: 'red',
                       message: 'Contract or organisation not found.',
-                      autoClose: 2000,
+                      autoClose: 5000,
                     });
                     return;
                   }
@@ -149,7 +149,7 @@ export default function Header() {
                       title: 'Error',
                       color: 'red',
                       message: 'Wallet has not been connected.',
-                      autoClose: 2000,
+                      autoClose: 5000,
                     });
                   }
                 } else {

@@ -29,11 +29,13 @@ import { update } from '@/pages/organisations/[id]';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import { updateHome } from '@/pages';
+import { updateOrganisations } from '@/pages/organisations';
 
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
 
 export default function CreateOrganisationForm(props: { update: () => any }) {
   const router = useRouter();
+  const isHomePage = router.pathname === '/';
   const [buttonContent, setButtonContent] = useState([
     <>Create Organisation</>,
     true,
@@ -117,7 +119,6 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           }
         />
         <TextInput
-          withAsterisk
           sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
@@ -160,13 +161,13 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               title: 'Error',
               color: 'red',
               message: 'Please connect your wallet!',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             updateNotification({
               id: 'load-data',
               message:
                 'Notification will close in 2 seconds, you can close this notification now',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             return;
           }
@@ -178,13 +179,13 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               title: 'Error',
               color: 'red',
               message: 'An error occured.',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             updateNotification({
               id: 'load-data',
               message:
                 'Notification will close in 2 seconds, you can close this notification now',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             return;
           }
@@ -206,7 +207,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 message:
                   'Notification will close in 2 seconds, you can close this notification now',
                 icon: <Check />,
-                autoClose: 2000,
+                autoClose: 5000,
               });
             }, 3000);
           } catch (error: any) {
@@ -219,7 +220,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
-                  autoClose: 2000,
+                  autoClose: 5000,
                 });
                 break;
               case 'CALL_EXCEPTION':
@@ -230,7 +231,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
-                  autoClose: 2000,
+                  autoClose: 5000,
                 });
                 break;
               default:
@@ -241,13 +242,17 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
-                  autoClose: 2000,
+                  autoClose: 5000,
                 });
                 break;
             }
           }
-          updateHome();
-          router.push('/');
+          if (isHomePage) {
+            updateHome();
+          } else {
+            updateOrganisations();
+            router.push('/organisations');
+          }
         }}
       >
         {buttonContent[0]}

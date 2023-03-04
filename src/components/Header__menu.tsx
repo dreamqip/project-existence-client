@@ -208,7 +208,6 @@ export default function Header__menu({
             Create Record
           </Button>
           <Modal
-            className={styles.create_record__modal}
             size='lg'
             opened={createRecModalOpened}
             onClose={() => setCreateRecModalOpened(false)}

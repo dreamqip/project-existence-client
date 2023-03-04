@@ -19,6 +19,28 @@
         display: flex;
         flex-wrap: wrap;
     }
+    &__your_organisations{
+        margin-top: 50px;
+    }
+}
+
+.your_organisations{
+    &__cards{
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 20px;
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr 1fr;
+        }
+        @media (max-width: 425px) {
+            grid-template-columns: 1fr;
+        }
+        div{
+            height: max-content !important;
+        }
+    }
+    
 }
 
 .featured{

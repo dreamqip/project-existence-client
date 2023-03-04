@@ -15,3 +15,7 @@ td{
   text-overflow: ellipsis !important;
   max-width: 80px;
 }
+
+.mantine-Modal-header, .mantine-1sffr2y{
+  position: relative !important;
+}

@@ -13,6 +13,7 @@ import {
   Title,
   Notification,
   Table,
+  Modal,
 } from '@mantine/core';
 
 import OrganisationCard from '@/components/Card';
@@ -26,12 +27,14 @@ import {
 } from '@/contract_interactions';
 import { FEATURED_ORGANISATIONS } from '@/config';
 import { parseMetadata, timestampToDate, toFunctionSelector } from '@/utils';
+import DeployRegisterForm from '@/components/forms/DeployRegisterForm';
 import { getActivityTransactions, TracerTransaction } from '@/tracer_interactions';
 
 export let update = () => { };
 
 export default function Organisation() {
   const router = useRouter();
+  const [regModalOpened, setRegModalOpened] = useState(false);
   const { id } = router.query;
   const breadCrumbItems = [
     { title: 'Home', href: '/' },
@@ -42,6 +45,17 @@ export default function Organisation() {
       {item.title}
     </Link>
   ));
+
+  const isOrgOwner = true;
+
+  const isOrganisationPage = /\/organisations\/.+/.test(router.pathname);
+  const orgAddress = isOrganisationPage
+    ? router.query.id
+      ? typeof router.query.id == 'string'
+        ? router.query.id
+        : router.query.id[0]
+      : null
+    : null;
 
   const [activityElements, setActivityElements] = useState([
     {
@@ -309,6 +323,24 @@ export default function Organisation() {
                       color='blue'
                       title='Connect wallet and click `Deploy Register`.'
                     ></Notification>
+                    <Button
+                      radius='md'
+                      onClick={() => setRegModalOpened(true)}
+                      disabled={!isOrgOwner}
+                    >
+                      Deploy Register
+                    </Button>
+                    <Modal
+                      opened={regModalOpened}
+                      onClose={() => setRegModalOpened(false)}
+                      title='To create Register fill in the forms'
+                    >
+                      <DeployRegisterForm
+                        orgAddress={orgAddress ?? ''}
+                        update={() => update()}
+                        updateModal={() => setRegModalOpened(false)}
+                      />
+                    </Modal>
                   </div>
                 )}
               </Tabs.Panel>
