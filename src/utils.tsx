@@ -8,6 +8,22 @@ export function waitFor(conditionFunction: () => boolean) {
   return new Promise(poll);
 }
 
+export function timestampToDate(milliseconds: string | number, extended = false) {
+  const numbers = typeof milliseconds == "number" ? milliseconds : parseInt(milliseconds) * 1000;
+  const dateObj = new Date(numbers);
+
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth() + 1;
+  const day = dateObj.getDate();
+
+  let hour = dateObj.getHours().toString();
+  if(hour.length != 2) hour = "0"+hour;
+  let minute = dateObj.getMinutes().toString();
+  if(minute.length != 2) minute = "0"+minute;
+
+  return `${day}-${month}-${year}`+(extended ? ` ${hour}:${minute}` : '');
+}
+
 export type Metadata = {
   name?: string;
   description?: string;
