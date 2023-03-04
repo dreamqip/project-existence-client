@@ -39,6 +39,7 @@ export default function UpdateOrganisationForm(props: {
   });
 
   console.log(formInput);
+
   const [buttonContent, setButtonContent] = useState([
     <>Update Organisation</>,
     true,
@@ -84,6 +85,7 @@ export default function UpdateOrganisationForm(props: {
         placeholder='Organisation name'
         label='Organisation name'
         defaultValue={orgMetadata.name ?? ''}
+        value={formInput.name ?? ''}
         onChange={(event) =>
           setFormInput({
             ...formInput,
@@ -94,6 +96,7 @@ export default function UpdateOrganisationForm(props: {
       <TextInput
         icon={<TextCaption />}
         defaultValue={orgMetadata.description ?? ''}
+        value={formInput.description ?? ''}
         placeholder='Organisation description'
         label='Organisation description'
         onChange={(event) =>

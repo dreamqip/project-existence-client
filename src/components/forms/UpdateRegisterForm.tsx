@@ -84,6 +84,7 @@ export default function UpdateRegisterForm(props: {
         placeholder='Register name'
         label='Register name'
         defaultValue={regMetadata.name ?? ''}
+        value={formInput.name ?? ''}
         onChange={(event) =>
           setFormInput({
             ...formInput,
@@ -94,6 +95,7 @@ export default function UpdateRegisterForm(props: {
       <TextInput
         icon={<TextCaption />}
         defaultValue={regMetadata.description ?? ''}
+        value={formInput.description ?? ''}
         placeholder='Register description'
         label='Register description'
         onChange={(event) =>
