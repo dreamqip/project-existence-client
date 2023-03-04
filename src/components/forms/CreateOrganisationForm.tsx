@@ -32,6 +32,7 @@ import { updateHome } from '@/pages';
 import { updateOrganisations } from '@/pages/organisations';
 
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
+const phoneRegex = /^\+\d+$/;
 
 export default function CreateOrganisationForm(props: { update: () => any }) {
   const router = useRouter();
@@ -142,7 +143,9 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           formInput.name.trim() == '' ||
           formInput.description.trim() == '' ||
           (emailRegex.test(formInput.contacts.email) == false &&
-            formInput.contacts.email.trim() != '')
+            formInput.contacts.email.trim() != '') ||
+          (phoneRegex.test(formInput.contacts.phone) == false &&
+            formInput.contacts.phone.trim() != '')
         }
         onClick={async (e) => {
           props.update();

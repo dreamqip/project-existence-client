@@ -20,6 +20,7 @@ import {
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { parseMetadata, waitFor, type Metadata } from '@/utils';
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
+const phoneRegex = /^\+\d+$/;
 
 export default function UpdateOrganisationForm(props: {
   orgAddress: string;
@@ -179,7 +180,9 @@ export default function UpdateOrganisationForm(props: {
           formInput.name.trim() == '' ||
           formInput.description.trim() == '' ||
           (emailRegex.test(formInput.contacts.email) == false &&
-            formInput.contacts.email.trim() != '')
+            formInput.contacts.email.trim() != '') ||
+          (phoneRegex.test(formInput.contacts.phone) == false &&
+            formInput.contacts.phone.trim() != '')
         }
         onClick={async (e) => {
           props.updateModal();
