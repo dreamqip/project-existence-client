@@ -33,6 +33,7 @@ const items = [
     {item.title}
   </Link>
 ));
+import Head from 'next/head';
 
 export let updateOrganisations = () => {};
 

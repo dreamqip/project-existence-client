@@ -207,7 +207,7 @@ export default function HeaderMenu({
               title='Alert'
               onClose={() => setSearchAlert(false)}
             >
-              Address not found
+              Organisation or Register not found.
             </Notification>
           ) : null}
           {isHomePage ? null : null}

@@ -73,7 +73,7 @@ export default function Header() {
                   showNotification({
                     title: 'Error',
                     color: 'red',
-                    message: 'Contract or organisation not found.',
+                    message: 'Organisation or Register not found.',
                     autoClose: 5000,
                   });
                   return;
