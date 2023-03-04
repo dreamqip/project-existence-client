@@ -1,64 +1,51 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
+
 import styles from '@/styles/Header.module.scss';
+import { Button, TextInput, Title, ActionIcon } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
+import { Search, Wallet } from 'tabler-icons-react';
+
 import Header__menu from './Header__menu';
 import Header__mobile_menu from './Header__mobile_menu';
+import { updateHome } from '@/pages';
+
 import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
-import {
-  Button,
-  TextInput,
-  Title,
-  ActionIcon,
-  Notification,
-} from '@mantine/core';
-import { AlertTriangle, Search, Wallet } from 'tabler-icons-react';
 import {
   disconnectProvider,
   getProvider,
-  OrganisationContract,
   updateProvider,
-} from '@/contract_interactions';
-import { NETWORK } from '@/config';
-import {
   getOrganisationFactoryContract,
   searchForOrganisationOrRegister,
   getSigner,
   OrganisationFactoryContract,
 } from '@/contract_interactions';
-import { useRouter } from 'next/router';
-import { showNotification, updateNotification } from '@mantine/notifications';
-import { updateHome } from '@/pages';
 
 export default function Header() {
   const router = useRouter();
   const [walletConnected, setWalletConnected] = useState(getProvider() != null);
-  const [searchAlert, setSearchAlert] = useState(false);
-  const [contractAddr, setContractAddr] = useState({
-    address: '',
-  });
+  const [contractAddr, setContractAddr] = useState({ address: '' });
   const [orgFactory, setOrgFactory] = useState<
     OrganisationFactoryContract | undefined
   >(undefined);
 
+  const fetchData = async () => {
+    let signer = getSigner();
+    if (signer == null) return;
+
+    let factory = await getOrganisationFactoryContract(
+      ORGANISATION_FACTORY_ADDRESS,
+    );
+    if (factory != null) {
+      setOrgFactory(factory);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
-    const fetchData = async () => {
-      if (isMounted) {
-        let signer = getSigner();
-        if (signer == null) return;
-
-        let factory = await getOrganisationFactoryContract(
-          ORGANISATION_FACTORY_ADDRESS,
-        );
-        if (factory != null) {
-          setOrgFactory(factory);
-        }
-      }
-    };
-
-    fetchData();
+    if (isMounted) fetchData();
 
     return () => {
       isMounted = false;
@@ -81,7 +68,7 @@ export default function Header() {
                 let searchResult = await searchForOrganisationOrRegister(
                   contractAddr.address,
                   orgFactory,
-                )
+                );
                 if (searchResult == null) {
                   showNotification({
                     title: 'Error',
@@ -91,12 +78,15 @@ export default function Header() {
                   });
                   return;
                 }
-                if (
-                  searchResult[1] == 'org'
-                ) {
+                if (searchResult[1] == 'org') {
                   router.push('/organisations/' + contractAddr.address);
                 } else {
-                  router.push('/organisations/' + (await searchResult[0].getAddress()) + "/" + contractAddr.address);
+                  router.push(
+                    '/organisations/' +
+                      (await searchResult[0].getAddress()) +
+                      '/' +
+                      contractAddr.address,
+                  );
                 }
               }}
             >
@@ -115,7 +105,7 @@ export default function Header() {
                   let searchResult = await searchForOrganisationOrRegister(
                     contractAddr.address,
                     orgFactory,
-                  )
+                  );
                   if (searchResult == null) {
                     showNotification({
                       title: 'Error',
@@ -125,12 +115,15 @@ export default function Header() {
                     });
                     return;
                   }
-                  if (
-                    searchResult[1] == 'org'
-                  ) {
+                  if (searchResult[1] == 'org') {
                     router.push('/organisations/' + contractAddr.address);
                   } else {
-                    router.push('/organisations/' + (await searchResult[0].getAddress()) + "/" + contractAddr.address);
+                    router.push(
+                      '/organisations/' +
+                        (await searchResult[0].getAddress()) +
+                        '/' +
+                        contractAddr.address,
+                    );
                   }
                 }
               }}

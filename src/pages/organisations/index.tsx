@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import OrganisationCard from '@/components/Card';
+import Link from 'next/link';
+
 import { Title, Text, Breadcrumbs, Anchor, Notification } from '@mantine/core';
 import styles from '@/styles/Organisations.module.scss';
-import Link from 'next/link';
+
+import OrganisationCard from '@/components/Card';
+
 import {
   getOrganisationContract,
   getSigner,

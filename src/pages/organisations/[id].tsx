@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+
 import styles from '@/styles/Organisation.module.scss';
-import OrganisationCard from '@/components/Card';
-import RegisterCard from '@/components/Card';
+import { Copy } from 'tabler-icons-react';
+
 import {
   Breadcrumbs,
   Tabs,
-  Table,
   CopyButton,
   Button,
   Title,
   Notification,
+  Table,
 } from '@mantine/core';
-import { Copy } from 'tabler-icons-react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+
+import OrganisationCard from '@/components/Card';
+import RegisterCard from '@/components/Card';
+
 import {
   getOrganisationContract,
   getRegisterContract,
-  getSigner,
   RegisterContract,
   registersOfOrganisation,
 } from '@/contract_interactions';
 import { FEATURED_ORGANISATIONS } from '@/config';
-import { parseMetadata, waitFor } from '@/utils';
+import { parseMetadata } from '@/utils';
 
 export let update = () => {};
 
@@ -233,7 +236,7 @@ export default function Organisation() {
             <Tabs defaultValue='items'>
               <Tabs.List>
                 <Tabs.Tab value='items'>Items</Tabs.Tab>
-                {/* <Tabs.Tab value='activity'>Activity</Tabs.Tab> */}
+                <Tabs.Tab value='activity'>Activity</Tabs.Tab>
               </Tabs.List>
 
               <Tabs.Panel value='items' pt='xs'>
@@ -262,7 +265,7 @@ export default function Organisation() {
                 )}
               </Tabs.Panel>
 
-              {/* <Tabs.Panel value='activity' pt='xs'>
+              <Tabs.Panel value='activity' pt='xs'>
                 <Table highlightOnHover>
                   <thead>
                     <tr>
@@ -273,7 +276,7 @@ export default function Organisation() {
                   </thead>
                   <tbody>{rows}</tbody>
                 </Table>
-              </Tabs.Panel> */}
+              </Tabs.Panel>
             </Tabs>
           </div>
         </div>

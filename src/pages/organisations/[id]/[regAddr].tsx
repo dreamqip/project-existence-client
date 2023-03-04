@@ -1,10 +1,20 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { sha256 } from 'crypto-hash';
+import { useRouter } from 'next/router';
+
 import styles from '@/styles/Register.module.scss';
+import { showNotification, updateNotification } from '@mantine/notifications';
+import {
+  Copy,
+  ArrowUpRight,
+  Search,
+  Upload,
+  X,
+  Check,
+} from 'tabler-icons-react';
 import {
   Breadcrumbs,
-  Tabs,
-  Table,
   Button,
   CopyButton,
   TextInput,
@@ -18,18 +28,12 @@ import {
   ActionIcon,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
-import RegisterCard from '@/components/Card';
-import Link from 'next/link';
-import { Copy } from 'tabler-icons-react';
-import { ArrowUpRight, Search, Upload, X, Check } from 'tabler-icons-react';
-import { sha256 } from 'crypto-hash';
-import { showNotification, updateNotification } from '@mantine/notifications';
 
-import { useRouter } from 'next/router';
+import RegisterCard from '@/components/Card';
+
 import {
   getRecord,
   getRegisterContract,
-  getSigner,
   type Record,
 } from '@/contract_interactions';
 import { parseMetadata, waitFor } from '@/utils';

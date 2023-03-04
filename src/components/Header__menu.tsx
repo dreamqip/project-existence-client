@@ -1,26 +1,27 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+
 import styles from '@/styles/Header.module.scss';
-import { Button, TextInput, Modal, Stack, LoadingOverlay } from '@mantine/core';
-import {
-  TextCaption,
-  BrandMailgun,
-  TextColor,
-  Hash,
-  ExternalLink,
-  FileSymlink,
-  FileTime,
-} from 'tabler-icons-react';
+import { Button, Modal } from '@mantine/core';
+
 import CreateOrganisationForm from './forms/CreateOrganisationForm';
 import UpdateOrganisationForm from './forms/UpdateOrganisationForm';
-import { update as updateOrganisationPage } from '@/pages/organisations/[id]';
-import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAddr]';
 import DeployRegisterForm from './forms/DeployRegisterForm';
 import CreateRecordForm from './forms/CreateRecordForm';
 import UpdateRegisterForm from './forms/UpdateRegisterForm';
 import InvalidateRecordForm from './forms/InvalidateRecordForm';
-import { getOrganisationContract, getRegisterContract, getSigner, RECORD_CREATOR_ROLE, RECORD_INVALIDATOR_ROLE, REGISTER_EDITOR_ROLE } from '@/contract_interactions';
+
+import { update as updateOrganisationPage } from '@/pages/organisations/[id]';
+import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAddr]';
+
+import {
+  getOrganisationContract,
+  getRegisterContract,
+  getSigner,
+  RECORD_CREATOR_ROLE,
+  RECORD_INVALIDATOR_ROLE,
+  REGISTER_EDITOR_ROLE,
+} from '@/contract_interactions';
 
 export default function Header__menu({
   walletConnected,
@@ -85,11 +86,12 @@ export default function Header__menu({
   }, [walletConnected, orgAddress]);
 
   useEffect(() => {
-    if (!walletConnected) setRegPermissions({
-      recordCreator: false,
-      recordInvalidator: false,
-      registerEditor: false,
-    });
+    if (!walletConnected)
+      setRegPermissions({
+        recordCreator: false,
+        recordInvalidator: false,
+        registerEditor: false,
+      });
     if (!regAddress) {
       setRegPermissions({
         recordCreator: false,
@@ -198,7 +200,11 @@ export default function Header__menu({
       ) : null}
       {isRegisterPage && walletConnected ? (
         <div className={styles.header__menu}>
-          <Button radius='md' onClick={() => setCreateRecModalOpened(true)} disabled={!regPermissions.recordCreator}>
+          <Button
+            radius='md'
+            onClick={() => setCreateRecModalOpened(true)}
+            disabled={!regPermissions.recordCreator}
+          >
             Create Record
           </Button>
           <Modal
@@ -213,7 +219,11 @@ export default function Header__menu({
               registerAddress={regAddress ?? ''}
             />
           </Modal>
-          <Button radius='md' onClick={() => setInvaliRecModalOpened(true)} disabled={!regPermissions.recordInvalidator}>
+          <Button
+            radius='md'
+            onClick={() => setInvaliRecModalOpened(true)}
+            disabled={!regPermissions.recordInvalidator}
+          >
             Invalidate Record
           </Button>
           <Modal
@@ -227,7 +237,11 @@ export default function Header__menu({
               registerAddress={regAddress ?? ''}
             />
           </Modal>
-          <Button radius='md' onClick={() => setRegModalOpened(true)} disabled={!regPermissions.registerEditor}>
+          <Button
+            radius='md'
+            onClick={() => setRegModalOpened(true)}
+            disabled={!regPermissions.registerEditor}
+          >
             Update Register
           </Button>
           <Modal

@@ -1,12 +1,8 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+
 import styles from '@/styles/Header.module.scss';
-import {
-  getOrganisationFactoryContract,
-  searchForOrganisationOrRegister,
-  OrganisationFactoryContract,
-} from '@/contract_interactions';
+import { Search, Menu2 } from 'tabler-icons-react';
 import {
   Button,
   TextInput,
@@ -14,30 +10,22 @@ import {
   Drawer,
   Group,
   Modal,
-  Stack,
   Notification,
 } from '@mantine/core';
-import {
-  Search,
-  Menu2,
-  TextCaption,
-  BrandMailgun,
-  TextColor,
-  Hash,
-  ExternalLink,
-  FileSymlink,
-  FileTime,
-} from 'tabler-icons-react';
-import { ORGANISATION_FACTORY_ADDRESS } from '@/config';
-import { update as updateOrganisationPage } from '@/pages/organisations/[id]';
+
 import CreateOrganisationForm from './forms/CreateOrganisationForm';
 import UpdateOrganisationForm from './forms/UpdateOrganisationForm';
-import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAddr]';
 import DeployRegisterForm from './forms/DeployRegisterForm';
 import CreateRecordForm from './forms/CreateRecordForm';
 import UpdateRegisterForm from './forms/UpdateRegisterForm';
 import InvalidateRecordForm from './forms/InvalidateRecordForm';
+
+import { update as updateOrganisationPage } from '@/pages/organisations/[id]';
+import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAddr]';
+
 import {
+  searchForOrganisationOrRegister,
+  OrganisationFactoryContract,
   getOrganisationContract,
   getRegisterContract,
   getSigner,
@@ -224,7 +212,7 @@ export default function HeaderMenu({
           ) : null}
           {isHomePage ? null : null}
           {isOrganisationsPage && walletConnected ? (
-            <div className={styles.header__mobile_menu}>
+            <div className={styles.header__menu}>
               <Button
                 radius='md'
                 onClick={() => {
@@ -248,7 +236,7 @@ export default function HeaderMenu({
           orgAddress &&
           !isRegisterPage &&
           walletConnected ? (
-            <div className={styles.header__mobile_menu}>
+            <div className={styles.header__menu}>
               <Button
                 radius='md'
                 onClick={() => {
@@ -290,7 +278,7 @@ export default function HeaderMenu({
             </div>
           ) : null}
           {isRegisterPage && walletConnected ? (
-            <div className={styles.header__mobile_menu}>
+            <div className={styles.header__menu}>
               <Button
                 radius='md'
                 onClick={() => setCreateRecModalOpened(true)}
