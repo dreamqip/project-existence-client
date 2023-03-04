@@ -333,14 +333,31 @@ export default function Register() {
             {searchBlock ? (
               <div className={styles.records__result}>
                 <Notification
-                  color='teal'
+                  color={
+                    Number(searchResult.expiresAt) == 0 ||
+                    Number(searchResult.expiresAt) > new Date().getTime()
+                      ? 'teal'
+                      : 'red'
+                  }
                   title='The last record successfully requested.'
                   onClose={() => setSearchBlock(false)}
                 >
                   <div className={styles.result__notification}>
-                    <Text>
+                    <Text size='sm'>
                       Click details to get more information about the record
                     </Text>
+
+                    <Text
+                      c={
+                        Number(searchResult.expiresAt) == 0 ||
+                        Number(searchResult.expiresAt) > new Date().getTime()
+                          ? 'teal'
+                          : 'red'
+                      }
+                    >
+                      {searchResult.documentHash}
+                    </Text>
+
                     <Button
                       className={styles.records__link_btn}
                       onClick={() => setOpened(true)}

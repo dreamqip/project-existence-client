@@ -156,7 +156,7 @@ export default function CreateRecordForm(props: {
             onChange={(value) =>
               setFormInput({
                 ...formInput,
-                startsAt: (() => value?.getTime() ?? 0)(),
+                startsAt: (() => (value?.getTime() ?? 0) / 1000)(),
               })
             }
           />
@@ -167,7 +167,7 @@ export default function CreateRecordForm(props: {
             onChange={(value) =>
               setFormInput({
                 ...formInput,
-                expiresAt: (() => value?.getTime() ?? 0)(),
+                expiresAt: (() => (value?.getTime() ?? 0) / 1000)(),
               })
             }
           />
