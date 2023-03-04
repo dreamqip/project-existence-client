@@ -29,11 +29,13 @@ import { update } from '@/pages/organisations/[id]';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import { updateHome } from '@/pages';
+import { updateOrganisations } from '@/pages/organisations';
 
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
 
 export default function CreateOrganisationForm(props: { update: () => any }) {
   const router = useRouter();
+  const isHomePage = router.pathname === '/';
   const [buttonContent, setButtonContent] = useState([
     <>Create Organisation</>,
     true,
@@ -117,7 +119,6 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
           }
         />
         <TextInput
-          withAsterisk
           sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
@@ -246,8 +247,12 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 break;
             }
           }
-          updateHome();
-          router.push('/');
+          if (isHomePage) {
+            updateHome();
+          } else {
+            updateOrganisations();
+            router.push('/organisations');
+          }
         }}
       >
         {buttonContent[0]}

@@ -109,8 +109,6 @@ export default function Home() {
       fetchData();
     }
 
-    fetchData();
-
     return () => {
       isMounted = false;
     };
