@@ -40,6 +40,8 @@ import {
 } from '@/contract_interactions';
 import { parseMetadata, waitFor } from '@/utils';
 import { NULL_ADDR, NULL_HASH } from '@/config';
+import { getIncomingTransactions } from '@/tracer_interactions';
+import { ethers } from 'ethers';
 
 export let update = () => {};
 

@@ -15,6 +15,15 @@ const nextConfig = {
         source: '/api/rpc/fakenet',
         destination: 'http://localhost:18545',
       },
+
+      {
+        source: '/api/rpc/tracer/mainnet',
+        destination: 'https://rpcapi-tracing.fantom.network/',
+      },
+      {
+        source: '/api/rpc/tracer/testnet',
+        destination: 'https://rpcapi-tracing.testnet.fantom.network/',
+      },
     ]
   },
 }
