@@ -249,7 +249,7 @@ export default function Organisation() {
       ]);
       let i = regAddresses.length - 1;
       setActivityElements(
-        transactions.sort((a, b) => a.timestamp > b.timestamp ? 0 : 1).map((item) => {
+        transactions.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((item) => {
           let action = item.functionSelector;
           let address = '';
           switch (item.functionSelector) {

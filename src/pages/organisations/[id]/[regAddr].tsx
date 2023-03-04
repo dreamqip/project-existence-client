@@ -212,7 +212,7 @@ export default function Register() {
         ])
       } else {
         let transactions = txs.transactions
-        setActivityElements(transactions.sort((a, b) => a.timestamp > b.timestamp ? 0 : 1).map((item) => {
+        setActivityElements(transactions.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((item) => {
           let action = item.functionSelector;
           let address = '';
           switch (item.functionSelector) {
