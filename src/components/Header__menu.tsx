@@ -16,6 +16,7 @@ import { update as updateRegisterPage } from '@/pages/organisations/[id]/[regAdd
 
 import {
   getOrganisationContract,
+  getProvider,
   getRegisterContract,
   getSigner,
   RECORD_CREATOR_ROLE,

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 import styles from '@/styles/Organisation.module.scss';
-import { Copy } from 'tabler-icons-react';
+import { ArrowUp, Copy } from 'tabler-icons-react';
 
 import {
   Breadcrumbs,
@@ -13,7 +13,9 @@ import {
   Title,
   Notification,
   Table,
-  Modal,
+  Affix,
+  Transition,
+  rem,
 } from '@mantine/core';
 
 import OrganisationCard from '@/components/Card';
@@ -27,13 +29,13 @@ import {
 } from '@/contract_interactions';
 import { FEATURED_ORGANISATIONS } from '@/config';
 import { parseMetadata } from '@/utils';
-import DeployRegisterForm from '@/components/forms/DeployRegisterForm';
+import { useWindowScroll } from '@mantine/hooks';
 
 export let update = () => {};
 
 export default function Organisation() {
+  const [scroll, scrollTo] = useWindowScroll();
   const router = useRouter();
-  const [regModalOpened, setRegModalOpened] = useState(false);
   const { id } = router.query;
   const breadCrumbItems = [
     { title: 'Home', href: '/' },
@@ -44,15 +46,6 @@ export default function Organisation() {
       {item.title}
     </Link>
   ));
-
-  const isOrganisationPage = /\/organisations\/.+/.test(router.pathname);
-  const orgAddress = isOrganisationPage
-    ? router.query.id
-      ? typeof router.query.id == 'string'
-        ? router.query.id
-        : router.query.id[0]
-      : null
-    : null;
 
   const elements = [
     {
@@ -260,39 +253,29 @@ export default function Organisation() {
                   <div>
                     <Notification
                       withCloseButton={false}
-                      color='blue'
-                      title='Don`t have a Register?'
+                      color='yellow'
+                      title='There are no Registers yet.'
                     ></Notification>
                     <Notification
                       sx={{ marginTop: '10px' }}
                       withCloseButton={false}
                       color='blue'
-                      title='What are you waiting for? Go create one!'
+                      title='Are you the Organisation owner? What are you waiting for? Go create one!'
                     ></Notification>
                     <Notification
                       sx={{ marginTop: '10px' }}
                       withCloseButton={false}
                       color='blue'
-                      title='Connect wallet and click `Deploy Register`.'
+                      title='`Connect wallet` and click `Deploy Register`.'
                     ></Notification>
                     <Button
-                      radius='md'
-                      onClick={() => setRegModalOpened(true)}
-                      disabled={!isOrgOwner}
+                      className={styles.scroll}
+                      sx={{ marginTop: '10px' }}
+                      leftIcon={<ArrowUp size={30} />}
+                      onClick={() => scrollTo({ y: 0 })}
                     >
-                      Deploy Register
+                      Scroll to top
                     </Button>
-                    <Modal
-                      opened={regModalOpened}
-                      onClose={() => setRegModalOpened(false)}
-                      title='To create Register fill in the forms'
-                    >
-                      <DeployRegisterForm
-                        orgAddress={orgAddress}
-                        update={() => update()}
-                        updateModal={() => setRegModalOpened(false)}
-                      />
-                    </Modal>
                   </div>
                 )}
               </Tabs.Panel>
