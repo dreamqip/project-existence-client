@@ -1,0 +1,21 @@
+body{
+  background-image: linear-gradient( black 0%, #04619F 250% ) !important;
+  background-repeat:no-repeat;
+  background-size:100%;
+  background-position:center;
+}
+a{
+  text-decoration: none !important;
+  color: white;
+}
+
+td{
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 80px;
+}
+
+.mantine-Modal-header, .mantine-1sffr2y{
+  position: relative !important;
+}

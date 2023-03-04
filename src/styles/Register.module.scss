@@ -1,0 +1,142 @@
+.register{
+    &__container{
+        padding: 0 20px;
+        max-width: 1240px;
+        margin: 0 auto;
+        margin-top: 25px;
+    }
+    &__body{
+        display: flex;
+        margin: 0px -10px;
+        @media (max-width: 768px){
+            flex-direction: column;
+        }
+        div{
+            flex: 1 1 auto;
+        }
+        margin-top: 25px;
+    }
+    &__card{
+        max-width: 400px;
+        padding: 0px 10px;
+    }
+    &__breadcrumbs{
+        display: flex;
+        flex-wrap: wrap;
+        @media (max-width: 425px) {
+            flex-direction: column;
+            align-items: flex-start;
+        }   
+    }
+}
+
+.records{
+    &__tabs{
+        margin-top: 25px;
+    }
+    &__check{
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        grid-gap: 10px;
+        @media (max-width: 768px){
+            margin-top: 10px;
+        }
+    }
+    &__title{
+        margin-bottom: 25px;
+        text-align: center;
+        @media (max-width: 768px){
+            margin-bottom: 25px;
+            margin-top: 40px;
+        }
+    }
+    &__link{
+        display: block;
+        padding: 0;
+    }
+    &__link_btn{
+        margin-top: 10px;
+        display: block;
+    }
+    &__record{
+        padding: 25px;
+        padding-left: 0;
+    }
+    
+}
+
+
+.search{
+    &__button{
+        margin-left: 6px;
+        margin-bottom: -35px;
+        z-index: 10;
+    }
+}
+
+.result{
+    &__hash{
+        margin: 10px;
+    }
+    &__notification{
+        button{
+            margin-top: 10px;
+        }
+    }
+}
+
+.dates{
+    display: flex;
+    gap: 20px;
+    .date{
+        padding: 10px;
+        max-width: 250px;
+        @media (max-width: 768px) {
+            border: none;
+        }
+    }
+    @media (max-width: 768px){
+        flex-direction: column;
+        gap: 0px;
+    }
+}
+
+
+.hide{
+    display: none;
+}
+
+.link{
+    color: #C1C2C5;;
+  }
+
+  .record{
+    &__list{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    &__modal{
+        div{
+            z-index: 1000;
+        }
+    }
+  }
+
+  .bread_link{
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    @media (max-width: 768px){
+        max-width: 100%;
+    }
+}
+
+.column{
+    @media (max-width: 425px){
+        max-width: 50px;
+        white-space: normal;
+        
+        font-size: 14px !important;
+    }
+}
