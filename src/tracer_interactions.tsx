@@ -26,7 +26,7 @@ export type TracerTransaction = {
   from: string,
   to: string
   timestamp: number,
-  transaction: TransactionResponse | null,
+  rawInput: string,
 }
 
 let requestId = 1;
@@ -68,18 +68,12 @@ export async function getActivityTransactions(to: string, blocks = 10000, fromBl
         if (item.action?.callType != "call") return false;
         return true;
       }).map(async (item, index) => {
-        try {
-          let x = Transaction.from(item.action.input);
-          console.log(x);
-        } catch (error) {
-          console.log(error);
-        }
         return {
           from: item.action.from,
           to: item.action.to,
           functionSelector: item.action.input.slice(2, 10),
           timestamp: (await getReadOnlyProvider()?.getBlock(item.blockHash))?.timestamp,
-          transaction: await getReadOnlyProvider().getTransaction(item.transactionHash),
+          rawInput: item.action.input,
         } as TracerTransaction;
       }));
       return { error: null, transactions: txs }
