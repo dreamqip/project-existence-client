@@ -76,6 +76,8 @@ export default function Organisation() {
         <CopyButton value={element.address}>
           {({ copied, copy }) => (
             <Button
+              size='xs'
+              compact
               color={copied ? 'teal' : 'blue'}
               onClick={copy}
               sx={{ marginRight: '10px' }}
