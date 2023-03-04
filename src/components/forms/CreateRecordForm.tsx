@@ -209,9 +209,9 @@ export default function CreateRecordForm(props: {
         radius='md'
         color='red'
         disabled={
-          formInput.documentHash == '' ||
-          (checkedReference && formInput.referenceDocument == '') ||
-          (checkedSource && formInput.sourceDocument == '') ||
+          formInput.documentHash.trim() == '' ||
+          (checkedReference && formInput.referenceDocument.trim() == '') ||
+          (checkedSource && formInput.sourceDocument.trim() == '') ||
           (checkedDates && formInput.startsAt == 0) ||
           (checkedDates && formInput.expiresAt == 0) ||
           (checkedPast && formInput.pastDocumentHash == NULL_HASH)
@@ -299,7 +299,7 @@ export default function CreateRecordForm(props: {
                 updateNotification({
                   id: 'load-data',
                   color: 'red',
-                  title: 'Transaction rejected: '+error.reason,
+                  title: 'Transaction rejected: ' + error.reason,
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,

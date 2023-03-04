@@ -138,12 +138,10 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
         radius='md'
         color='red'
         disabled={
-          formInput.name == '' ||
-          formInput.description == '' ||
-          (formInput.contacts.link == '' &&
-            formInput.contacts.phone == '' &&
-            formInput.contacts.email == '') ||
-          emailRegex.test(formInput.contacts.email) == false
+          formInput.name.trim() == '' ||
+          formInput.description.trim() == '' ||
+          (emailRegex.test(formInput.contacts.email) == false &&
+            formInput.contacts.email.trim() != '')
         }
         onClick={async (e) => {
           props.update();

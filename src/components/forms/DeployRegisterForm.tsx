@@ -108,7 +108,6 @@ export default function UpdateOrganisationForm(props: {
           }
         />
         <TextInput
-          withAsterisk
           sx={{ marginTop: '5px' }}
           icon={<BrandMailgun />}
           placeholder='Email'
@@ -128,12 +127,10 @@ export default function UpdateOrganisationForm(props: {
         radius='md'
         color='red'
         disabled={
-          formInput.name == '' ||
-          formInput.description == '' ||
-          (formInput.contacts.link == '' &&
-            formInput.contacts.phone == '' &&
-            formInput.contacts.email == '') ||
-          emailRegex.test(formInput.contacts.email) == false
+          formInput.name.trim() == '' ||
+          formInput.description.trim() == '' ||
+          (emailRegex.test(formInput.contacts.email) == false &&
+            formInput.contacts.email.trim() != '')
         }
         onClick={async (e) => {
           props.updateModal();

@@ -81,7 +81,7 @@ export default function InvalidateRecordForm(props: {
       <Button
         radius='md'
         color='red'
-        disabled={formInput.documentHash == ''}
+        disabled={formInput.documentHash.trim() == ''}
         onClick={async (e) => {
           props.updateModal();
           showNotification({
@@ -158,7 +158,7 @@ export default function InvalidateRecordForm(props: {
                 updateNotification({
                   id: 'load-data',
                   color: 'red',
-                  title: 'Transaction rejected: '+error.reason,
+                  title: 'Transaction rejected: ' + error.reason,
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,

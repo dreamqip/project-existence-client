@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
@@ -43,15 +43,27 @@ export default function MyCard(props: {
 
   const randomIndex = hashString(title);
   const randomImage = images[randomIndex % images.length];
+  const [imageError, setImageError] = useState(false);
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <Card shadow='sm' p='lg' radius='md' withBorder>
       <Card.Section>
         {banner ? (
-          <Image src={banner} height={160} alt='Card' />
+          <Image
+            src={banner}
+            height={160}
+            alt='Card'
+            onError={handleImageError}
+          />
         ) : (
           <Image src={randomImage} height={160} alt='Card' />
         )}
+        {imageError ? (
+          <Image src={randomImage} height={160} alt='Card' />
+        ) : null}
       </Card.Section>
       <Group position='apart' mt='md' mb='xs'>
         <Text fz='xl' weight={600}>
@@ -66,31 +78,37 @@ export default function MyCard(props: {
       <Text size='md' color='dimmed' sx={{ overflowWrap: 'break-word' }}>
         {description}
       </Text>
-      <div className={styles.contacts}>
-        <Text
-          className={styles.contacts__title}
-          size='lg'
-          color='dimmed'
-          sx={{ overflowWrap: 'break-word' }}
-        >
-          Contacts:
-        </Text>
-        {link ? (
-          <Link target='_blank' className={styles.link} href={link.toString()}>
-            Link: {link.toString()}
-          </Link>
-        ) : null}
-        {phone ? (
-          <Text size='sm' color='dimmed'>
-            Phone: {phone}
+      {link || phone || email ? (
+        <div className={styles.contacts}>
+          <Text
+            className={styles.contacts__title}
+            size='lg'
+            color='dimmed'
+            sx={{ overflowWrap: 'break-word' }}
+          >
+            Contacts:
           </Text>
-        ) : null}
-        {email ? (
-          <Text size='sm' color='dimmed'>
-            Email: {email}
-          </Text>
-        ) : null}
-      </div>
+          {link ? (
+            <Link
+              target='_blank'
+              className={styles.link}
+              href={link.toString()}
+            >
+              Link: {link.toString()}
+            </Link>
+          ) : null}
+          {phone ? (
+            <Text size='sm' color='dimmed'>
+              Phone: {phone}
+            </Text>
+          ) : null}
+          {email ? (
+            <Text size='sm' color='dimmed'>
+              Email: {email}
+            </Text>
+          ) : null}
+        </div>
+      ) : null}
 
       {way != undefined ? (
         <Link href={way}>
