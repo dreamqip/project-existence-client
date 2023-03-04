@@ -244,6 +244,8 @@ export default function Register() {
               color={copied ? 'teal' : 'blue'}
               onClick={copy}
               sx={{ marginRight: '10px' }}
+              size='xs'
+              compact
             >
               <Copy size={20} strokeWidth={2} color={'#000000'} />
             </Button>
@@ -257,6 +259,7 @@ export default function Register() {
         <Button
           variant='subtle'
           compact
+          size='xs'
           className={styles.records__link}
           onClick={() => setOpened(true)}
         >
@@ -608,13 +611,13 @@ export default function Register() {
               </Tabs.List>
 
               <Tabs.Panel value='activity' pt='xs'>
-                <Table highlightOnHover fontSize='xs'>
+                <Table highlightOnHover fontSize='md'>
                   <thead>
                     <tr>
-                      <th>Document hash</th>
-                      <th>Action</th>
-                      <th>When</th>
-                      <th>Details</th>
+                      <th className={styles.column}>Document hash</th>
+                      <th className={styles.column}>Action</th>
+                      <th className={styles.column}>When</th>
+                      <th className={styles.column}>Details</th>
                     </tr>
                   </thead>
                   <tbody>{rows}</tbody>

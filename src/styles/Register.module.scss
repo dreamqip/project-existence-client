@@ -131,3 +131,12 @@
         max-width: 100%;
     }
 }
+
+.column{
+    @media (max-width: 425px){
+        max-width: 50px;
+        white-space: normal;
+        
+        font-size: 14px !important;
+    }
+}
