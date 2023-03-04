@@ -85,6 +85,7 @@ export default function CreateRecordForm(props: {
     <Stack>
       <div className='DocumentHash'>
         <FileInput
+          className={styles.input_under}
           label='Upload Document'
           placeholder='Upload Document'
           icon={<FileUpload />}
