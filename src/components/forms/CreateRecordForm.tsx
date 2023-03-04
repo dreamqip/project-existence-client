@@ -283,6 +283,7 @@ export default function CreateRecordForm(props: {
               icon: <Check />,
               autoClose: 5000,
             });
+            props.update();
           } catch (error: any) {
             switch (error.code as string) {
               case 'ACTION_REJECTED':
