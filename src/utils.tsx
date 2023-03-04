@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 export function waitFor(conditionFunction: () => boolean) {
   const poll = (resolve: (value?: unknown) => void) => {
     if (conditionFunction()) resolve();
@@ -36,4 +38,10 @@ export function parseMetadata(rawMetadata: string) {
 
 export function serializeMetadata(metadata: Metadata) {
   return JSON.stringify(metadata);
+}
+
+export function toFunctionSelector(minifiedFunction: string) {
+  return ethers
+    .keccak256(ethers.toUtf8Bytes(minifiedFunction))
+    .slice(2, 10);
 }
