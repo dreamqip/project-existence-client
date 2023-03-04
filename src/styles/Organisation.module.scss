@@ -23,6 +23,9 @@
     }
     &__registers{
         flex: 0 1 60%;
+        div{
+            height: max-content !important;
+        }
     }
     &__breadcrumbs{
         display: flex;
