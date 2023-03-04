@@ -161,13 +161,13 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               title: 'Error',
               color: 'red',
               message: 'Please connect your wallet!',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             updateNotification({
               id: 'load-data',
               message:
                 'Notification will close in 2 seconds, you can close this notification now',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             return;
           }
@@ -179,13 +179,13 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
               title: 'Error',
               color: 'red',
               message: 'An error occured.',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             updateNotification({
               id: 'load-data',
               message:
                 'Notification will close in 2 seconds, you can close this notification now',
-              autoClose: 2000,
+              autoClose: 5000,
             });
             return;
           }
@@ -207,7 +207,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                 message:
                   'Notification will close in 2 seconds, you can close this notification now',
                 icon: <Check />,
-                autoClose: 2000,
+                autoClose: 5000,
               });
             }, 3000);
           } catch (error: any) {
@@ -220,7 +220,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
-                  autoClose: 2000,
+                  autoClose: 5000,
                 });
                 break;
               case 'CALL_EXCEPTION':
@@ -231,7 +231,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
-                  autoClose: 2000,
+                  autoClose: 5000,
                 });
                 break;
               default:
@@ -242,7 +242,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
                   message:
                     'Notification will close in 2 seconds, you can close this notification now',
                   icon: <X />,
-                  autoClose: 2000,
+                  autoClose: 5000,
                 });
                 break;
             }

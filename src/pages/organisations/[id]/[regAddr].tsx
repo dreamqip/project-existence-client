@@ -223,7 +223,7 @@ export default function Register() {
         message:
           'Notification will close in 2 seconds, you can close this notification now',
         icon: <Check />,
-        autoClose: 2000,
+        autoClose: 5000,
       });
     } else {
       //alert("not found");
@@ -231,7 +231,7 @@ export default function Register() {
         title: 'Error',
         color: 'red',
         message: 'Record not found.',
-        autoClose: 2000,
+        autoClose: 5000,
       });
     }
   };
