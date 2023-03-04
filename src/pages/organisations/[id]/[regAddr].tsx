@@ -4,7 +4,7 @@ import { sha256 } from 'crypto-hash';
 import { useRouter } from 'next/router';
 
 import styles from '@/styles/Register.module.scss';
-import { showNotification, updateNotification } from '@mantine/notifications';
+import { showNotification } from '@mantine/notifications';
 import {
   Copy,
   ArrowUpRight,
@@ -26,6 +26,8 @@ import {
   Text,
   Notification,
   ActionIcon,
+  Tabs,
+  Table,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 
@@ -599,7 +601,7 @@ export default function Register() {
               </div>
             ) : null}
           </div>
-          {/* <div className={styles.records__tabs}>
+          <div className={styles.records__tabs}>
             <Tabs defaultValue='activity'>
               <Tabs.List>
                 <Tabs.Tab value='activity'>Activity</Tabs.Tab>
@@ -619,7 +621,7 @@ export default function Register() {
                 </Table>
               </Tabs.Panel>
             </Tabs>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
