@@ -28,8 +28,12 @@ import {
   registersOfOrganisation,
 } from '@/contract_interactions';
 import { FEATURED_ORGANISATIONS } from '@/config';
-import { parseMetadata } from '@/utils';
+import { parseMetadata, timestampToDate, toFunctionSelector } from '@/utils';
 import { useWindowScroll } from '@mantine/hooks';
+import {
+  getActivityTransactions,
+  TracerTransaction,
+} from '@/tracer_interactions';
 
 export let update = () => {};
 
@@ -47,63 +51,51 @@ export default function Organisation() {
     </Link>
   ));
 
-  const elements = [
-    {
-      address: '0x5B38Da6a701c568545dCfcB03FcB875f56beddC4',
-      date: '4 months ago',
-      action: 'Deployed',
-    },
-    {
-      address: '0x5B38Da6a7011568545dCfcB03FcB875f56beddC4',
-      date: '2 weeks ago',
-      action: 'Updated',
-    },
-    {
-      address: '0x5B38Da6a705c568545dCfcB03FcB875f56beddC4',
-      date: '2 seconds ago',
-      action: 'Deployed',
-    },
-    {
-      address: '0x5B38Da6a701h568545dCfcB03FcB875f56beddC4',
-      date: '15 minutes ago',
-      action: 'Updated',
-    },
-    {
-      address: '0x5B38Da6a701c56854fdCfcB03FcB875f56beddC4',
-      date: '3 minutes ago',
-      action: 'Deployed',
-    },
-  ];
+  const isOrgOwner = true;
 
-  const rows = elements.map((element) => (
-    <tr key={element.address}>
-      <td>
-        <CopyButton value={element.address}>
-          {({ copied, copy }) => (
-            <Button
-              size='xs'
-              compact
-              color={copied ? 'teal' : 'blue'}
-              onClick={copy}
-              sx={{ marginRight: '10px' }}
-            >
-              <Copy size={20} strokeWidth={2} color={'#000000'} />
-            </Button>
+  const [activityElements, setActivityElements] = useState([
+    {
+      address: '',
+      date: '',
+      action: '',
+    },
+  ]);
+
+  const rows = activityElements
+    .map((element, index) => (
+      <tr key={index}>
+        <td>
+          {element.address == '' ? null : (
+            <>
+              <CopyButton value={element.address}>
+                {({ copied, copy }) => (
+                  <Button
+                    size='xs'
+                    compact
+                    color={copied ? 'teal' : 'blue'}
+                    onClick={copy}
+                    sx={{ marginRight: '10px' }}
+                  >
+                    <Copy size={20} strokeWidth={2} color={'#000000'} />
+                  </Button>
+                )}
+              </CopyButton>
+              {element.address}
+            </>
           )}
-        </CopyButton>
-        {element.address}
-      </td>
-      <td>{element.action}</td>
-      <td>{element.date}</td>
-    </tr>
-  ));
+        </td>
+        <td>{element.action}</td>
+        <td>{element.date}</td>
+      </tr>
+    ))
+    .reverse();
 
   const [orgCard, setOrgCard] = useState(
     <>
       <Notification
         withCloseButton={false}
-        color='blue'
-        title='Please connect your wallet'
+        color='yellow'
+        title='Loading...'
       ></Notification>
     </>,
   );
@@ -111,8 +103,8 @@ export default function Organisation() {
     <React.Fragment key='1'>
       <Notification
         withCloseButton={false}
-        color='blue'
-        title='Please connect your wallet'
+        color='yellow'
+        title='Loading...'
       ></Notification>
     </React.Fragment>,
   ] as JSX.Element[]);
@@ -141,7 +133,6 @@ export default function Organisation() {
     if (id == undefined) return;
     if (typeof id == 'string') orgAddress = id;
     else orgAddress = id[0];
-
     let org = await getOrganisationContract(orgAddress, true);
     if (org == null) {
       setOrgCard(
@@ -165,55 +156,121 @@ export default function Organisation() {
       return;
     }
 
-    let metadata = parseMetadata(await org.metadata());
+    (async () => {
+      let metadata = parseMetadata(await org.metadata());
 
-    setOrgCard(
-      <OrganisationCard
-        title={metadata.name ?? 'name'}
-        description={metadata.description ?? 'description'}
-        banner={metadata.banner ?? ''}
-        link={metadata.contacts?.link ?? ''}
-        phone={metadata.contacts?.phone ?? ''}
-        email={metadata.contacts?.email ?? ''}
-        badge={
-          FEATURED_ORGANISATIONS.includes(await org.getAddress())
-            ? 'Featured'
-            : undefined
-        }
-      />,
-    );
+      setOrgCard(
+        <OrganisationCard
+          title={metadata.name ?? 'name'}
+          description={metadata.description ?? 'description'}
+          banner={metadata.banner ?? ''}
+          link={metadata.contacts?.link ?? ''}
+          phone={metadata.contacts?.phone ?? ''}
+          email={metadata.contacts?.email ?? ''}
+          badge={
+            FEATURED_ORGANISATIONS.includes(await org.getAddress())
+              ? 'Featured'
+              : undefined
+          }
+        />,
+      );
+    })();
 
-    let regs: RegisterContract[] = [];
-    for await (const i of registersOfOrganisation(org)) {
-      let reg = await getRegisterContract(i.toString());
-      if (reg != null) regs.push(reg);
-    }
+    (async () => {
+      let regs: RegisterContract[] = [];
+      for await (const i of registersOfOrganisation(org)) {
+        let reg = await getRegisterContract(i.toString());
+        if (reg != null) regs.push(reg);
+      }
 
-    let regCards = await Promise.all(
-      regs.map(async (reg: RegisterContract, index) => {
-        let metadata = parseMetadata(await reg.metadata());
+      let regCards = await Promise.all(
+        regs.map(async (reg: RegisterContract, index) => {
+          let metadata = parseMetadata(await reg.metadata());
 
-        return (
-          <RegisterCard
-            title={metadata.name ?? 'name'}
-            key={index}
-            description={metadata.description ?? 'description'}
-            banner={metadata.banner ?? ''}
-            link={metadata.contacts?.link ?? ''}
-            phone={metadata.contacts?.phone ?? ''}
-            email={metadata.contacts?.email ?? ''}
-            way={
-              '/organisations/' +
-              ((await org?.getAddress()) ?? 'error') +
-              '/' +
-              (await reg.getAddress())
+          return (
+            <RegisterCard
+              title={metadata.name ?? 'name'}
+              key={index}
+              description={metadata.description ?? 'description'}
+              banner={metadata.banner ?? ''}
+              link={metadata.contacts?.link ?? ''}
+              phone={metadata.contacts?.phone ?? ''}
+              email={metadata.contacts?.email ?? ''}
+              way={
+                '/organisations/' +
+                ((await org?.getAddress()) ?? 'error') +
+                '/' +
+                (await reg.getAddress())
+              }
+            />
+          );
+        }),
+      );
+
+      setRegCards(regCards);
+    })();
+
+    (async () => {
+      setActivityElements([
+        {
+          address: 'Loading...',
+          date: 'Loading...',
+          action: 'Loading...',
+        },
+      ]);
+
+      let regAddresses: string[] = [];
+      let transactions: TracerTransaction[] = [];
+      await Promise.all([
+        Promise.race([
+          (async () => {
+            for await (const i of registersOfOrganisation(org)) {
+              let reg = await getRegisterContract(i.toString());
+              if (reg != null) regAddresses.push(await reg.getAddress());
             }
-          />
-        );
-      }),
-    );
-
-    setRegCards(regCards);
+          })(),
+          new Promise((_) => setTimeout(() => _(undefined), 5e3)),
+        ]).catch(function (err) {}),
+        (async () => {
+          let result = await getActivityTransactions(orgAddress);
+          if (result.error) {
+            setActivityElements([
+              {
+                address: `Error: ${result.message}`,
+                date: 'Error.',
+                action: 'Error.',
+              },
+            ]);
+            return;
+          }
+          transactions = (
+            result as { error: null; transactions: TracerTransaction[] }
+          ).transactions;
+        })(),
+      ]);
+      let i = regAddresses.length - 1;
+      setActivityElements(
+        transactions.map((item) => {
+          let action = item.functionSelector;
+          let address = '';
+          switch (item.functionSelector) {
+            case toFunctionSelector('deployRegister(string)'):
+              action = 'Deploy Register';
+              address = regAddresses[i];
+              i--;
+              break;
+            case toFunctionSelector('editOrganisationMetadata(string)'):
+              action = 'Update Organisation';
+              break;
+          }
+          return {
+            address: address,
+            date: timestampToDate(item.timestamp * 1000, true),
+            action: action,
+          };
+        }),
+      );
+    })();
   };
 
   update = () => fetchData();
