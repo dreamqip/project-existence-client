@@ -111,7 +111,7 @@ export default function CreateRecordForm(props: {
       </div>
 
       <Switch
-        label='Do you want to include link source document'
+        label='Do you want to include link to source document?'
         checked={checkedSource}
         onChange={(event) => setCheckedSource(event.currentTarget.checked)}
       />
