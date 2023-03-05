@@ -145,7 +145,7 @@ export async function updateProvider() {
       await provider.send('wallet_switchEthereumChain', [{ chainId: "0x" + networkId.toString(16) }]);
     } catch (switchError: any) {
       // This error code indicates that the chain has not been added to MetaMask.
-      if (switchError.code === 4902) {
+      if (switchError.error.code === 4902) {
         try {
           await provider.send(
             "wallet_addEthereumChain",
@@ -158,10 +158,14 @@ export async function updateProvider() {
                 symbol: "FTM",
                 decimals: 18
               },
-              blockExplorerUrls: []
+              blockExplorerUrls: null
             }]
           );
           await provider.send('wallet_switchEthereumChain', [{ chainId: "0x" + networkId.toString(16) }]);
+
+          signer = await provider.getSigner();
+          
+          return;
         } catch (addError) {
           provider = null;
           return;
