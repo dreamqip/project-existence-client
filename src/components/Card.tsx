@@ -52,6 +52,7 @@ export default function MyCard(props: {
 
   const router = useRouter();
   const isOrganisationsPage = router.pathname === '/organisations';
+  const isHomePage = router.pathname === '/';
 
   const randomIndex = hashString(title);
   const randomImage = images[randomIndex % images.length];
@@ -89,7 +90,7 @@ export default function MyCard(props: {
             {title}
           </Text>
         </Stack>
-        {isOrganisationsPage ? (
+        {isOrganisationsPage || isHomePage ? (
           <Spoiler maxHeight={150} showLabel='Show more' hideLabel='Hide'>
             <Text
               size='md'
@@ -98,48 +99,80 @@ export default function MyCard(props: {
             >
               {description}
             </Text>
+            {link || phone || email ? (
+              <div className={styles.contacts}>
+                <Text
+                  className={styles.contacts__title}
+                  size='lg'
+                  color='dimmed'
+                  sx={{ overflowWrap: 'break-word' }}
+                >
+                  Contacts:
+                </Text>
+                {link ? (
+                  <Link
+                    target='_blank'
+                    className={styles.link}
+                    href={link.toString()}
+                  >
+                    Link: {link.toString()}
+                  </Link>
+                ) : null}
+                {phone ? (
+                  <Text size='sm' color='dimmed'>
+                    Phone: {phone}
+                  </Text>
+                ) : null}
+                {email ? (
+                  <Text size='sm' color='dimmed'>
+                    Email: {email}
+                  </Text>
+                ) : null}
+              </div>
+            ) : null}
           </Spoiler>
         ) : (
-          <Text
-            size='md'
-            color='dimmed'
-            sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
-          >
-            {description}
-          </Text>
-        )}
-
-        {link || phone || email ? (
-          <div className={styles.contacts}>
+          <div>
             <Text
-              className={styles.contacts__title}
-              size='lg'
+              size='md'
               color='dimmed'
-              sx={{ overflowWrap: 'break-word' }}
+              sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
             >
-              Contacts:
+              {description}
             </Text>
-            {link ? (
-              <Link
-                target='_blank'
-                className={styles.link}
-                href={link.toString()}
-              >
-                Link: {link.toString()}
-              </Link>
-            ) : null}
-            {phone ? (
-              <Text size='sm' color='dimmed'>
-                Phone: {phone}
-              </Text>
-            ) : null}
-            {email ? (
-              <Text size='sm' color='dimmed'>
-                Email: {email}
-              </Text>
+            {link || phone || email ? (
+              <div className={styles.contacts}>
+                <Text
+                  className={styles.contacts__title}
+                  size='lg'
+                  color='dimmed'
+                  sx={{ overflowWrap: 'break-word' }}
+                >
+                  Contacts:
+                </Text>
+                {link ? (
+                  <Link
+                    target='_blank'
+                    className={styles.link}
+                    href={link.toString()}
+                  >
+                    Link: {link.toString()}
+                  </Link>
+                ) : null}
+                {phone ? (
+                  <Text size='sm' color='dimmed'>
+                    Phone: {phone}
+                  </Text>
+                ) : null}
+                {email ? (
+                  <Text size='sm' color='dimmed'>
+                    Email: {email}
+                  </Text>
+                ) : null}
+              </div>
             ) : null}
           </div>
-        ) : null}
+        )}
       </div>
       {way != undefined ? (
         <Link href={way} className={styles.btn}>

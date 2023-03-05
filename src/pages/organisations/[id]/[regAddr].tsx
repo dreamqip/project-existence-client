@@ -12,6 +12,7 @@ import {
   Upload,
   X,
   Check,
+  ArrowUp,
 } from 'tabler-icons-react';
 import {
   Breadcrumbs,
@@ -55,7 +56,7 @@ function getExpirationColor(searchResult: Record) {
   if (expirationTime > currentTime || expirationTime === 0) {
     return 'teal';
   } else if (searchResult.nextDocumentHash != NULL_HASH) {
-    return 'yellow';
+    return 'red';
   } else {
     return 'red';
   }
@@ -382,7 +383,7 @@ export default function Register() {
                     <Text size='sm'>
                       Click details to get more information about the record
                     </Text>
-                    {getExpirationColor(searchResult) == 'yellow' ? (
+                    {getExpirationColor(searchResult) == 'red' ? (
                       <Text size='sm' color='blue'>
                         There is a new record attached to it.
                       </Text>
@@ -645,22 +646,22 @@ export default function Register() {
                 pt='xs'
                 className={styles.activity__table}
               >
-                <Table highlightOnHover fontSize='md'>
-                  <thead>
-                    <tr>
-                      <th className={styles.column}>Action</th>
-                      <th className={styles.column}>Document hash</th>
-                      <th className={styles.column}>When</th>
-                    </tr>
-                  </thead>
-                  {rows.length == 0 ? (
-                    <tr>
-                      <td>No actions yet.</td>
-                    </tr>
-                  ) : (
-                    rows
-                  )}
-                </Table>
+                {rows.length != 0 ? (
+                  <Table highlightOnHover fontSize='md'>
+                    <thead>
+                      <tr>
+                        <th className={styles.column}>Action</th>
+                        <th className={styles.column}>Document hash</th>
+                        <th className={styles.column}>When</th>
+                      </tr>
+                    </thead>
+                    <tbody>{rows}</tbody>
+                  </Table>
+                ) : (
+                  <div className={styles.activity__banner}>
+                    <Title order={4}>No actions yet.</Title>
+                  </div>
+                )}
               </Tabs.Panel>
             </Tabs>
           </div>

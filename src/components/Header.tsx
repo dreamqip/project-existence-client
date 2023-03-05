@@ -95,7 +95,7 @@ export default function Header() {
             <TextInput
               className={styles.search__input}
               icon={<Search />}
-              placeholder='Enter Org or Reg address'
+              placeholder='Enter organisation or register address'
               radius='md'
               size='md'
               onChange={(event) =>

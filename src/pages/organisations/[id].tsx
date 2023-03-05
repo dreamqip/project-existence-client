@@ -309,9 +309,9 @@ export default function Organisation() {
                 ) : (
                   <div className={styles.registers__banner}>
                     <Title order={4}>No Registers, yet!</Title>
-                    <p>
+                    <p className={styles.banner__text}>
                       Are you the Organisation owner? What are you waiting for?
-                      Go create one!
+                      Let`s create one!
                     </p>
                     <Button
                       className={styles.scroll}
@@ -330,24 +330,22 @@ export default function Organisation() {
                 pt='xs'
                 className={styles.activity__table}
               >
-                <Table highlightOnHover fontSize='md'>
-                  <thead>
-                    <tr>
-                      <th>Action</th>
-                      <th>Register address</th>
-                      <th>When</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.length == 0 ? (
+                {rows.length != 0 ? (
+                  <Table highlightOnHover fontSize='md'>
+                    <thead>
                       <tr>
-                        <td>No actions yet.</td>
+                        <th>Action</th>
+                        <th>Register address</th>
+                        <th>When</th>
                       </tr>
-                    ) : (
-                      rows
-                    )}
-                  </tbody>
-                </Table>
+                    </thead>
+                    <tbody>{rows}</tbody>
+                  </Table>
+                ) : (
+                  <div className={styles.registers__banner}>
+                    <Title order={4}>No actions yet.</Title>
+                  </div>
+                )}
               </Tabs.Panel>
             </Tabs>
           </div>

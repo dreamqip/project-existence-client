@@ -133,10 +133,10 @@ export default function Home() {
             <>
               {yourOrganisationsCards.length == 0 ? (
                 <div className={styles.your_organisations__banner}>
-                  <Title order={4}>No Organisations, yet!</Title>
-                  <p>What are you waiting for? Go create one!</p>
+                  <Title order={3}>No Organisations, yet!</Title>
+                  <p>What are you waiting for? Let`s create one!</p>
                   <Button
-                    sx={{ marginTop: '20px' }}
+                    sx={{ marginTop: '5px' }}
                     radius='md'
                     onClick={() => {
                       setOrgModalOpened(true);

@@ -211,7 +211,7 @@ export default function Organisations() {
                 <Title order={4}>No Organisations, yet!</Title>
                 <p>What are you waiting for? Go create one!</p>
                 <Button
-                  sx={{ marginTop: '20px' }}
+                  sx={{ marginTop: '5px' }}
                   radius='md'
                   onClick={() => {
                     setOrgModalOpened(true);

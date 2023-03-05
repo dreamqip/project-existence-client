@@ -40,19 +40,16 @@
         @media (max-width: 425px) {
             grid-template-columns: 1fr;
         }
-        div{
-            height: max-content !important;
-        }
     }
 }
     
 
 .your_organisations__banner{
-    border-radius: 15px;
+    border-radius: 6px;
     background-color: #25262b;
     box-shadow: 0 0.0625rem 0.1875rem rgb(0 0 0 / 5%), rgb(0 0 0 / 5%) 0 1.75rem 1.4375rem -0.4375rem, rgb(0 0 0 / 4%) 0 0.75rem 0.75rem -0.4375rem;
     border: 0.0625rem solid #25262b;
-    padding: 30px;
+    padding: 20px;
 }
 
 .featured{
