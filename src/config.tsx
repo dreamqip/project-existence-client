@@ -4,11 +4,11 @@ export const ORGANISATION_FACTORY_ADDRESS =
 //'0xA4d4E5458a04190D0cBa96D5050170eC2Ea183a0'; // FOR TESTING
 export const FEATURED_ORGANISATIONS = {
   '0x15D0Ea7f56c8d157B6b356D372E3a69c8845b752': ['Education', 'green'],
-  '0xE4eb82946515455a87E7F354b200e72DAB7767f5': ['Education', 'green'],
-  '0x47Dd616391A7b2286Fee13b59a20A97a1Df694a4': ['Ownership', 'blue'],
-  '0xC428412e382f8aCe2A97dE546200Cf06168DBa68': ['Healthcare', 'grape'],
-  '0x11C21C590515eD7921AA79fBdE37F62aE90596De': ['Government', 'teal'],
-  '0xeF887c7E6A6A46d8CBDbDa9e29f66a9E34992e63': ['Financial', 'yellow'],
+  '0x7F0cB1ABD9AC11b099DfABc21aafcB8c7F71a8C2': ['Education', 'green'],
+  '0x4564e5BE832E9aB0831eF906005dD9e54e915c53': ['Ownership', 'blue'],
+  '0x030f7ED0D270020ae700A4da69FEFf074De433F8': ['Healthcare', 'grape'],
+  '0xc41c38cE740e0Da24E49262D517B15007b56fd90': ['Government', 'teal'],
+  '0x9d30E164d2c12C84b61C43d164b2978EAb7bD21a': ['Financial', 'yellow'],
 } as { [key: string]: [string, string] };
 export const NULL_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
