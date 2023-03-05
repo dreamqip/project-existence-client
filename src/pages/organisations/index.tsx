@@ -211,7 +211,7 @@ export default function Organisations() {
             {yourOrganisationsCards.length == 0 ? (
               <div className={styles.your_organisations__banner}>
                 <Title order={4}>No Organisations, yet!</Title>
-                <p>What are you waiting for? Go create one!</p>
+                <p>What are you waiting for? Let`s create one!</p>
                 <Button
                   sx={{ marginTop: '5px' }}
                   radius='md'
