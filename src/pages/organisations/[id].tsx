@@ -24,6 +24,7 @@ import RegisterCard from '@/components/Card';
 import {
   getOrganisationContract,
   getRegisterContract,
+  getSigner,
   RegisterContract,
   registersOfOrganisation,
 } from '@/contract_interactions';
@@ -35,7 +36,7 @@ import {
   TracerTransaction,
 } from '@/tracer_interactions';
 
-export let update = () => {};
+export let update = () => { };
 
 export default function Organisation() {
   const [scroll, scrollTo] = useWindowScroll();
@@ -106,6 +107,12 @@ export default function Organisation() {
       ></Notification>
     </React.Fragment>,
   ] as JSX.Element[]);
+
+  const [noRegisterElement, setNoRegisterElement] = useState(
+    <p className={styles.banner__text}>
+      Contact the organisation owner so they create one!
+    </p>
+  )
 
   const fetchData = async () => {
     setOrgCard(
@@ -209,6 +216,18 @@ export default function Organisation() {
     })();
 
     (async () => {
+      let signer = getSigner();
+      if(signer == null) return;
+      if(await org.owner() != await signer.getAddress()) return;
+      setNoRegisterElement(
+        <p className={styles.banner__text}>
+          Are you the Organisation owner? What are you waiting for?
+          Let{"'"}s create one!
+        </p>
+      )
+    })();
+
+    (async () => {
       setActivityElements([
         {
           address: 'Loading...',
@@ -228,7 +247,7 @@ export default function Organisation() {
             }
           })(),
           new Promise((_) => setTimeout(() => _(undefined), 5e3)),
-        ]).catch(function (err) {}),
+        ]).catch(function (err) { }),
         (async () => {
           let result = await getActivityTransactions(orgAddress);
           if (result.error) {
@@ -309,10 +328,7 @@ export default function Organisation() {
                 ) : (
                   <div className={styles.registers__banner}>
                     <Title order={4}>No Registers, yet!</Title>
-                    <p className={styles.banner__text}>
-                      Are you the Organisation owner? What are you waiting for?
-                      Let`s create one!
-                    </p>
+                    {noRegisterElement}
                     <Button
                       className={styles.scroll}
                       sx={{ marginTop: '10px' }}
