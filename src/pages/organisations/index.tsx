@@ -199,14 +199,6 @@ export default function Organisations() {
           thrive in its environment.
         </Text>
       </div>
-      <div className={styles.organisations__featured}>
-        <Title order={2} className={styles.featured__title}>
-          Featured Organisations
-        </Title>
-        <div className={styles.featured__cards}>
-          {featuredOrganisationsCards}
-        </div>
-      </div>
       <div className={styles.organisations__your_organisations}>
         <Title order={2} className={styles.your_organisations__title}>
           Your Organisations
@@ -249,6 +241,14 @@ export default function Organisations() {
               yourOrganisationsCards
             )}
           </>
+        </div>
+      </div>
+      <div className={styles.organisations__featured}>
+        <Title order={2} className={styles.featured__title}>
+          Featured Organisations
+        </Title>
+        <div className={styles.featured__cards}>
+          {featuredOrganisationsCards}
         </div>
       </div>
     </div>
