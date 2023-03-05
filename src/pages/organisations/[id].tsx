@@ -166,7 +166,7 @@ export default function Organisation() {
           phone={metadata.contacts?.phone ?? ''}
           email={metadata.contacts?.email ?? ''}
           badge={
-            FEATURED_ORGANISATIONS.includes(await org.getAddress())
+            FEATURED_ORGANISATIONS[0].includes(await org.getAddress())
               ? 'Featured'
               : undefined
           }

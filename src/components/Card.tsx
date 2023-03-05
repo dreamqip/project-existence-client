@@ -46,9 +46,10 @@ export default function MyCard(props: {
   phone?: string;
   email?: string;
   badge?: string;
+  badge2?: [string, string];
   way?: string;
 }) {
-  const { title, description, banner, link, phone, email, badge, way } = props;
+  const { title, description, banner, link, phone, email, badge, badge2, way } = props;
 
   const router = useRouter();
   const isOrganisationsPage = router.pathname === '/organisations';
@@ -81,11 +82,16 @@ export default function MyCard(props: {
       </Card.Section>
       <div className={styles.card__body}>
         <Stack mt='md' mb='xs' align='flex-start'>
-          {badge != undefined ? (
-            <Badge color='pink' variant='light'>
-              {badge}
-            </Badge>
-          ) : null}
+            {badge != undefined ? (
+              <Badge color='pink' variant='light'>
+                {badge}
+              </Badge>
+            ) : null}
+            {badge2 != undefined ? (
+              <Badge color={badge2[1]} variant='light'>
+                {badge2[0]}
+              </Badge>
+            ) : null}
           <Text fz='xl' weight={600}>
             {title}
           </Text>

@@ -70,7 +70,7 @@ export default function Organisations() {
     ]);
 
     let orgs: OrganisationContract[] = [];
-    for (const orgAddress of FEATURED_ORGANISATIONS) {
+    for (const orgAddress of Object.keys(FEATURED_ORGANISATIONS)) {
       let org = await getOrganisationContract(orgAddress.toString());
       if (org != null) orgs.push(org);
     }
@@ -85,6 +85,7 @@ export default function Organisations() {
             key={index}
             description={metadata.description ?? 'description'}
             badge='Featured'
+            badge2={FEATURED_ORGANISATIONS[await org.getAddress()]}
             banner={metadata.banner ?? ''}
             link={metadata.contacts?.link ?? ''}
             phone={metadata.contacts?.phone ?? ''}
@@ -158,10 +159,11 @@ export default function Organisations() {
             description={metadata.description ?? 'description'}
             banner={metadata.banner ?? ''}
             badge={
-              FEATURED_ORGANISATIONS.includes(await org.getAddress())
+              FEATURED_ORGANISATIONS[await org.getAddress()]
                 ? 'Featured'
                 : undefined
             }
+            badge2={FEATURED_ORGANISATIONS[await org.getAddress()]}
             link={metadata.contacts?.link ?? ''}
             phone={metadata.contacts?.phone ?? ''}
             email={metadata.contacts?.email ?? ''}
