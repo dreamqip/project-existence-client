@@ -44,6 +44,7 @@ export default function UpdateOrganisationForm(props: {
   return (
     <Stack>
       <TextInput
+        withAsterisk
         icon={<TextColor />}
         placeholder='Register name'
         label='Register name'
@@ -55,6 +56,7 @@ export default function UpdateOrganisationForm(props: {
         }
       />
       <TextInput
+        withAsterisk
         icon={<TextCaption />}
         placeholder='Register description'
         label='Register description'

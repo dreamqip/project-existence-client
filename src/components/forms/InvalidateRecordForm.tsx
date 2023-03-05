@@ -67,6 +67,7 @@ export default function InvalidateRecordForm(props: {
       />
       <TextInput
         icon={<Hash />}
+        withAsterisk
         placeholder='Document hash'
         label='Document hash'
         defaultValue={docHash}

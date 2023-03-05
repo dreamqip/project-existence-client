@@ -61,33 +61,32 @@ export default function Organisation() {
     },
   ]);
 
-  const rows = activityElements
-    .map((element, index) => (
-      <tr key={index}>
-        <td>
-          {element.address == '' ? null : (
-            <>
-              <CopyButton value={element.address}>
-                {({ copied, copy }) => (
-                  <Button
-                    size='xs'
-                    compact
-                    color={copied ? 'teal' : 'blue'}
-                    onClick={copy}
-                    sx={{ marginRight: '10px' }}
-                  >
-                    <Copy size={20} strokeWidth={2} color={'#000000'} />
-                  </Button>
-                )}
-              </CopyButton>
-              {element.address}
-            </>
-          )}
-        </td>
-        <td>{element.action}</td>
-        <td>{element.date}</td>
-      </tr>
-    ));
+  const rows = activityElements.map((element, index) => (
+    <tr key={index}>
+      <td>{element.action}</td>
+      <td>
+        {element.address == '' ? null : (
+          <>
+            <CopyButton value={element.address}>
+              {({ copied, copy }) => (
+                <Button
+                  size='xs'
+                  compact
+                  color={copied ? 'teal' : 'blue'}
+                  onClick={copy}
+                  sx={{ marginRight: '10px' }}
+                >
+                  <Copy size={20} strokeWidth={2} color={'#000000'} />
+                </Button>
+              )}
+            </CopyButton>
+            {element.address}
+          </>
+        )}
+      </td>
+      <td>{element.date}</td>
+    </tr>
+  ));
 
   const [orgCard, setOrgCard] = useState(
     <>
@@ -249,25 +248,27 @@ export default function Organisation() {
       ]);
       let i = regAddresses.length - 1;
       setActivityElements(
-        transactions.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((item) => {
-          let action = item.functionSelector;
-          let address = '';
-          switch (item.functionSelector) {
-            case toFunctionSelector('deployRegister(string)'):
-              action = 'Deploy Register';
-              address = regAddresses[i];
-              i--;
-              break;
-            case toFunctionSelector('editOrganisationMetadata(string)'):
-              action = 'Update Organisation';
-              break;
-          }
-          return {
-            address: address,
-            date: timestampToDate(item.timestamp * 1000, true),
-            action: action,
-          };
-        }),
+        transactions
+          .sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))
+          .map((item) => {
+            let action = item.functionSelector;
+            let address = '';
+            switch (item.functionSelector) {
+              case toFunctionSelector('deployRegister(string)'):
+                action = 'Deploy Register';
+                address = regAddresses[i];
+                i--;
+                break;
+              case toFunctionSelector('editOrganisationMetadata(string)'):
+                action = 'Update Organisation';
+                break;
+            }
+            return {
+              address: address,
+              date: timestampToDate(item.timestamp * 1000, true),
+              action: action,
+            };
+          }),
       );
     })();
   };
@@ -336,12 +337,16 @@ export default function Organisation() {
                 )}
               </Tabs.Panel>
 
-              <Tabs.Panel value='activity' pt='xs'>
+              <Tabs.Panel
+                value='activity'
+                pt='xs'
+                className={styles.activity__table}
+              >
                 <Table highlightOnHover fontSize='md'>
                   <thead>
                     <tr>
-                      <th>Register address</th>
                       <th>Action</th>
+                      <th>Register address</th>
                       <th>When</th>
                     </tr>
                   </thead>

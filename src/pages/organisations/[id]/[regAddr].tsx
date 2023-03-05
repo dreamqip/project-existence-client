@@ -38,12 +38,30 @@ import {
   getRegisterContract,
   type Record,
 } from '@/contract_interactions';
-import { parseMetadata, timestampToDate, toFunctionSelector, waitFor } from '@/utils';
+import {
+  parseMetadata,
+  timestampToDate,
+  toFunctionSelector,
+  waitFor,
+} from '@/utils';
 import { NULL_ADDR, NULL_HASH } from '@/config';
 import { ethers } from 'ethers';
 import { getActivityTransactions } from '@/tracer_interactions';
 
-export let update = () => { };
+function getExpirationColor(searchResult: Record) {
+  const expirationTime = Number(searchResult.expiresAt);
+  const currentTime = new Date().getTime();
+
+  if (expirationTime > currentTime || expirationTime === 0) {
+    return 'teal';
+  } else if (searchResult.nextDocumentHash != NULL_HASH) {
+    return 'yellow';
+  } else {
+    return 'red';
+  }
+}
+
+export let update = () => {};
 
 export default function Register() {
   const router = useRouter();
@@ -146,8 +164,9 @@ export default function Register() {
 
   const rows = activityElements.map((element, index) => (
     <tr key={index}>
+      <td>{element.action}</td>
       <td>
-        {element.address == '' ? null :
+        {element.address == '' ? null : (
           <>
             <CopyButton value={element.address}>
               {({ copied, copy }) => (
@@ -164,9 +183,8 @@ export default function Register() {
             </CopyButton>
             {element.address}
           </>
-        }
+        )}
       </td>
-      <td>{element.action}</td>
       <td>{element.date}</td>
     </tr>
   ));
@@ -201,39 +219,45 @@ export default function Register() {
       );
     })();
     (async () => {
-      let txs = await getActivityTransactions(await reg.getAddress())
+      let txs = await getActivityTransactions(await reg.getAddress());
       if (txs.error != null) {
         setActivityElements([
           {
             address: 'Error.',
             date: 'Error.',
             action: 'Error.',
-          }
-        ])
+          },
+        ]);
       } else {
-        let transactions = txs.transactions
-        setActivityElements(transactions.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((item) => {
-          let action = item.functionSelector;
-          let address = '';
-          switch (item.functionSelector) {
-            case toFunctionSelector('createRecord(bytes32,string,string,uint256,uint256,bytes32)'):
-              action = 'Create Record';
-              address = "0x" + item.rawInput.slice(10, 74);
-              break;
-            case toFunctionSelector('invalidateRecord(bytes32)'):
-              action = 'Invalidate Record';
-              address = "0x" + item.rawInput.slice(10, 74);
-              break;
-            case toFunctionSelector('editRegisterMetadata(string)'):
-              action = 'Update Register';
-              break;
-          }
-          return {
-            address: address,
-            date: timestampToDate(item.timestamp * 1000, true),
-            action: action,
-          };
-        }));
+        let transactions = txs.transactions;
+        setActivityElements(
+          transactions
+            .sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))
+            .map((item) => {
+              let action = item.functionSelector;
+              let address = '';
+              switch (item.functionSelector) {
+                case toFunctionSelector(
+                  'createRecord(bytes32,string,string,uint256,uint256,bytes32)',
+                ):
+                  action = 'Create Record';
+                  address = '0x' + item.rawInput.slice(10, 74);
+                  break;
+                case toFunctionSelector('invalidateRecord(bytes32)'):
+                  action = 'Invalidate Record';
+                  address = '0x' + item.rawInput.slice(10, 74);
+                  break;
+                case toFunctionSelector('editRegisterMetadata(string)'):
+                  action = 'Update Register';
+                  break;
+              }
+              return {
+                address: address,
+                date: timestampToDate(item.timestamp * 1000, true),
+                action: action,
+              };
+            }),
+        );
       }
     })();
   };
@@ -320,6 +344,7 @@ export default function Register() {
                 onDrop={handleDrop}
                 loading={isLoading}
                 onReject={(files) => console.log('rejected files', files)}
+                maxFiles={1}
               >
                 <Group
                   position='center'
@@ -349,12 +374,7 @@ export default function Register() {
             {searchBlock ? (
               <div className={styles.records__result}>
                 <Notification
-                  color={
-                    Number(searchResult.expiresAt) == 0 ||
-                      Number(searchResult.expiresAt) > new Date().getTime()
-                      ? 'teal'
-                      : 'red'
-                  }
+                  color={getExpirationColor(searchResult)}
                   title='The last record successfully requested.'
                   onClose={() => setSearchBlock(false)}
                 >
@@ -362,15 +382,18 @@ export default function Register() {
                     <Text size='sm'>
                       Click details to get more information about the record
                     </Text>
+                    {getExpirationColor(searchResult) == 'yellow' ? (
+                      <Text size='sm' color='blue'>
+                        There is a new record attached to it.
+                      </Text>
+                    ) : null}
+                    {getExpirationColor(searchResult) == 'red' ? (
+                      <Text size='sm' color='blue'>
+                        Record is expired.
+                      </Text>
+                    ) : null}
 
-                    <Text
-                      c={
-                        Number(searchResult.expiresAt) == 0 ||
-                          Number(searchResult.expiresAt) > new Date().getTime()
-                          ? 'teal'
-                          : 'red'
-                      }
-                    >
+                    <Text c={getExpirationColor(searchResult)}>
                       {searchResult.documentHash}
                     </Text>
 
@@ -379,7 +402,7 @@ export default function Register() {
                       onClick={() => setOpened(true)}
                       rightIcon={
                         <ArrowUpRight
-                          size={40}
+                          size={30}
                           strokeWidth={2}
                           color={'#ffffff'}
                         />
@@ -517,8 +540,8 @@ export default function Register() {
                             </Text>{' '}
                             {searchResult.createdAt.toString() != '0'
                               ? transformToDate(
-                                searchResult.createdAt.toString(),
-                              )
+                                  searchResult.createdAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item>
@@ -527,8 +550,8 @@ export default function Register() {
                             </Text>{' '}
                             {searchResult.updatedAt.toString() != '0'
                               ? transformToDate(
-                                searchResult.updatedAt.toString(),
-                              )
+                                  searchResult.updatedAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item>
@@ -537,8 +560,8 @@ export default function Register() {
                             </Text>
                             {searchResult.startsAt.toString() != '0'
                               ? transformToDate(
-                                searchResult.startsAt.toString(),
-                              )
+                                  searchResult.startsAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item>
@@ -547,8 +570,8 @@ export default function Register() {
                             </Text>
                             {searchResult.expiresAt.toString() != '0'
                               ? transformToDate(
-                                searchResult.expiresAt.toString(),
-                              )
+                                  searchResult.expiresAt.toString(),
+                                )
                               : '-'}
                           </List.Item>
                           <List.Item sx={{ overflowWrap: 'break-word' }}>
@@ -617,12 +640,16 @@ export default function Register() {
                 <Tabs.Tab value='activity'>Activity</Tabs.Tab>
               </Tabs.List>
 
-              <Tabs.Panel value='activity' pt='xs'>
+              <Tabs.Panel
+                value='activity'
+                pt='xs'
+                className={styles.activity__table}
+              >
                 <Table highlightOnHover fontSize='md'>
                   <thead>
                     <tr>
-                      <th className={styles.column}>Document hash</th>
                       <th className={styles.column}>Action</th>
+                      <th className={styles.column}>Document hash</th>
                       <th className={styles.column}>When</th>
                     </tr>
                   </thead>

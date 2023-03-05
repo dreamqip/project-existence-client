@@ -73,7 +73,7 @@ export default function Header() {
                   showNotification({
                     title: 'Error',
                     color: 'red',
-                    message: 'Contract or organisation not found.',
+                    message: 'Organisation or Register not found.',
                     autoClose: 5000,
                   });
                   return;
@@ -93,6 +93,7 @@ export default function Header() {
               <Search />
             </ActionIcon>
             <TextInput
+              className={styles.search__input}
               icon={<Search />}
               placeholder='Enter Org or Reg address'
               radius='md'
@@ -152,14 +153,10 @@ export default function Header() {
                       autoClose: 5000,
                     });
                   }
-                } else {
-                  await disconnectProvider();
-                  setWalletConnected(false);
-                  updateHome();
                 }
               }}
             >
-              {walletConnected ? <>Disconnect</> : <>Connect</>}
+              {walletConnected ? <>Connected ✅</> : <>Connect</>}
             </Button>
           </div>
           <Header__mobile_menu

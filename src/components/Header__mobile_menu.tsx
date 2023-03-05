@@ -203,11 +203,12 @@ export default function HeaderMenu({
           />
           {searchAlert ? (
             <Notification
+              sx={{ marginTop: '10px' }}
               color='red'
               title='Alert'
               onClose={() => setSearchAlert(false)}
             >
-              Address not found
+              Organisation or Register not found.
             </Notification>
           ) : null}
           {isHomePage ? null : null}

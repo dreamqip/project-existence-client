@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import { MantineProvider } from '@mantine/core';
 import Layout from '@/components/Layout';
 import { Notifications } from '@mantine/notifications';
+import Head from 'next/head';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -16,6 +17,9 @@ export default function App({ Component, pageProps }: AppProps) {
     >
       <Notifications />
       <Layout>
+        <Head>
+          <title>Project Existence</title>
+        </Head>
         <Component {...pageProps} />
       </Layout>
     </MantineProvider>

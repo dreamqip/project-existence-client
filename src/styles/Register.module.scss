@@ -125,10 +125,11 @@
   }
 
   .bread_link{
-    word-wrap: break-word !important;
-    white-space: normal !important;
-    @media (max-width: 768px){
-        max-width: 100%;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    @media (max-width: 425px) {
+        max-width: 280px;
+        overflow: hidden !important;
     }
 }
 
@@ -139,4 +140,10 @@
         
         font-size: 14px !important;
     }
+}
+
+.activity__table{
+    max-height: 51vh;
+    overflow: scroll;
+    overflow-x: hidden;
 }
