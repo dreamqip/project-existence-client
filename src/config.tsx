@@ -5,11 +5,11 @@ export const ORGANISATION_FACTORY_ADDRESS =
 export const FEATURED_ORGANISATIONS = {
   '0x4aBAEA52776b5304b1153221d24eaBFE8aAA9266': ['Education', 'green'],
   '0xE4eb82946515455a87E7F354b200e72DAB7767f5': ['Education', 'green'],
-  '0x47Dd616391A7b2286Fee13b59a20A97a1Df694a4': ['Legal', 'blue'],
-  '0xC428412e382f8aCe2A97dE546200Cf06168DBa68': ['Healthcare', 'pink'],
-  '0x11C21C590515eD7921AA79fBdE37F62aE90596De': ['Legal', 'blue'],
+  '0x47Dd616391A7b2286Fee13b59a20A97a1Df694a4': ['Ownership', 'blue'],
+  '0xC428412e382f8aCe2A97dE546200Cf06168DBa68': ['Healthcare', 'grape'],
+  '0x11C21C590515eD7921AA79fBdE37F62aE90596De': ['Government', 'teal'],
   '0xeF887c7E6A6A46d8CBDbDa9e29f66a9E34992e63': ['Financial', 'yellow'],
-} as {[key: string]: [string, string]};
+} as { [key: string]: [string, string] };
 export const NULL_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
 
