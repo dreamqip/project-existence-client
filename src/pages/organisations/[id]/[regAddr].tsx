@@ -344,6 +344,7 @@ export default function Register() {
                 onDrop={handleDrop}
                 loading={isLoading}
                 onReject={(files) => console.log('rejected files', files)}
+                maxFiles={1}
               >
                 <Group
                   position='center'
