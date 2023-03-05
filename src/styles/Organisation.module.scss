@@ -81,3 +81,9 @@
         display: block;
     }
 }
+
+.activity__table{
+    max-height: 51vh;
+    overflow: scroll;
+    overflow-x: hidden;
+}

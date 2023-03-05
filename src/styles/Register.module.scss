@@ -141,3 +141,9 @@
         font-size: 14px !important;
     }
 }
+
+.activity__table{
+    max-height: 51vh;
+    overflow: scroll;
+    overflow-x: hidden;
+}

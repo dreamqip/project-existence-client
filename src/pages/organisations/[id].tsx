@@ -337,7 +337,11 @@ export default function Organisation() {
                 )}
               </Tabs.Panel>
 
-              <Tabs.Panel value='activity' pt='xs'>
+              <Tabs.Panel
+                value='activity'
+                pt='xs'
+                className={styles.activity__table}
+              >
                 <Table highlightOnHover fontSize='md'>
                   <thead>
                     <tr>

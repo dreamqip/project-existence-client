@@ -628,7 +628,11 @@ export default function Register() {
                 <Tabs.Tab value='activity'>Activity</Tabs.Tab>
               </Tabs.List>
 
-              <Tabs.Panel value='activity' pt='xs'>
+              <Tabs.Panel
+                value='activity'
+                pt='xs'
+                className={styles.activity__table}
+              >
                 <Table highlightOnHover fontSize='md'>
                   <thead>
                     <tr>
