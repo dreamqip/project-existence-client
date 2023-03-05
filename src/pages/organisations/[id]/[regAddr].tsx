@@ -50,13 +50,16 @@ import { ethers } from 'ethers';
 import { getActivityTransactions } from '@/tracer_interactions';
 
 function getExpirationColor(searchResult: Record) {
-  const expirationTime = Number(searchResult.expiresAt);
+  const expirationTime = Number(searchResult.expiresAt) * 1000;
   const currentTime = new Date().getTime();
+
+  console.log(expirationTime);
+  console.log(currentTime);
 
   if (expirationTime > currentTime || expirationTime === 0) {
     return 'teal';
   } else if (searchResult.nextDocumentHash != NULL_HASH) {
-    return 'red';
+    return 'pink';
   } else {
     return 'red';
   }
@@ -383,7 +386,7 @@ export default function Register() {
                     <Text size='sm'>
                       Click details to get more information about the record
                     </Text>
-                    {getExpirationColor(searchResult) == 'red' ? (
+                    {getExpirationColor(searchResult) == 'pink' ? (
                       <Text size='sm' color='blue'>
                         There is a new record attached to it.
                       </Text>
