@@ -307,24 +307,12 @@ export default function Organisation() {
                 {regCards.length != 0 ? (
                   <div className={styles.registers__list}>{regCards}</div>
                 ) : (
-                  <div>
-                    <Notification
-                      withCloseButton={false}
-                      color='yellow'
-                      title='There are no Registers yet.'
-                    ></Notification>
-                    <Notification
-                      sx={{ marginTop: '10px' }}
-                      withCloseButton={false}
-                      color='blue'
-                      title='Are you the Organisation owner? What are you waiting for? Go create one!'
-                    ></Notification>
-                    <Notification
-                      sx={{ marginTop: '10px' }}
-                      withCloseButton={false}
-                      color='blue'
-                      title='`Connect wallet` and click `Deploy Register`.'
-                    ></Notification>
+                  <div className={styles.registers__banner}>
+                    <Title order={4}>No Registers, yet!</Title>
+                    <p>
+                      Are you the Organisation owner? What are you waiting for?
+                      Go create one!
+                    </p>
                     <Button
                       className={styles.scroll}
                       sx={{ marginTop: '10px' }}
