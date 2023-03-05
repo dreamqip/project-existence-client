@@ -93,6 +93,7 @@ export default function Header() {
               <Search />
             </ActionIcon>
             <TextInput
+              className={styles.search__input}
               icon={<Search />}
               placeholder='Enter Org or Reg address'
               radius='md'
