@@ -132,18 +132,9 @@ export default function Home() {
           <div className={styles.your_organisations__cards}>
             <>
               {yourOrganisationsCards.length == 0 ? (
-                <div>
-                  <Notification
-                    withCloseButton={false}
-                    color='blue'
-                    title='Don`t have an organisation?'
-                  ></Notification>
-                  <Notification
-                    sx={{ marginTop: '10px' }}
-                    withCloseButton={false}
-                    color='blue'
-                    title='What are you waiting for? Go create one!'
-                  ></Notification>
+                <div className={styles.your_organisations__banner}>
+                  <Title order={4}>No Organisations, yet!</Title>
+                  <p>What are you waiting for? Go create one!</p>
                   <Button
                     sx={{ marginTop: '20px' }}
                     radius='md'
