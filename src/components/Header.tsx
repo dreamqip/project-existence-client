@@ -136,7 +136,7 @@ export default function Header() {
           <div className={styles.header__connect}>
             <Button
               leftIcon={<Wallet />}
-              color='dark'
+              color={walletConnected ? 'ocean-blue' : 'dark'}
               radius='md'
               onClick={async (event) => {
                 if (!walletConnected) {
@@ -156,7 +156,7 @@ export default function Header() {
                 }
               }}
             >
-              {walletConnected ? <>Connected ✅</> : <>Connect</>}
+              {walletConnected ? <>Connected</> : <>Connect</>}
             </Button>
           </div>
           <Header__mobile_menu

@@ -13,6 +13,20 @@ export default function App({ Component, pageProps }: AppProps) {
       theme={{
         /** Put your mantine theme override here */
         colorScheme: 'dark',
+        colors: {
+          'ocean-blue': [
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+            '#023020',
+          ],
+        },
       }}
     >
       <Notifications />
