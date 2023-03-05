@@ -5,7 +5,13 @@ import {
   getSigner,
 } from '@/contract_interactions';
 import { serializeMetadata } from '@/utils';
-import { Button, LoadingOverlay, Stack, TextInput } from '@mantine/core';
+import {
+  Button,
+  LoadingOverlay,
+  Stack,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import {
@@ -93,7 +99,7 @@ export default function UpdateRegisterForm(props: {
           })
         }
       />
-      <TextInput
+      <Textarea
         icon={<TextCaption />}
         defaultValue={regMetadata.description ?? ''}
         value={formInput.description ?? ''}

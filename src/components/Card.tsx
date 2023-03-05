@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
+import ReactMarkdown from 'react-markdown';
 
 function hashString(str: string) {
   let hash = 0;
@@ -75,8 +76,12 @@ export default function MyCard(props: {
           </Badge>
         ) : null}
       </Group>
-      <Text size='md' color='dimmed' sx={{ overflowWrap: 'break-word' }}>
-        {description}
+      <Text
+        size='md'
+        color='dimmed'
+        sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
+      >
+        <ReactMarkdown>{description}</ReactMarkdown>
       </Text>
       {link || phone || email ? (
         <div className={styles.contacts}>

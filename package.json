@@ -30,6 +30,7 @@
     "react": "18.2.0",
     "react-breadcrumbs": "^2.1.7",
     "react-dom": "18.2.0",
+    "react-markdown": "^8.0.5",
     "react-router-dom": "^6.8.1",
     "tabler-icons-react": "^1.56.0",
     "typescript": "4.9.5"

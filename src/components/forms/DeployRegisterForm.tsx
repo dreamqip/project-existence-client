@@ -4,7 +4,13 @@ import {
   getSigner,
 } from '@/contract_interactions';
 import { serializeMetadata } from '@/utils';
-import { Button, LoadingOverlay, Stack, TextInput } from '@mantine/core';
+import {
+  Button,
+  LoadingOverlay,
+  Stack,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 import React from 'react';
 import { useState } from 'react';
 import {
@@ -55,7 +61,7 @@ export default function UpdateOrganisationForm(props: {
           })
         }
       />
-      <TextInput
+      <Textarea
         withAsterisk
         icon={<TextCaption />}
         placeholder='Register description'
