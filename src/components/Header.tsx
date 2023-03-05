@@ -153,14 +153,10 @@ export default function Header() {
                       autoClose: 5000,
                     });
                   }
-                } else {
-                  await disconnectProvider();
-                  setWalletConnected(false);
-                  updateHome();
                 }
               }}
             >
-              {walletConnected ? <>Disconnect</> : <>Connect</>}
+              {walletConnected ? <>Connected ✅</> : <>Connect</>}
             </Button>
           </div>
           <Header__mobile_menu
