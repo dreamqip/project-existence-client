@@ -213,8 +213,9 @@ export default function CreateRecordForm(props: {
           formInput.documentHash.trim() == '' ||
           (checkedReference && formInput.referenceDocument.trim() == '') ||
           (checkedSource && formInput.sourceDocument.trim() == '') ||
-          (checkedDates && formInput.startsAt == 0) ||
-          (checkedDates && formInput.expiresAt == 0) ||
+          (checkedDates &&
+            formInput.startsAt == 0 &&
+            formInput.expiresAt == 0) ||
           (checkedPast && formInput.pastDocumentHash == NULL_HASH)
         }
         onClick={async (e) => {
