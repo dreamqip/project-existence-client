@@ -55,6 +55,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
     <Stack>
       <TextInput
         icon={<TextColor />}
+        withAsterisk
         placeholder='Organisation name'
         label='Organisation name'
         onChange={(event) =>
@@ -67,6 +68,7 @@ export default function CreateOrganisationForm(props: { update: () => any }) {
 
       <Textarea
         icon={<TextCaption />}
+        withAsterisk
         placeholder='Organisation description'
         label='Organisation description'
         onChange={(event) =>
