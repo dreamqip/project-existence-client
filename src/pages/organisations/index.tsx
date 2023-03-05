@@ -85,6 +85,7 @@ export default function Organisations() {
             key={index}
             description={metadata.description ?? 'description'}
             badge='Featured'
+            banner={metadata.banner ?? ''}
             link={metadata.contacts?.link ?? ''}
             phone={metadata.contacts?.phone ?? ''}
             email={metadata.contacts?.email ?? ''}

@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
-import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
+import { useRouter } from 'next/router';
+import {
+  Card,
+  Image,
+  Text,
+  Badge,
+  Button,
+  Spoiler,
+  Stack,
+} from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
-import ReactMarkdown from 'react-markdown';
 
 function hashString(str: string) {
   let hash = 0;
@@ -42,6 +50,9 @@ export default function MyCard(props: {
 }) {
   const { title, description, banner, link, phone, email, badge, way } = props;
 
+  const router = useRouter();
+  const isOrganisationsPage = router.pathname === '/organisations';
+
   const randomIndex = hashString(title);
   const randomImage = images[randomIndex % images.length];
   const [imageError, setImageError] = useState(false);
@@ -54,6 +65,7 @@ export default function MyCard(props: {
       <Card.Section>
         {banner ? (
           <Image
+            className={styles.banner}
             src={banner}
             height={160}
             alt='Card'
@@ -66,23 +78,36 @@ export default function MyCard(props: {
           <Image src={randomImage} height={160} alt='Card' />
         ) : null}
       </Card.Section>
-      <Group position='apart' mt='md' mb='xs'>
-        <Text fz='xl' weight={600}>
-          {title}
-        </Text>
+      <Stack mt='md' mb='xs' align='flex-start'>
         {badge != undefined ? (
           <Badge color='pink' variant='light'>
             {badge}
           </Badge>
         ) : null}
-      </Group>
-      <Text
-        size='md'
-        color='dimmed'
-        sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
-      >
-        <ReactMarkdown>{description}</ReactMarkdown>
-      </Text>
+        <Text fz='xl' weight={600}>
+          {title}
+        </Text>
+      </Stack>
+      {isOrganisationsPage ? (
+        <Spoiler maxHeight={150} showLabel='Show more' hideLabel='Hide'>
+          <Text
+            size='md'
+            color='dimmed'
+            sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
+          >
+            {description}
+          </Text>
+        </Spoiler>
+      ) : (
+        <Text
+          size='md'
+          color='dimmed'
+          sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
+        >
+          {description}
+        </Text>
+      )}
+
       {link || phone || email ? (
         <div className={styles.contacts}>
           <Text
