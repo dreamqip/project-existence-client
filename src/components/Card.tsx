@@ -8,6 +8,7 @@ import {
   Button,
   Spoiler,
   Stack,
+  Group,
 } from '@mantine/core';
 import Link from 'next/link';
 import styles from '@/styles/Form.module.scss';
@@ -49,7 +50,8 @@ export default function MyCard(props: {
   badge2?: [string, string];
   way?: string;
 }) {
-  const { title, description, banner, link, phone, email, badge, badge2, way } = props;
+  const { title, description, banner, link, phone, email, badge, badge2, way } =
+    props;
 
   const router = useRouter();
   const isOrganisationsPage = router.pathname === '/organisations';
@@ -82,6 +84,7 @@ export default function MyCard(props: {
       </Card.Section>
       <div className={styles.card__body}>
         <Stack mt='md' mb='xs' align='flex-start'>
+          <Group spacing='xs'>
             {badge != undefined ? (
               <Badge color='pink' variant='light'>
                 {badge}
@@ -92,6 +95,7 @@ export default function MyCard(props: {
                 {badge2[0]}
               </Badge>
             ) : null}
+          </Group>
           <Text fz='xl' weight={600}>
             {title}
           </Text>
