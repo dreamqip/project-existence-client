@@ -146,10 +146,14 @@ export default function Header() {
                     setWalletConnected(true);
                   } else {
                     setWalletConnected(false);
+                    const isMobile = window.innerWidth < 768;
+                    const errorMessage = isMobile
+                      ? 'Wallet has not been connected. Please connect your wallet on a larger screen device.'
+                      : 'Wallet has not been connected.';
                     showNotification({
                       title: 'Error',
                       color: 'red',
-                      message: 'Wallet has not been connected.',
+                      message: errorMessage,
                       autoClose: 5000,
                     });
                   }
