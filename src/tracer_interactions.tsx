@@ -32,7 +32,7 @@ export type TracerTransaction = {
 let requestId = 1;
 export async function getActivityTransactions(to: string, blocks = 10000, fromBlock?: number) {
   if (blocks < 1) throw new Error("blocks less than 1");
-  if (TRACER_LINK == null) throw new Error("no tracer");
+  if (TRACER_LINK == null) return { error: "no tracer" } as TracerError;
   if (to == "") return { error: "no address" } as TracerError;
   if (!to.startsWith("0x")) to = "0x" + to;
   to = to.toLowerCase();
