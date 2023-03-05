@@ -653,7 +653,13 @@ export default function Register() {
                       <th className={styles.column}>When</th>
                     </tr>
                   </thead>
-                  <tbody>{rows}</tbody>
+                  {rows.length == 0 ? (
+                    <tr>
+                      <td>No actions yet.</td>
+                    </tr>
+                  ) : (
+                    rows
+                  )}
                 </Table>
               </Tabs.Panel>
             </Tabs>

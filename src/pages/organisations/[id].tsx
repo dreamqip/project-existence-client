@@ -338,7 +338,15 @@ export default function Organisation() {
                       <th>When</th>
                     </tr>
                   </thead>
-                  <tbody>{rows}</tbody>
+                  <tbody>
+                    {rows.length == 0 ? (
+                      <tr>
+                        <td>No actions yet.</td>
+                      </tr>
+                    ) : (
+                      rows
+                    )}
+                  </tbody>
                 </Table>
               </Tabs.Panel>
             </Tabs>
