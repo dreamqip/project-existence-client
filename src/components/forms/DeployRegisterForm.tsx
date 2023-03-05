@@ -26,6 +26,8 @@ import {
 import { showNotification, updateNotification } from '@mantine/notifications';
 const emailRegex = /^\S+@\S+\.\S+$/; // This is a basic email regex pattern, modify it as needed
 const phoneRegex = /^\+\d+$/;
+const imageRegex = /\bhttps?:\/\/\S+?\.(?:jpg|jpeg|png|gif|svg)\b/i;
+const linkRegex = /\bhttps?:\/\/\S+\b/i;
 
 export default function UpdateOrganisationForm(props: {
   orgAddress: string;
@@ -141,7 +143,11 @@ export default function UpdateOrganisationForm(props: {
           (emailRegex.test(formInput.contacts.email) == false &&
             formInput.contacts.email.trim() != '') ||
           (phoneRegex.test(formInput.contacts.phone) == false &&
-            formInput.contacts.phone.trim() != '')
+            formInput.contacts.phone.trim() != '') ||
+          (linkRegex.test(formInput.contacts.link) == false &&
+            formInput.contacts.link.trim() != '') ||
+          (imageRegex.test(formInput.banner) == false &&
+            formInput.banner.trim() != '')
         }
         onClick={async (e) => {
           props.updateModal();
