@@ -61,7 +61,7 @@ export default function MyCard(props: {
   };
 
   return (
-    <Card shadow='sm' p='lg' radius='md' withBorder>
+    <Card shadow='sm' p='lg' radius='md' withBorder className={styles.card}>
       <Card.Section>
         {banner ? (
           <Image
@@ -78,18 +78,28 @@ export default function MyCard(props: {
           <Image src={randomImage} height={160} alt='Card' />
         ) : null}
       </Card.Section>
-      <Stack mt='md' mb='xs' align='flex-start'>
-        {badge != undefined ? (
-          <Badge color='pink' variant='light'>
-            {badge}
-          </Badge>
-        ) : null}
-        <Text fz='xl' weight={600}>
-          {title}
-        </Text>
-      </Stack>
-      {isOrganisationsPage ? (
-        <Spoiler maxHeight={150} showLabel='Show more' hideLabel='Hide'>
+      <div className={styles.card__body}>
+        <Stack mt='md' mb='xs' align='flex-start'>
+          {badge != undefined ? (
+            <Badge color='pink' variant='light'>
+              {badge}
+            </Badge>
+          ) : null}
+          <Text fz='xl' weight={600}>
+            {title}
+          </Text>
+        </Stack>
+        {isOrganisationsPage ? (
+          <Spoiler maxHeight={150} showLabel='Show more' hideLabel='Hide'>
+            <Text
+              size='md'
+              color='dimmed'
+              sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
+            >
+              {description}
+            </Text>
+          </Spoiler>
+        ) : (
           <Text
             size='md'
             color='dimmed'
@@ -97,51 +107,42 @@ export default function MyCard(props: {
           >
             {description}
           </Text>
-        </Spoiler>
-      ) : (
-        <Text
-          size='md'
-          color='dimmed'
-          sx={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}
-        >
-          {description}
-        </Text>
-      )}
+        )}
 
-      {link || phone || email ? (
-        <div className={styles.contacts}>
-          <Text
-            className={styles.contacts__title}
-            size='lg'
-            color='dimmed'
-            sx={{ overflowWrap: 'break-word' }}
-          >
-            Contacts:
-          </Text>
-          {link ? (
-            <Link
-              target='_blank'
-              className={styles.link}
-              href={link.toString()}
+        {link || phone || email ? (
+          <div className={styles.contacts}>
+            <Text
+              className={styles.contacts__title}
+              size='lg'
+              color='dimmed'
+              sx={{ overflowWrap: 'break-word' }}
             >
-              Link: {link.toString()}
-            </Link>
-          ) : null}
-          {phone ? (
-            <Text size='sm' color='dimmed'>
-              Phone: {phone}
+              Contacts:
             </Text>
-          ) : null}
-          {email ? (
-            <Text size='sm' color='dimmed'>
-              Email: {email}
-            </Text>
-          ) : null}
-        </div>
-      ) : null}
-
+            {link ? (
+              <Link
+                target='_blank'
+                className={styles.link}
+                href={link.toString()}
+              >
+                Link: {link.toString()}
+              </Link>
+            ) : null}
+            {phone ? (
+              <Text size='sm' color='dimmed'>
+                Phone: {phone}
+              </Text>
+            ) : null}
+            {email ? (
+              <Text size='sm' color='dimmed'>
+                Email: {email}
+              </Text>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
       {way != undefined ? (
-        <Link href={way}>
+        <Link href={way} className={styles.btn}>
           <Button variant='light' color='blue' fullWidth mt='md' radius='md'>
             View
           </Button>

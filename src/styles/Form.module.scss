@@ -12,3 +12,16 @@
     font-size: 0.875rem;
     line-height: 1.55;
   }
+
+.btn{
+    margin-top: 20px;
+    
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    &__body{
+        flex: 1 1 auto;
+    }
+}
