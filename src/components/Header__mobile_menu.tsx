@@ -213,7 +213,7 @@ export default function HeaderMenu({
           ) : null}
           {isHomePage ? null : null}
           {isOrganisationsPage && walletConnected ? (
-            <div className={styles.header__menu}>
+            <div className={styles.header__mobile_menu}>
               <Button
                 radius='md'
                 onClick={() => {
@@ -237,7 +237,7 @@ export default function HeaderMenu({
           orgAddress &&
           !isRegisterPage &&
           walletConnected ? (
-            <div className={styles.header__menu}>
+            <div className={styles.header__mobile_menu}>
               <Button
                 radius='md'
                 onClick={() => {
@@ -279,7 +279,7 @@ export default function HeaderMenu({
             </div>
           ) : null}
           {isRegisterPage && walletConnected ? (
-            <div className={styles.header__menu}>
+            <div className={styles.header__mobile_menu}>
               <Button
                 radius='md'
                 onClick={() => setCreateRecModalOpened(true)}
