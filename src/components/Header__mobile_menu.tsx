@@ -100,7 +100,7 @@ export default function HeaderMenu({
       setIsOrgOwner((await org.owner()).toString() == address);
     })();
     return () => {
-      // unmount
+      //unmount
     };
   }, [walletConnected, orgAddress]);
 
