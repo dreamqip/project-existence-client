@@ -82,7 +82,23 @@ type RegisterContract = ethers.Contract & {
   editRegisterMetadata: (metadata: string) => Promise<Transaction>;
   organisation: () => Promise<AddressLike>;
   metadata: () => Promise<string>;
-  records: (documentHash: DataHexString) => Promise<[DataHexString, AddressLike, AddressLike, string, string, BigInt, BigInt, BigInt, BigInt, DataHexString, DataHexString]>;
+  records: (
+    documentHash: DataHexString,
+  ) => Promise<
+    [
+      DataHexString,
+      AddressLike,
+      AddressLike,
+      string,
+      string,
+      BigInt,
+      BigInt,
+      BigInt,
+      BigInt,
+      DataHexString,
+      DataHexString,
+    ]
+  >;
   hasRole: (role: DataHexString, account: AddressLike) => Promise<boolean>;
 };
 export type Record = {
@@ -101,16 +117,22 @@ export type Record = {
 
   pastDocumentHash: DataHexString;
   nextDocumentHash: DataHexString;
-}
+};
 export type {
   OrganisationFactoryContract,
   OrganisationContract,
   RegisterContract,
 };
 
-export const RECORD_CREATOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("RECORD_CREATOR"));
-export const RECORD_INVALIDATOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("RECORD_INVALIDATOR"));
-export const REGISTER_EDITOR_ROLE: DataHexString = ethers.keccak256(ethers.toUtf8Bytes("REGISTER_EDITOR"));
+export const RECORD_CREATOR_ROLE: DataHexString = ethers.keccak256(
+  ethers.toUtf8Bytes('RECORD_CREATOR'),
+);
+export const RECORD_INVALIDATOR_ROLE: DataHexString = ethers.keccak256(
+  ethers.toUtf8Bytes('RECORD_INVALIDATOR'),
+);
+export const REGISTER_EDITOR_ROLE: DataHexString = ethers.keccak256(
+  ethers.toUtf8Bytes('REGISTER_EDITOR'),
+);
 
 let networkId = 0xfa;
 if (NETWORK === 'testnet') networkId = 0xfa2;
@@ -119,13 +141,13 @@ if (NETWORK === 'fakenet') networkId = 0xfa3;
 let rpcLink: string;
 switch (NETWORK) {
   case 'mainnet':
-    rpcLink = "https://rpc.ankr.com/fantom";
+    rpcLink = 'https://rpc.ankr.com/fantom';
     break;
   case 'testnet':
-    rpcLink = "https://rpc.ankr.com/fantom_testnet";
+    rpcLink = 'https://rpc.ankr.com/fantom_testnet';
     break;
   case 'fakenet':
-    rpcLink = "http://localhost:18545";
+    rpcLink = 'http://localhost:18545';
     break;
 }
 let readOnlyProvider = new ethers.JsonRpcProvider(rpcLink, networkId);
@@ -142,29 +164,32 @@ export async function updateProvider() {
     if (provider == null) return;
 
     try {
-      await provider.send('wallet_switchEthereumChain', [{ chainId: "0x" + networkId.toString(16) }]);
+      await provider.send('wallet_switchEthereumChain', [
+        { chainId: '0x' + networkId.toString(16) },
+      ]);
     } catch (switchError: any) {
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.error.code === 4902) {
         try {
-          await provider.send(
-            "wallet_addEthereumChain",
-            [{
-              chainId: "0x" + networkId.toString(16),
+          await provider.send('wallet_addEthereumChain', [
+            {
+              chainId: '0x' + networkId.toString(16),
               rpcUrls: [rpcLink],
-              chainName: "Fantom " + NETWORK,
+              chainName: 'Fantom ' + NETWORK,
               nativeCurrency: {
-                name: "FTM",
-                symbol: "FTM",
-                decimals: 18
+                name: 'FTM',
+                symbol: 'FTM',
+                decimals: 18,
               },
-              blockExplorerUrls: null
-            }]
-          );
-          await provider.send('wallet_switchEthereumChain', [{ chainId: "0x" + networkId.toString(16) }]);
+              blockExplorerUrls: null,
+            },
+          ]);
+          await provider.send('wallet_switchEthereumChain', [
+            { chainId: '0x' + networkId.toString(16) },
+          ]);
 
           signer = await provider.getSigner();
-          
+
           return;
         } catch (addError) {
           provider = null;
@@ -198,21 +223,27 @@ export function getSigner() {
   return signer;
 }
 
-export async function* organisationsOfOwner(owner: AddressLike, orgFactory: OrganisationFactoryContract) {
+export async function* organisationsOfOwner(
+  owner: AddressLike,
+  orgFactory: OrganisationFactoryContract,
+) {
   try {
     for (var i = 0; true; i++) {
       yield await orgFactory.organisationsOfOwner(owner, i);
     }
-  } catch { }
+  } catch {}
 }
 export async function* registersOfOrganisation(org: OrganisationContract) {
   try {
     for (var i = 0; true; i++) {
       yield await org.registers(i);
     }
-  } catch { }
+  } catch {}
 }
-export async function getRecord(reg: RegisterContract, fileHash: DataHexString) {
+export async function getRecord(
+  reg: RegisterContract,
+  fileHash: DataHexString,
+) {
   let rawRecord = await reg.records(fileHash);
   let record: Record = {
     documentHash: rawRecord[0],
@@ -225,8 +256,8 @@ export async function getRecord(reg: RegisterContract, fileHash: DataHexString) 
     startsAt: rawRecord[7],
     expiresAt: rawRecord[8],
     pastDocumentHash: rawRecord[9],
-    nextDocumentHash: rawRecord[10]
-  }
+    nextDocumentHash: rawRecord[10],
+  };
   return record;
 }
 
@@ -234,14 +265,14 @@ export async function getRecord(reg: RegisterContract, fileHash: DataHexString) 
 export async function searchForOrganisationOrRegister(
   address: string,
   orgFactory?: OrganisationFactoryContract,
-): Promise<[OrganisationContract | RegisterContract, "org" | "reg"] | null> {
+): Promise<[OrganisationContract | RegisterContract, 'org' | 'reg'] | null> {
   let possibleOrganisation = await getOrganisationContract(address);
   if (possibleOrganisation != null) {
     // it is an organisation (possibly, fake)
     if (orgFactory && !(await orgFactory.organisations(address))) {
       return null; // organisation is not official
     }
-    return [possibleOrganisation, "org"];
+    return [possibleOrganisation, 'org'];
   }
 
   let possibleRegister = await getRegisterContract(address);
@@ -261,7 +292,7 @@ export async function searchForOrganisationOrRegister(
         }
       }
     }
-    return [possibleRegister, "reg"];
+    return [possibleRegister, 'reg'];
   }
 
   return null;
@@ -274,8 +305,15 @@ export async function getOrganisationFactoryContract(
   if (!skipCheck) {
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
-      if (!bytecode.includes(toFunctionSelector('deployOrganisation(string,address)'))) return null;
-    } catch { return null }
+      if (
+        !bytecode.includes(
+          toFunctionSelector('deployOrganisation(string,address)'),
+        )
+      )
+        return null;
+    } catch {
+      return null;
+    }
   }
   return new ethers.Contract(
     contractAddress,
@@ -291,9 +329,17 @@ export async function getOrganisationContract(
   if (!skipCheck) {
     try {
       const bytecode = await readOnlyProvider.getCode(contractAddress);
-      if (!bytecode.includes(toFunctionSelector('editOrganisationMetadata(string)'))) return null;
-      if (!bytecode.includes(toFunctionSelector('deployRegister(string)'))) return null;
-    } catch { return null }
+      if (
+        !bytecode.includes(
+          toFunctionSelector('editOrganisationMetadata(string)'),
+        )
+      )
+        return null;
+      if (!bytecode.includes(toFunctionSelector('deployRegister(string)')))
+        return null;
+    } catch {
+      return null;
+    }
   }
   return new ethers.Contract(
     contractAddress,
@@ -314,7 +360,9 @@ export async function getRegisterContract(
       ) {
         return null;
       }
-    } catch { return null }
+    } catch {
+      return null;
+    }
   }
   return new ethers.Contract(
     contractAddress,
