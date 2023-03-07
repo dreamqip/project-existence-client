@@ -250,7 +250,7 @@ export default function Organisations() {
             rightIcon={<BrandGoogleDrive size={30} />}
             sx={{ marginTop: '10px' }}
           >
-            Documents for testing
+            Source documents (only for demonstrational purposes)
           </Button>
         </Link>
         <div className={styles.featured__cards}>
