@@ -34,6 +34,7 @@ const items = [
   </Link>
 ));
 import Head from 'next/head';
+import { BrandGoogleDrive } from 'tabler-icons-react';
 
 export let updateOrganisations = () => {};
 
@@ -241,6 +242,17 @@ export default function Organisations() {
         <Title order={2} className={styles.featured__title}>
           Featured Organisations
         </Title>
+        <Link
+          href='https://drive.google.com/drive/u/2/folders/1qjcA_HeXXK3NFHQ3rEZmy3aOrj-BdaOM'
+          target='_blank'
+        >
+          <Button
+            rightIcon={<BrandGoogleDrive size={30} />}
+            sx={{ marginTop: '10px' }}
+          >
+            Documents for testing
+          </Button>
+        </Link>
         <div className={styles.featured__cards}>
           {featuredOrganisationsCards}
         </div>
